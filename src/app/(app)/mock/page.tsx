@@ -5,6 +5,7 @@ import {
   Timer, Zap, CheckCircle, XCircle, RotateCcw, Trophy, Lock, Unlock
 } from 'lucide-react'
 import { getProgress, updateProgress, getMockSessions, saveMockSession, type MockSessionRecord } from '@/lib/db'
+import PracticeEditor from '@/components/PracticeEditor'
 import DifficultyBadge from '@/components/DifficultyBadge'
 import DescriptionRenderer from '@/components/DescriptionRenderer'
 import CodePanel from '@/components/CodePanel'
@@ -55,7 +56,6 @@ export default function MockInterviewPage() {
   const [allQuestions, setAllQuestions] = useState<Question[]>([])
   const [progress, setProgress] = useState<Record<string, any>>({})
   const [loading, setLoading] = useState(true)
-  const [practiceCode, setPracticeCode] = useState('')
   const [sessions, setSessions] = useState<SessionRecord[]>([])
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const startTimeRef = useRef<number | null>(null)
@@ -153,7 +153,6 @@ export default function MockInterviewPage() {
     setQuestion(q)
     setTimeLeft(duration)
     setResult(null)
-    setPracticeCode('')
     setImageError(false)
     setPhase('active')
     startTimeRef.current = Date.now()
@@ -364,23 +363,12 @@ export default function MockInterviewPage() {
             </div>
           )}
 
-          {/* Practice textarea */}
-          <div>
-            <div className="flex items-center gap-2 mb-2 px-1">
-              <div className="h-px flex-1 bg-gray-200" />
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-widest px-2">Your Solution</span>
-              <div className="h-px flex-1 bg-gray-200" />
-            </div>
-            <p className="text-xs text-gray-400 text-center mb-3">Write your solution below</p>
-            <textarea
-              value={practiceCode}
-              onChange={e => setPracticeCode(e.target.value)}
-              spellCheck={false}
-              rows={14}
-              placeholder="# Write your solution here..."
-              className="w-full font-mono text-sm bg-gray-900 text-gray-100 rounded-xl p-4 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed"
-            />
-          </div>
+          {/* Practice Editor — full features */}
+          <PracticeEditor
+            questionId={question.id}
+            starterPython={question.starter_python}
+            starterCpp={question.starter_cpp}
+          />
 
           {/* Answer section — locked until reveal threshold */}
           <div className="rounded-xl border overflow-hidden">
