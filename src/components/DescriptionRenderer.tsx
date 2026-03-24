@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 
 const SUP_MAP: Record<string, string> = {

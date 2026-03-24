@@ -1,8 +1,12 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Copy, Check } from 'lucide-react'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import hljs from 'highlight.js/lib/core'
+import pythonLang from 'highlight.js/lib/languages/python'
+import cppLang from 'highlight.js/lib/languages/cpp'
+
+hljs.registerLanguage('python', pythonLang)
+hljs.registerLanguage('cpp', cppLang)
 
 interface CodePanelProps {
   pythonCode?: string
@@ -12,8 +16,17 @@ interface CodePanelProps {
 export default function CodePanel({ pythonCode = '', cppCode = '' }: CodePanelProps) {
   const [lang, setLang] = useState<'python' | 'cpp'>('python')
   const [copied, setCopied] = useState(false)
+  const codeRef = useRef<HTMLElement>(null)
 
   const code = lang === 'python' ? pythonCode : cppCode
+
+  useEffect(() => {
+    if (codeRef.current && code) {
+      codeRef.current.removeAttribute('data-highlighted')
+      codeRef.current.textContent = code
+      hljs.highlightElement(codeRef.current)
+    }
+  }, [code, lang])
 
   const copy = async () => {
     if (!code) return
@@ -23,48 +36,65 @@ export default function CodePanel({ pythonCode = '', cppCode = '' }: CodePanelPr
   }
 
   return (
-    <div className="rounded-xl overflow-hidden border border-gray-700 bg-[#282c34]">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between gap-2 px-4 py-2 bg-[#21252b] border-b border-gray-700">
-        <div className="flex gap-1">
-          {(['python', 'cpp'] as const).map(l => (
-            <button
-              key={l}
-              onClick={() => setLang(l)}
-              className={`px-3 py-1 rounded text-xs font-semibold transition-colors ${
-                lang === l ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              {l === 'python' ? 'Python' : 'C++'}
-            </button>
-          ))}
-        </div>
-        <button
-          onClick={copy}
-          className="flex items-center gap-1 text-xs text-gray-400 hover:text-white transition-colors"
-        >
-          {copied ? <Check size={13} className="text-green-400" /> : <Copy size={13} />}
-          {copied ? 'Copied!' : 'Copy'}
-        </button>
-      </div>
-
-      {code ? (
-        <div className="text-[11px] sm:text-[12px] md:text-[13px] overflow-x-auto">
-          <SyntaxHighlighter
-            language={lang === 'python' ? 'python' : 'cpp'}
-            style={oneDark}
-            showLineNumbers
-            wrapLines
-            customStyle={{ margin: 0, borderRadius: 0, background: '#282c34' }}
+    <>
+      <style>{`
+        .hljs { background: #282c34; color: #abb2bf; }
+        .hljs-keyword { color: #c678dd; }
+        .hljs-built_in { color: #e6c07b; }
+        .hljs-string { color: #98c379; }
+        .hljs-number { color: #d19a66; }
+        .hljs-comment { color: #5c6370; font-style: italic; }
+        .hljs-function .hljs-title, .hljs-title.function_ { color: #61afef; }
+        .hljs-class .hljs-title, .hljs-title.class_ { color: #e5c07b; }
+        .hljs-params { color: #abb2bf; }
+        .hljs-operator { color: #56b6c2; }
+        .hljs-punctuation { color: #abb2bf; }
+        .hljs-attr { color: #e06c75; }
+        .hljs-variable { color: #e06c75; }
+        .hljs-literal { color: #56b6c2; }
+        .hljs-type { color: #e5c07b; }
+        .code-block { counter-reset: line; }
+        .code-block code { display: block; }
+      `}</style>
+      <div className="rounded-xl overflow-hidden border border-gray-700 bg-[#282c34]">
+        {/* Toolbar */}
+        <div className="flex items-center justify-between gap-2 px-4 py-2 bg-[#21252b] border-b border-gray-700">
+          <div className="flex gap-1">
+            {(['python', 'cpp'] as const).map(l => (
+              <button
+                key={l}
+                onClick={() => setLang(l)}
+                className={`px-3 py-1 rounded text-xs font-semibold transition-colors ${
+                  lang === l ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                {l === 'python' ? 'Python' : 'C++'}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={copy}
+            className="flex items-center gap-1 text-xs text-gray-400 hover:text-white transition-colors"
           >
-            {code}
-          </SyntaxHighlighter>
+            {copied ? <Check size={13} className="text-green-400" /> : <Copy size={13} />}
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
         </div>
-      ) : (
-        <div className="text-gray-500 text-sm text-center py-12">
-          No {lang === 'python' ? 'Python' : 'C++'} solution available.
-        </div>
-      )}
-    </div>
+
+        {code ? (
+          <div className="overflow-x-auto code-block">
+            <pre className="p-4 text-[11px] sm:text-[12px] md:text-[13px] leading-relaxed m-0">
+              <code ref={codeRef} className={`language-${lang}`}>
+                {code}
+              </code>
+            </pre>
+          </div>
+        ) : (
+          <div className="text-gray-500 text-sm text-center py-12">
+            No {lang === 'python' ? 'Python' : 'C++'} solution available.
+          </div>
+        )}
+      </div>
+    </>
   )
 }
