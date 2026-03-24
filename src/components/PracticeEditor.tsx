@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { RotateCcw, Code2, Play, ChevronDown, ChevronUp } from 'lucide-react'
+import { getPracticeSession, savePracticeSession } from '@/lib/db'
 
 // Code execution — proxied server-side through Next.js API
 const RUN_CODE_API = '/api/run-code'
@@ -72,6 +73,7 @@ export default function PracticeEditor({ questionId, starterPython, starterCpp }
   const editorViewRef = useRef<any>(null)
 
   const storageKey = `practice_v7_${questionId}_${lang}`
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const DEFAULT_PYTHON = `from typing import List, Optional
 
@@ -285,9 +287,18 @@ int main() {
     loadExtensions()
   }, [lang])
 
+  // Load: localStorage first (instant), then Supabase (authoritative)
   useEffect(() => {
-    const stored = localStorage.getItem(storageKey)
-    setCode(stored !== null ? stored : starter)
+    const local = localStorage.getItem(storageKey)
+    setCode(local !== null ? local : starter)
+
+    // Async: load from Supabase and prefer it if it has saved code
+    getPracticeSession(questionId, lang).then(session => {
+      if (session?.code) {
+        setCode(session.code)
+        localStorage.setItem(storageKey, session.code)
+      }
+    })
   }, [questionId, lang])
 
   const handleChange = (val: string) => {
@@ -295,11 +306,17 @@ int main() {
     localStorage.setItem(storageKey, val)
     setSaved(true)
     setTimeout(() => setSaved(false), 1200)
+    // Debounce Supabase save — write 2s after last keystroke
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+    saveTimerRef.current = setTimeout(() => {
+      savePracticeSession(questionId, lang, val)
+    }, 2000)
   }
 
   const reset = () => {
     setCode(starter)
     localStorage.setItem(storageKey, starter)
+    savePracticeSession(questionId, lang, starter)
   }
 
   const runCode = async () => {

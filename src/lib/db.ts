@@ -253,18 +253,19 @@ export async function setDailyTarget(target: number, lock_code: string) {
 
 // ─── Practice Sessions ────────────────────────────────────────────────────────
 export async function getPracticeSession(questionId: number, language: string) {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('practice_sessions')
     .select('*')
     .eq('user_id', USER_ID)
     .eq('question_id', questionId)
     .eq('language', language)
     .single()
+  if (error && error.code !== 'PGRST116') console.error('[db] getPracticeSession:', error.message)
   return data
 }
 
 export async function savePracticeSession(questionId: number, language: string, code: string, result?: any) {
-  await supabase.from('practice_sessions').upsert({
+  const { error } = await supabase.from('practice_sessions').upsert({
     user_id: USER_ID,
     question_id: questionId,
     language,
@@ -272,6 +273,56 @@ export async function savePracticeSession(questionId: number, language: string, 
     last_result: result ?? null,
     updated_at: new Date().toISOString(),
   }, { onConflict: 'user_id,question_id,language' })
+  if (error) console.error('[db] savePracticeSession:', error.message)
+}
+
+// ─── Mock Sessions ────────────────────────────────────────────────────────────
+export interface MockSessionRecord {
+  id?: number
+  date: string
+  question_id?: number | null
+  question_title?: string | null
+  difficulty?: string | null
+  outcome: string
+  elapsed_seconds: number
+  duration_seconds?: number
+  created_at?: string
+}
+
+export async function getMockSessions(limit = 20): Promise<MockSessionRecord[]> {
+  const { data, error } = await supabase
+    .from('mock_sessions')
+    .select('*')
+    .eq('user_id', USER_ID)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+  if (error) console.error('[db] getMockSessions:', error.message)
+  return (data ?? []).map((r: any) => ({
+    id: r.id,
+    date: r.date ?? r.created_at?.split('T')[0] ?? '',
+    question_id: r.question_id,
+    question_title: r.question_title,
+    difficulty: r.difficulty,
+    outcome: r.outcome,
+    elapsed_seconds: r.elapsed_seconds,
+    duration_seconds: r.duration_seconds,
+  }))
+}
+
+export async function saveMockSession(session: Omit<MockSessionRecord, 'id'>) {
+  const { error } = await supabase.from('mock_sessions').insert({
+    user_id: USER_ID,
+    date: session.date,
+    question_id: session.question_id ?? null,
+    question_title: session.question_title ?? null,
+    difficulty: session.difficulty ?? null,
+    outcome: session.outcome,
+    elapsed_seconds: session.elapsed_seconds,
+    duration_seconds: session.duration_seconds ?? null,
+    created_at: session.created_at ?? new Date().toISOString(),
+  })
+  if (error) console.error('[db] saveMockSession:', error.message)
+  return !error
 }
 
 export async function getAllPracticeSessions() {

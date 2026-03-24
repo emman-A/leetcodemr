@@ -4,8 +4,7 @@ import { useRouter } from 'next/navigation'
 import {
   Timer, Zap, CheckCircle, XCircle, RotateCcw, Trophy, Lock, Unlock
 } from 'lucide-react'
-import { getProgress, updateProgress } from '@/lib/db'
-import { supabase } from '@/lib/supabase'
+import { getProgress, updateProgress, getMockSessions, saveMockSession, type MockSessionRecord } from '@/lib/db'
 import DifficultyBadge from '@/components/DifficultyBadge'
 import DescriptionRenderer from '@/components/DescriptionRenderer'
 import CodePanel from '@/components/CodePanel'
@@ -28,19 +27,18 @@ interface Question {
 type Phase = 'setup' | 'active' | 'done'
 type Outcome = 'solved' | 'gave_up' | 'timeout'
 
-const USER_ID = 'emmanuel'
-
 function fmt(secs: number): string {
   const m = Math.floor(secs / 60).toString().padStart(2, '0')
   const s = (secs % 60).toString().padStart(2, '0')
   return `${m}:${s}`
 }
 
+// Re-export from db shape into local view shape
 interface SessionRecord {
   date: string
-  questionId?: number
-  questionTitle?: string
-  difficulty?: string
+  questionId?: number | null
+  questionTitle?: string | null
+  difficulty?: string | null
   outcome: Outcome
   elapsedSeconds: number
 }
@@ -58,13 +56,7 @@ export default function MockInterviewPage() {
   const [progress, setProgress] = useState<Record<string, any>>({})
   const [loading, setLoading] = useState(true)
   const [practiceCode, setPracticeCode] = useState('')
-  const [sessions, setSessions] = useState<SessionRecord[]>(() => {
-    try {
-      return JSON.parse(localStorage.getItem('mock_sessions') || '[]')
-    } catch {
-      return []
-    }
-  })
+  const [sessions, setSessions] = useState<SessionRecord[]>([])
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const startTimeRef = useRef<number | null>(null)
   const [imageError, setImageError] = useState(false)
@@ -80,12 +72,21 @@ export default function MockInterviewPage() {
 
   useEffect(() => {
     async function load() {
-      const [qs, prog] = await Promise.all([
+      const [qs, prog, rawSessions] = await Promise.all([
         fetch('/questions_full.json').then(r => r.json()),
         getProgress(),
+        getMockSessions(20),
       ])
       setAllQuestions(qs as Question[])
       setProgress(prog)
+      setSessions(rawSessions.map(s => ({
+        date: s.date,
+        questionId: s.question_id,
+        questionTitle: s.question_title,
+        difficulty: s.difficulty,
+        outcome: s.outcome as Outcome,
+        elapsedSeconds: s.elapsed_seconds,
+      })))
       setLoading(false)
     }
     load()
@@ -122,28 +123,19 @@ export default function MockInterviewPage() {
       elapsedSeconds: elapsedSec,
     }
 
-    // Save to localStorage
-    setSessions(prev => {
-      const updated = [session, ...prev].slice(0, 20)
-      localStorage.setItem('mock_sessions', JSON.stringify(updated))
-      return updated
+    // Persist to Supabase
+    await saveMockSession({
+      date: session.date,
+      question_id: activeQ?.id ?? null,
+      question_title: activeQ?.title ?? null,
+      difficulty: activeQ?.difficulty ?? null,
+      outcome,
+      elapsed_seconds: elapsedSec,
+      duration_seconds: duration,
+      created_at: new Date().toISOString(),
     })
 
-    // Save to Supabase mock_sessions table
-    try {
-      await supabase.from('mock_sessions').insert({
-        user_id: USER_ID,
-        question_id: activeQ?.id ?? null,
-        question_title: activeQ?.title ?? null,
-        difficulty: activeQ?.difficulty ?? null,
-        outcome,
-        elapsed_seconds: elapsedSec,
-        duration_seconds: duration,
-        created_at: new Date().toISOString(),
-      })
-    } catch {
-      // Non-critical: table may not exist yet
-    }
+    setSessions(prev => [session, ...prev].slice(0, 20))
 
     if (outcome === 'solved' && activeQ) {
       await updateProgress(activeQ.id, {
