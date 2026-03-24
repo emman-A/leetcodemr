@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { CalendarCheck, Rocket, RotateCcw, ArrowRight, CheckCircle2, Circle, ChevronDown, ChevronUp } from 'lucide-react'
+import { CalendarCheck, Rocket, RotateCcw, ArrowRight, CheckCircle2, Circle, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
 import { getStudyPlan, saveStudyPlan, clearStudyPlan, getProgress } from '@/lib/db'
 import DifficultyBadge from '@/components/DifficultyBadge'
 import toast from 'react-hot-toast'
@@ -9,6 +9,7 @@ import toast from 'react-hot-toast'
 interface Question {
   id: number
   title: string
+  slug: string
   difficulty: string
   tags: string[]
 }
@@ -389,6 +390,16 @@ export default function DailyPage() {
                       <span className={`text-sm font-semibold truncate ${solved ? 'text-green-700 line-through' : 'text-gray-800'}`}>
                         {q.title}
                       </span>
+                      <a
+                        href={`https://leetcode.com/problems/${q.slug}/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 text-gray-300 hover:text-orange-400 transition-colors"
+                        title="Open on LeetCode"
+                        onClick={e => e.stopPropagation()}
+                      >
+                        <ExternalLink size={11} />
+                      </a>
                     </div>
                     <div className="mt-1">
                       <DifficultyBadge difficulty={q.difficulty} />
@@ -452,6 +463,16 @@ export default function DailyPage() {
                             <span className={`text-sm font-semibold truncate ${solved ? 'text-green-700 line-through' : 'text-gray-800'}`}>
                               {q.title}
                             </span>
+                            <a
+                              href={`https://leetcode.com/problems/${q.slug}/`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="shrink-0 text-gray-300 hover:text-orange-400 transition-colors"
+                              title="Open on LeetCode"
+                              onClick={e => e.stopPropagation()}
+                            >
+                              <ExternalLink size={11} />
+                            </a>
                           </div>
                           <div className="mt-1">
                             <DifficultyBadge difficulty={q.difficulty} />
@@ -542,9 +563,18 @@ export default function DailyPage() {
                             ? <CheckCircle2 size={14} className="text-green-500 shrink-0" />
                             : <Circle size={14} className="text-gray-300 shrink-0" />
                           }
-                          <Link href={`/question/${q.id}`} className="text-gray-700 hover:text-indigo-600 truncate">
+                          <Link href={`/question/${q.id}`} className="text-gray-700 hover:text-indigo-600 truncate flex-1 min-w-0">
                             {q.title}
                           </Link>
+                          <a
+                            href={`https://leetcode.com/problems/${q.slug}/`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="shrink-0 text-gray-300 hover:text-orange-400 transition-colors"
+                            title="Open on LeetCode"
+                          >
+                            <ExternalLink size={11} />
+                          </a>
                           <DifficultyBadge difficulty={q.difficulty} />
                         </div>
                       ))}
