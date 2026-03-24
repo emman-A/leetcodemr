@@ -23,8 +23,17 @@ function getWeeks(log: Record<string, number>) {
 }
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-const DAY_COL = 18  // px reserved for day labels (Mo/We/Fr)
-const GAP = 2       // px gap between cells
+const CELL = 12
+const GAP  = 2
+const DAY_COL = 18
+
+// How many weeks to show based on container width
+function weeksForWidth(w: number): number {
+  if (w < 480)  return 13  // ~3 months
+  if (w < 640)  return 20  // ~5 months
+  if (w < 900)  return 36  // ~9 months
+  return 52                // full year
+}
 
 interface StreakCalendarProps {
   log?: Record<string, number>
@@ -32,27 +41,26 @@ interface StreakCalendarProps {
 }
 
 export default function StreakCalendar({ log = {}, target = 0 }: StreakCalendarProps) {
-  const weeks = useMemo(() => getWeeks(log), [log])
+  const allWeeks = useMemo(() => getWeeks(log), [log])
   const maxCount = useMemo(() => Math.max(1, ...Object.values(log).filter(v => v > 0)), [log])
 
-  // Measure container width and compute cell size that fills it exactly
   const containerRef = useRef<HTMLDivElement>(null)
-  const [cell, setCell] = useState(12)
+  const [visibleCount, setVisibleCount] = useState(52)
 
   useEffect(() => {
     function recalc() {
       if (!containerRef.current) return
-      const available = containerRef.current.clientWidth - DAY_COL - weeks.length * GAP
-      const size = Math.max(4, Math.min(14, Math.floor(available / weeks.length)))
-      setCell(size)
+      setVisibleCount(weeksForWidth(containerRef.current.clientWidth))
     }
     recalc()
     const ro = new ResizeObserver(recalc)
     if (containerRef.current) ro.observe(containerRef.current)
     return () => ro.disconnect()
-  }, [weeks.length])
+  }, [])
 
-  const colWidth = cell + GAP
+  // Show the most recent N weeks
+  const weeks = allWeeks.slice(-visibleCount)
+  const colWidth = CELL + GAP
 
   function cellColor(count: number) {
     if (count < 0) return 'bg-gray-50'
@@ -64,7 +72,7 @@ export default function StreakCalendar({ log = {}, target = 0 }: StreakCalendarP
     }
     const intensity = Math.min(count / Math.max(maxCount, 1), 1)
     if (intensity < 0.35) return 'bg-green-300'
-    if (intensity < 0.6) return 'bg-green-500'
+    if (intensity < 0.6)  return 'bg-green-500'
     if (intensity < 0.85) return 'bg-green-600'
     return 'bg-green-700'
   }
@@ -85,6 +93,7 @@ export default function StreakCalendar({ log = {}, target = 0 }: StreakCalendarP
   })
 
   const totalActive = Object.values(log).filter(v => v >= 1).length
+  const monthsShown = Math.round(visibleCount / 4.33)
 
   return (
     <div ref={containerRef} className="w-full">
@@ -106,7 +115,7 @@ export default function StreakCalendar({ log = {}, target = 0 }: StreakCalendarP
         {/* Day labels */}
         <div className="flex flex-col text-gray-300 shrink-0" style={{ width: `${DAY_COL}px`, gap: `${GAP}px` }}>
           {['Su','Mo','Tu','We','Th','Fr','Sa'].map(d => (
-            <div key={d} className="text-center" style={{ height: `${cell}px`, lineHeight: `${cell}px`, fontSize: '8px' }}>
+            <div key={d} className="text-center" style={{ height: `${CELL}px`, lineHeight: `${CELL}px`, fontSize: '8px' }}>
               {['Mo','We','Fr'].includes(d) ? d : ''}
             </div>
           ))}
@@ -120,7 +129,7 @@ export default function StreakCalendar({ log = {}, target = 0 }: StreakCalendarP
                 key={day.key}
                 title={day.count < 0 ? '' : day.count === 0 ? `${day.date.toDateString()} — nothing solved` : `${day.date.toDateString()} — ${day.count} solved`}
                 className={`rounded-sm ${cellColor(day.count)}`}
-                style={{ width: `${cell}px`, height: `${cell}px`, flexShrink: 0 }}
+                style={{ width: `${CELL}px`, height: `${CELL}px` }}
               />
             ))}
           </div>
@@ -128,8 +137,8 @@ export default function StreakCalendar({ log = {}, target = 0 }: StreakCalendarP
       </div>
 
       <p className="text-xs text-gray-400 mt-2">
-        {totalActive} active day{totalActive !== 1 ? 's' : ''}
-        {target === 0 && ' · darker green = more questions solved'}
+        {totalActive} active day{totalActive !== 1 ? 's' : ''} · last {monthsShown} months shown
+        {target === 0 && ' · darker = more solved'}
       </p>
     </div>
   )
