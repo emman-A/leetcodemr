@@ -233,9 +233,24 @@ int main() {
       setTheme(oneDark)
       const { keymap } = viewMod
       const { Prec } = stateMod
-      const { insertNewlineAndIndent, indentWithTab } = cmdMod
+      const { indentWithTab } = cmdMod
+      const smartEnter = (view: any) => {
+        const { from } = view.state.selection.main
+        const line = view.state.doc.lineAt(from)
+        const indentMatch = line.text.match(/^(\s*)/)
+        const baseIndent = indentMatch ? indentMatch[1] : ''
+        // Add extra indent if line ends with : (Python) or { (C++)
+        const trimmed = line.text.trimEnd()
+        const extraIndent = (trimmed.endsWith(':') || trimmed.endsWith('{')) ? '    ' : ''
+        const insert = '\n' + baseIndent + extraIndent
+        view.dispatch({
+          changes: { from, to: from, insert },
+          selection: { anchor: from + insert.length },
+        })
+        return true
+      }
       const smartKeys = Prec.highest(keymap.of([
-        { key: 'Enter', run: insertNewlineAndIndent },
+        { key: 'Enter', run: smartEnter },
         indentWithTab,
       ]))
       setExtensions([lang === 'python' ? python() : cpp(), smartKeys])
