@@ -356,7 +356,7 @@ export default function HomePage() {
                     {p.starred && <Star size={14} className="text-yellow-400 fill-yellow-400" />}
                     {p.solved && <CheckCircle size={14} className="text-green-500" />}
                     {p.status === 'mastered' && isDue(p.next_review) && (
-                      <Brain size={14} className="text-indigo-500" title="Due for SR review" />
+                      <Brain size={14} className="text-indigo-500" />
                     )}
                   </div>
                 </div>
