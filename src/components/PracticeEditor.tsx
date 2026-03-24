@@ -3,9 +3,9 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { RotateCcw, Code2, Play, ChevronDown, ChevronUp } from 'lucide-react'
 
-// Judge0 CE (free, no auth needed) — language IDs
-const JUDGE0_SUBMIT = 'https://ce.judge0.com/submissions?base64_encoded=false'
-const JUDGE0_GET = (token: string) => `https://ce.judge0.com/submissions/${token}?base64_encoded=false`
+// Judge0 CE — proxied through Next.js API to avoid CORS
+const JUDGE0_SUBMIT = '/api/run-code'
+const JUDGE0_GET = (token: string) => `/api/run-code?token=${token}`
 const JUDGE0_LANG: Record<string, number> = {
   python: 71,  // Python 3.8.1
   cpp:    54,  // C++ (GCC 9.2.0)

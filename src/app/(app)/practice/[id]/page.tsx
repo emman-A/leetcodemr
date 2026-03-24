@@ -21,8 +21,8 @@ interface Question {
 
 type Language = 'python' | 'javascript' | 'java' | 'cpp'
 
-const JUDGE0_SUBMIT = 'https://ce.judge0.com/submissions?base64_encoded=false'
-const JUDGE0_GET = (token: string) => `https://ce.judge0.com/submissions/${token}?base64_encoded=false`
+const JUDGE0_SUBMIT = '/api/run-code'
+const JUDGE0_GET = (token: string) => `/api/run-code?token=${token}`
 const LANG_CONFIG: Record<Language, { label: string; judge0Id: number; starter: string }> = {
   python:     { label: 'Python',     judge0Id: 71,  starter: '# Write your Python solution here\n\n' },
   javascript: { label: 'JavaScript', judge0Id: 63,  starter: '// Write your JavaScript solution here\n\n' },
