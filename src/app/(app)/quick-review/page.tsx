@@ -14,8 +14,8 @@ interface Question {
   cpp_solution?: string
 }
 
-const Q_SECS = 60
-const SOL_SECS = 60
+const Q_SECS = 15
+const SOL_SECS = 15
 const DIFFS = ['All', 'Easy', 'Medium', 'Hard']
 const SOURCES = [
   { label: 'All',           value: 'All' },

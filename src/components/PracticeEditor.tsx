@@ -1,7 +1,12 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import dynamic from 'next/dynamic'
-import { RotateCcw, Code2 } from 'lucide-react'
+import { RotateCcw, Code2, Play, ChevronDown, ChevronUp } from 'lucide-react'
+
+const PISTON: Record<string, { lang: string; version: string }> = {
+  python: { lang: 'python',  version: '3.10.0' },
+  cpp:    { lang: 'c++',     version: '10.2.0' },
+}
 
 // Dynamic import to avoid SSR issues with CodeMirror
 const CodeMirror = dynamic(() => import('@uiw/react-codemirror').then(m => m.default), { ssr: false })
@@ -59,6 +64,9 @@ export default function PracticeEditor({ questionId, starterPython, starterCpp }
   const [saved, setSaved] = useState(false)
   const [extensions, setExtensions] = useState<any[]>([])
   const [theme, setTheme] = useState<any>(null)
+  const [running, setRunning] = useState(false)
+  const [output, setOutput] = useState<string | null>(null)
+  const [showOutput, setShowOutput] = useState(false)
   const editorViewRef = useRef<any>(null)
 
   const storageKey = `practice_${questionId}_${lang}`
@@ -109,6 +117,32 @@ export default function PracticeEditor({ questionId, starterPython, starterCpp }
   const reset = () => {
     setCode(starter)
     localStorage.setItem(storageKey, starter)
+  }
+
+  const runCode = async () => {
+    setRunning(true)
+    setOutput('Running…')
+    setShowOutput(true)
+    try {
+      const cfg = PISTON[lang]
+      const res = await fetch('https://emkc.org/api/v2/piston/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          language: cfg.lang,
+          version: cfg.version,
+          files: [{ content: code }],
+        }),
+      })
+      const result = await res.json()
+      const stdout = result?.run?.stdout || ''
+      const stderr = result?.run?.stderr || ''
+      const exitCode = result?.run?.code ?? -1
+      setOutput(stdout + (stderr ? `\nSTDERR:\n${stderr}` : '') + `\n[Exit: ${exitCode}]`)
+    } catch (err) {
+      setOutput(`Error: ${err}`)
+    }
+    setRunning(false)
   }
 
   const getLineIndent = useCallback((view: any) => {
@@ -226,12 +260,42 @@ export default function PracticeEditor({ questionId, starterPython, starterCpp }
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-4 py-2 bg-[#181825] border-t border-gray-700">
-        <span className="text-xs text-gray-500">Auto-saved · {lang === 'python' ? 'Python' : 'C++'}</span>
-        <button onClick={reset} className="flex items-center gap-1 px-3 py-1 rounded-lg text-xs text-gray-300 bg-[#313244] hover:bg-[#45475a] transition-colors">
-          <RotateCcw size={11} /> Reset starter
-        </button>
+      <div className="flex items-center justify-between px-4 py-2 bg-[#181825] border-t border-gray-700 flex-wrap gap-2">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-500">Auto-saved · {lang === 'python' ? 'Python' : 'C++'}</span>
+          {saved && <span className="text-xs text-green-400">saved ✓</span>}
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={reset} className="flex items-center gap-1 px-3 py-1 rounded-lg text-xs text-gray-300 bg-[#313244] hover:bg-[#45475a] transition-colors">
+            <RotateCcw size={11} /> Reset
+          </button>
+          <button
+            onClick={runCode}
+            disabled={running}
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold bg-green-600 text-white hover:bg-green-700 transition-colors disabled:opacity-50"
+          >
+            <Play size={11} /> {running ? 'Running…' : 'Run Code'}
+          </button>
+        </div>
       </div>
+
+      {/* Output panel */}
+      {output !== null && (
+        <div className="border-t border-[#313244]">
+          <button
+            onClick={() => setShowOutput(v => !v)}
+            className="w-full flex items-center justify-between px-4 py-2 bg-[#181825] text-xs font-semibold text-gray-400 hover:text-gray-200 transition-colors"
+          >
+            <span>Output</span>
+            {showOutput ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          </button>
+          {showOutput && (
+            <pre className="px-4 py-3 text-xs font-mono text-gray-200 bg-[#11111b] whitespace-pre-wrap overflow-x-auto max-h-48 overflow-y-auto">
+              {output}
+            </pre>
+          )}
+        </div>
+      )}
     </div>
   )
 }
