@@ -222,27 +222,23 @@ int main() {
   // Load language extensions lazily
   useEffect(() => {
     async function loadExtensions() {
-      const [{ python }, { cpp }, { oneDark }, { keymap, Prec }] = await Promise.all([
+      const [{ python }, { cpp }, { oneDark }, viewMod, stateMod, cmdMod] = await Promise.all([
         import('@codemirror/lang-python'),
         import('@codemirror/lang-cpp'),
         import('@codemirror/theme-one-dark'),
-        import('@codemirror/view').then(async m => ({ ...m, Prec: (await import('@codemirror/state')).Prec })),
+        import('@codemirror/view'),
+        import('@codemirror/state'),
+        import('@codemirror/commands'),
       ])
       setTheme(oneDark)
-      const enterKeymap = Prec.highest(keymap.of([{
-        key: 'Enter',
-        run: (view: any) => {
-          const { from } = view.state.selection.main
-          const line = view.state.doc.lineAt(from)
-          const indent = (line.text.match(/^(\s*)/) || ['', ''])[1]
-          view.dispatch({
-            changes: { from, to: from, insert: '\n' + indent },
-            selection: { anchor: from + 1 + indent.length },
-          })
-          return true
-        },
-      }]))
-      setExtensions([lang === 'python' ? python() : cpp(), enterKeymap])
+      const { keymap } = viewMod
+      const { Prec } = stateMod
+      const { insertNewlineAndIndent, indentWithTab } = cmdMod
+      const smartKeys = Prec.highest(keymap.of([
+        { key: 'Enter', run: insertNewlineAndIndent },
+        indentWithTab,
+      ]))
+      setExtensions([lang === 'python' ? python() : cpp(), smartKeys])
     }
     loadExtensions()
   }, [lang])
