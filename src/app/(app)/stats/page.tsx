@@ -278,20 +278,23 @@ export default function StatsPage() {
         </div>
       </div>
 
-      {/* Daily Police Heatmap — red/yellow/green vs daily target */}
-      {dailyTarget > 0 && (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-6">
-          <h2 className="font-bold text-gray-700 text-sm mb-1 flex items-center gap-2">🚔 Daily Plan Heatmap</h2>
-          <p className="text-xs text-gray-400 mb-4">
-            <span className="inline-flex items-center gap-1 mr-3"><span className="w-2.5 h-2.5 rounded-sm bg-green-500 inline-block" /> {dailyTarget} solved (full day)</span>
-            <span className="inline-flex items-center gap-1 mr-3"><span className="w-2.5 h-2.5 rounded-sm bg-yellow-400 inline-block" /> {dailyTarget - 1} solved (partial)</span>
-            <span className="inline-flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-red-400 inline-block" /> less (behind)</span>
-          </p>
-          <div className="overflow-x-auto">
-            <StreakCalendar log={solvedLog} target={dailyTarget} />
+      {/* Daily Police Heatmap — red/yellow/green vs daily target (default 3) */}
+      {(() => {
+        const policeTarget = dailyTarget > 0 ? dailyTarget : 3
+        return (
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-6">
+            <h2 className="font-bold text-gray-700 text-sm mb-1 flex items-center gap-2">🚔 Daily Plan Heatmap</h2>
+            <p className="text-xs text-gray-400 mb-4">
+              <span className="inline-flex items-center gap-1 mr-3"><span className="w-2.5 h-2.5 rounded-sm bg-green-500 inline-block" /> {policeTarget} solved — full day ✅</span>
+              <span className="inline-flex items-center gap-1 mr-3"><span className="w-2.5 h-2.5 rounded-sm bg-yellow-400 inline-block" /> {policeTarget - 1} solved — partial</span>
+              <span className="inline-flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-red-400 inline-block" /> less — behind</span>
+            </p>
+            <div className="overflow-x-auto">
+              <StreakCalendar log={solvedLog} target={policeTarget} />
+            </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
 
 
       {/* Time Spent */}
