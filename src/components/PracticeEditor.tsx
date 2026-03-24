@@ -59,9 +59,10 @@ interface PracticeEditorProps {
   questionId: number
   starterPython?: string
   starterCpp?: string
+  hideRunCode?: boolean
 }
 
-export default function PracticeEditor({ questionId, starterPython, starterCpp }: PracticeEditorProps) {
+export default function PracticeEditor({ questionId, starterPython, starterCpp, hideRunCode = false }: PracticeEditorProps) {
   const [lang, setLang] = useState<'python' | 'cpp'>('python')
   const [code, setCode] = useState('')
   const [saved, setSaved] = useState(false)
@@ -484,18 +485,20 @@ int main() {
           <button onClick={reset} className="flex items-center gap-1 px-3 py-1 rounded-lg text-xs text-gray-300 bg-[#313244] hover:bg-[#45475a] transition-colors">
             <RotateCcw size={11} /> Reset
           </button>
-          <button
-            onClick={runCode}
-            disabled={running}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold bg-green-600 text-white hover:bg-green-700 transition-colors disabled:opacity-50"
-          >
-            <Play size={11} /> {running ? 'Running…' : 'Run Code'}
-          </button>
+          {!hideRunCode && (
+            <button
+              onClick={runCode}
+              disabled={running}
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold bg-green-600 text-white hover:bg-green-700 transition-colors disabled:opacity-50"
+            >
+              <Play size={11} /> {running ? 'Running…' : 'Run Code'}
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Output panel */}
-      {output !== null && (
+      {/* Output panel — only when run code is enabled */}
+      {!hideRunCode && output !== null && (
         <div className="border-t border-[#313244]">
           <button
             onClick={() => setShowOutput(v => !v)}
