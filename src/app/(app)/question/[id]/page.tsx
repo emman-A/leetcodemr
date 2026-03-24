@@ -170,12 +170,14 @@ export default function QuestionPage() {
           <h2 className="text-sm font-bold text-gray-700 flex items-center gap-2 mb-3">
             <BookOpen size={14} /> Problem
           </h2>
-          <img
-            src={`/question-images/${question.id}.jpg`}
-            alt={question.title}
-            className="w-full rounded-lg"
-            onError={() => setImageError(true)}
-          />
+          <div className="p-2">
+            <img
+              src={`/question-images/${question.id}.jpg`}
+              alt={question.title}
+              className="w-full rounded-lg"
+              onError={() => setImageError(true)}
+            />
+          </div>
         </div>
       )}
 

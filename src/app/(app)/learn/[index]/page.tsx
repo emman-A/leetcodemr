@@ -319,11 +319,11 @@ export default function LearnPage() {
             )}
 
             {/* Question image */}
-            <div className="mb-4 rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+            <div className="mb-4 rounded-xl border border-gray-200 shadow-sm bg-white p-3">
               <img
                 src={`/question-images/${q.id}.jpg`}
                 alt={`${q.title} full question`}
-                className="w-full block"
+                className="w-full block rounded-lg"
                 onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
               />
             </div>
