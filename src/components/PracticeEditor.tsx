@@ -71,7 +71,7 @@ export default function PracticeEditor({ questionId, starterPython, starterCpp }
   const [showOutput, setShowOutput] = useState(false)
   const editorViewRef = useRef<any>(null)
 
-  const storageKey = `practice_v4_${questionId}_${lang}`
+  const storageKey = `practice_v5_${questionId}_${lang}`
 
   const DEFAULT_PYTHON = `from typing import List, Optional
 
@@ -155,32 +155,58 @@ int main() {
   function withTestHarness(base: string, language: 'python' | 'cpp'): string {
     if (language === 'python') {
       const lines = base.split('\n')
-      // Check if already has a runnable test outside class/imports
+      // Already has runnable test code
       const hasTest = lines.some(l => {
         const t = l.trim()
-        return t.startsWith('print(') || t.startsWith('sol.') || t.startsWith('result') ||
+        return t.startsWith('print(') || t.startsWith('sol.') || t.startsWith('_check(') ||
           (t !== '' && !t.startsWith('#') && !t.startsWith('class ') && !t.startsWith('def ') &&
            !t.startsWith('from ') && !t.startsWith('import ') && !l.startsWith(' '))
       })
       if (hasTest) return base
 
-      // Parse method signature from Solution class
+      // Detect design pattern: top-level class that is NOT Solution (or is Solution with __init__)
+      // i.e. the class has __init__ — it's meant to be instantiated directly
+      const topClass = lines.find(l => /^class \w+/.test(l))
+      const topClassName = topClass?.match(/^class (\w+)/)?.[1]
+      const isDesign = topClassName && (
+        topClassName !== 'Solution' ||
+        lines.some(l => /^\s{4}def __init__\(self/.test(l))
+      ) && lines.some(l => /^\s+def __init__\(self/.test(l))
+
+      if (isDesign) {
+        // Find first non-init method for example comment
+        const firstMethod = lines.find(l => {
+          const m = l.match(/^\s+def (\w+)\(self/)
+          return m && m[1] !== '__init__'
+        })
+        const methodName = firstMethod?.match(/def (\w+)/)?.[1] || 'method'
+        return base.trimEnd() + `\n\n# ── Test ──\nobj = ${topClassName}()\n# obj.${methodName}(...)\n`
+      }
+
+      // Normal Solution class — find the main method
       let methodName = 'solve'
       let callArgs = ''
-      for (const line of lines) {
+      // Prefer the method with the highest score (last defined, not __init__)
+      const candidates: { name: string; args: string; score: number; idx: number }[] = []
+      lines.forEach((line, idx) => {
         const m = line.match(/^\s{4}def (\w+)\(self(?:,\s*(.*?))?\)\s*(?:->.*?)?:\s*$/)
         if (m && m[1] !== '__init__') {
-          methodName = m[1]
           const rawParams = m[2] || ''
-          if (rawParams.trim()) {
-            callArgs = rawParams.split(',').map(p => {
-              const t = p.trim()
-              const colonIdx = t.indexOf(':')
-              return colonIdx >= 0 ? pyDefaultVal(t.slice(colonIdx + 1)) : '0'
-            }).join(', ')
-          }
-          break
+          const args = rawParams.trim()
+            ? rawParams.split(',').map(p => {
+                const t = p.trim()
+                const colonIdx = t.indexOf(':')
+                return colonIdx >= 0 ? pyDefaultVal(t.slice(colonIdx + 1)) : '0'
+              }).join(', ')
+            : ''
+          const score = (rawParams.match(/,/g) || []).length
+          candidates.push({ name: m[1], args, score, idx })
         }
+      })
+      if (candidates.length > 0) {
+        candidates.sort((a, b) => b.score - a.score || b.idx - a.idx)
+        methodName = candidates[0].name
+        callArgs = candidates[0].args
       }
 
       return base.trimEnd() + `\n\n# ── Test ──\nsol = Solution()\nprint(sol.${methodName}(${callArgs}))\n`
