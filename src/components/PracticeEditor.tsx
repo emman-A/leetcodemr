@@ -100,16 +100,116 @@ int main() {
 }
 `
 
+  function pyDefaultVal(type: string): string {
+    const t = type.trim()
+    if (t.includes('List[List[int]]')) return '[[1,2],[3,4]]'
+    if (t.includes('List[List[str]]')) return '[["a","b"],["c","d"]]'
+    if (t.includes('List[List')) return '[[1,2],[3,4]]'
+    if (t.includes('List[int]')) return '[2,7,11,15]'
+    if (t.includes('List[str]')) return '["eat","tea","tan"]'
+    if (t.includes('List[float]')) return '[1.0,2.0]'
+    if (t.includes('List[')) return '[1,2,3]'
+    if (t === 'int') return '0'
+    if (t === 'str') return '"hello"'
+    if (t === 'float') return '0.0'
+    if (t === 'bool') return 'True'
+    if (t.startsWith('Optional[TreeNode')) return 'None'
+    if (t.startsWith('Optional[ListNode')) return 'None'
+    if (t.startsWith('Optional')) return 'None'
+    if (t.includes('TreeNode')) return 'None'
+    if (t.includes('ListNode')) return 'None'
+    return 'None'
+  }
+
+  function cppDefaultVal(type: string): string {
+    const t = type.trim()
+    if (t.includes('vector<vector<int>>')) return '{{1,2},{3,4}}'
+    if (t.includes('vector<vector<string>>')) return '{{"eat","tea"},{"tan"}}'
+    if (t.includes('vector<vector')) return '{{1,2},{3,4}}'
+    if (t.includes('vector<int>')) return '{2,7,11,15}'
+    if (t.includes('vector<string>')) return '{"hello","world"}'
+    if (t.includes('vector<')) return '{}'
+    if (t === 'int' || t === 'long' || t === 'long long') return '0'
+    if (t === 'string') return '"hello"'
+    if (t === 'bool') return 'true'
+    if (t === 'double' || t === 'float') return '0.0'
+    if (t.includes('TreeNode') || t.includes('ListNode')) return 'nullptr'
+    return '0'
+  }
+
+  function splitCppParams(s: string): string[] {
+    const parts: string[] = []
+    let depth = 0, cur = ''
+    for (const ch of s) {
+      if (ch === '<') depth++
+      else if (ch === '>') depth--
+      else if (ch === ',' && depth === 0) { parts.push(cur.trim()); cur = ''; continue }
+      cur += ch
+    }
+    if (cur.trim()) parts.push(cur.trim())
+    return parts
+  }
+
   function withTestHarness(base: string, language: 'python' | 'cpp'): string {
     if (language === 'python') {
-      // append test section only if there's no existing print/test call outside the class
       const lines = base.split('\n')
-      const hasTestCall = lines.some(l => l.trim().startsWith('print(') || (l.trim() !== '' && !l.trim().startsWith('#') && !l.trim().startsWith('class ') && !l.trim().startsWith('def ') && !l.trim().startsWith('from ') && !l.trim().startsWith('import ') && !l.startsWith(' ')))
-      if (hasTestCall) return base
-      return base.trimEnd() + '\n\n# ── Test your solution ──────────────────────\nsol = Solution()\n# print(sol.solve())  # add your test inputs here\n'
+      // Check if already has a runnable test outside class/imports
+      const hasTest = lines.some(l => {
+        const t = l.trim()
+        return t.startsWith('print(') || t.startsWith('sol.') || t.startsWith('result') ||
+          (t !== '' && !t.startsWith('#') && !t.startsWith('class ') && !t.startsWith('def ') &&
+           !t.startsWith('from ') && !t.startsWith('import ') && !l.startsWith(' '))
+      })
+      if (hasTest) return base
+
+      // Parse method signature from Solution class
+      let methodName = 'solve'
+      let callArgs = ''
+      for (const line of lines) {
+        const m = line.match(/^\s{4}def (\w+)\(self(?:,\s*(.*?))?\)\s*(?:->.*?)?:\s*$/)
+        if (m && m[1] !== '__init__') {
+          methodName = m[1]
+          const rawParams = m[2] || ''
+          if (rawParams.trim()) {
+            callArgs = rawParams.split(',').map(p => {
+              const t = p.trim()
+              const colonIdx = t.indexOf(':')
+              return colonIdx >= 0 ? pyDefaultVal(t.slice(colonIdx + 1)) : '0'
+            }).join(', ')
+          }
+          break
+        }
+      }
+
+      return base.trimEnd() + `\n\n# ── Test ──\nsol = Solution()\nprint(sol.${methodName}(${callArgs}))\n`
     } else {
       if (base.includes('int main')) return base
-      return base.trimEnd() + '\n\nint main() {\n    Solution sol;\n    // sol.solve();  // add your test inputs here\n    return 0;\n}\n'
+
+      let methodName = 'solve'
+      let callArgs = ''
+      let returnType = 'void'
+      const lines = base.split('\n')
+      for (const line of lines) {
+        const m = line.match(/^\s{4}(\w[\w<>:,\s*&]*?)\s+(\w+)\s*\((.*?)\)\s*\{/)
+        if (m && m[2] !== 'Solution') {
+          returnType = m[1].trim()
+          methodName = m[2]
+          const parts = splitCppParams(m[3] || '')
+          callArgs = parts.map(p => {
+            p = p.trim()
+            const words = p.split(/\s+/)
+            const type = words.slice(0, -1).join(' ')
+            return cppDefaultVal(type)
+          }).join(', ')
+          break
+        }
+      }
+
+      const callLine = returnType === 'void'
+        ? `    sol.${methodName}(${callArgs});`
+        : `    cout << sol.${methodName}(${callArgs}) << endl;`
+
+      return base.trimEnd() + `\n\nint main() {\n    Solution sol;\n${callLine}\n    return 0;\n}\n`
     }
   }
 
