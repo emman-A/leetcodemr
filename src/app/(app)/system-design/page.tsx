@@ -152,12 +152,12 @@ function SDFlashcards() {
       </div>
 
       {/* Category filter */}
-      <div className="flex flex-wrap gap-2 mb-5">
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-5 scrollbar-none">
         {(SD_CATEGORIES as string[]).map(c => (
           <button
             key={c}
             onClick={() => changeFilter(c)}
-            className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shrink-0 ${
               cat === c ? 'bg-sky-600 text-white border-sky-600' : 'bg-white text-gray-500 border-gray-200 hover:border-sky-300'
             }`}
           >

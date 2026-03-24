@@ -279,22 +279,22 @@ export default function MockInterviewPage() {
               urgent ? 'bg-red-50 border-red-200' : 'bg-indigo-50 border-indigo-200'
             }`}
           >
-            <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
-              <div className={`text-4xl font-black font-mono ${urgent ? 'text-red-600 animate-pulse' : 'text-indigo-700'}`}>
+            <div className="flex items-center justify-between gap-3 mb-2">
+              <div className={`text-4xl font-black font-mono shrink-0 ${urgent ? 'text-red-600 animate-pulse' : 'text-indigo-700'}`}>
                 {fmt(timeLeft)}
               </div>
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-2">
                 <button
                   onClick={() => endInterview('solved')}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-colors text-sm"
+                  className="flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-colors text-xs sm:text-sm"
                 >
-                  <CheckCircle size={15} /> I Solved It ✓
+                  <CheckCircle size={14} /> <span className="hidden xs:inline">I </span>Solved ✓
                 </button>
                 <button
                   onClick={() => endInterview('gave_up')}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-white border-2 border-gray-200 text-gray-600 font-semibold rounded-xl hover:border-red-300 hover:text-red-500 transition-colors text-sm"
+                  className="flex items-center gap-1.5 px-3 sm:px-4 py-2 bg-white border-2 border-gray-200 text-gray-600 font-semibold rounded-xl hover:border-red-300 hover:text-red-500 transition-colors text-xs sm:text-sm"
                 >
-                  <XCircle size={15} /> Give Up
+                  <XCircle size={14} /> Give Up
                 </button>
               </div>
             </div>

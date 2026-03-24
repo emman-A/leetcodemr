@@ -291,29 +291,29 @@ export default function HomePage() {
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search questions..."
             className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300" />
         </div>
-        <div className="flex flex-wrap gap-2 items-center">
-          <div className="flex gap-1">
-            {DIFFICULTIES.map(d => (
-              <button key={d} onClick={() => setDifficulty(d)}
-                className={'px-3 py-1 rounded-full text-xs font-semibold transition-colors ' + (difficulty === d ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>{d}</button>
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-1">
-            {SOURCES.map(s => (
-              <button key={s} onClick={() => setSource(s)}
-                className={'px-3 py-1 rounded-full text-xs font-semibold transition-colors ' + (source === s ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>{s}</button>
-            ))}
-          </div>
+        <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-none">
+          {DIFFICULTIES.map(d => (
+            <button key={d} onClick={() => setDifficulty(d)}
+              className={'px-3 py-1.5 rounded-full text-xs font-semibold transition-colors shrink-0 ' + (difficulty === d ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>{d}</button>
+          ))}
+          <span className="w-px bg-gray-200 mx-0.5 shrink-0" />
+          {SOURCES.map(s => (
+            <button key={s} onClick={() => setSource(s)}
+              className={'px-3 py-1.5 rounded-full text-xs font-semibold transition-colors shrink-0 ' + (source === s ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>{s}</button>
+          ))}
+          <span className="w-px bg-gray-200 mx-0.5 shrink-0" />
           <button onClick={() => setShowStarred(v => !v)}
-            className={'flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold transition-colors ' + (showStarred ? 'bg-yellow-400 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>
+            className={'flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors shrink-0 ' + (showStarred ? 'bg-yellow-400 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>
             <Star size={12} /> Starred
           </button>
           <button onClick={() => setShowSolved(v => v === null ? false : v === false ? true : null)}
-            className={'flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold transition-colors ' + (showSolved === false ? 'bg-orange-400 text-white' : showSolved === true ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>
+            className={'flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors shrink-0 ' + (showSolved === false ? 'bg-orange-400 text-white' : showSolved === true ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>
             <CheckCircle2 size={12} />
             {showSolved === false ? 'Unsolved' : showSolved === true ? 'Solved' : 'All'}
           </button>
-          <span className="ml-auto text-xs text-gray-400">{filtered.length} questions</span>
+        </div>
+        <div className="flex items-center justify-between mt-1">
+          <span className="text-xs text-gray-400">{filtered.length} questions</span>
         </div>
         <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-gray-100">
           <span className="text-xs text-gray-400 self-center">Study {filtered.length} as:</span>

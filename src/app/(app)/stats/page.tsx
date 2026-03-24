@@ -123,7 +123,7 @@ export default function StatsPage() {
       </h1>
 
       {/* Big number cards */}
-      <div className="grid grid-cols-3 gap-3 mb-8">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-8">
         {[
           { label: 'Solved', value: solvedQ, color: 'text-green-600', bg: 'bg-green-50 border-green-200' },
           { label: 'Total', value: totalQ, color: 'text-gray-700', bg: 'bg-gray-50 border-gray-200' },
@@ -195,19 +195,19 @@ export default function StatsPage() {
         {dailyTarget === 0 && (
           <>
             <p className="text-xs text-gray-400 mb-4">Commit to a daily goal and lock it with a code. You can only change it by entering that code.</p>
-            <div className="flex flex-wrap gap-3 items-end">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:items-end">
               <div>
                 <label className="block text-xs text-gray-500 mb-1">Questions / day</label>
                 <input type="number" min="1" max="20" value={targetInput} onChange={e => setTargetInput(e.target.value)} placeholder="e.g. 3"
-                  className="w-24 px-3 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white text-sm focus:outline-none focus:border-indigo-400" />
+                  className="w-full sm:w-24 px-3 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white text-sm focus:outline-none focus:border-indigo-400" />
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">Lock code</label>
                 <input type="text" value={lockCodeInput} onChange={e => setLockCodeInput(e.target.value)} placeholder="e.g. GRIND2026"
-                  className="w-36 px-3 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white text-sm focus:outline-none focus:border-indigo-400" />
+                  className="w-full sm:w-40 px-3 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white text-sm focus:outline-none focus:border-indigo-400" />
               </div>
               <button onClick={handleSetAndLock} disabled={!targetInput || !lockCodeInput.trim()}
-                className="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-40">
+                className="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-40">
                 🔒 Set & Lock
               </button>
             </div>
@@ -224,13 +224,13 @@ export default function StatsPage() {
                 <p className="text-xs text-gray-500">Goal is locked. Enter your code to change it.</p>
               </div>
             </div>
-            <div className="flex flex-wrap gap-3 items-center">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:items-center">
               <input type="text" value={unlockAttempt}
                 onChange={e => { setUnlockAttempt(e.target.value); setUnlockError(false) }}
                 onKeyDown={e => e.key === 'Enter' && handleUnlock()}
                 placeholder="Enter lock code"
-                className={`w-40 px-3 py-2 rounded-lg border bg-gray-800 text-white text-sm focus:outline-none transition-colors ${unlockError ? 'border-red-500' : 'border-gray-600 focus:border-indigo-400'}`} />
-              <button onClick={handleUnlock} className="px-4 py-2 bg-amber-600 text-white text-sm font-semibold rounded-lg hover:bg-amber-500 transition-colors">
+                className={`w-full sm:w-44 px-3 py-2 rounded-lg border bg-gray-800 text-white text-sm focus:outline-none transition-colors ${unlockError ? 'border-red-500' : 'border-gray-600 focus:border-indigo-400'}`} />
+              <button onClick={handleUnlock} className="w-full sm:w-auto px-4 py-2 bg-amber-600 text-white text-sm font-semibold rounded-lg hover:bg-amber-500 transition-colors">
                 🔓 Unlock
               </button>
               {unlockError && <span className="text-red-400 text-xs font-semibold">Wrong code ❌</span>}
@@ -246,19 +246,19 @@ export default function StatsPage() {
         {dailyTarget > 0 && isUnlocked && (
           <>
             <p className="text-xs text-green-400 mb-4 font-semibold">🔓 Unlocked — update your goal or remove it.</p>
-            <div className="flex flex-wrap gap-3 items-end mb-3">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:items-end mb-3">
               <div>
                 <label className="block text-xs text-gray-500 mb-1">New questions / day</label>
                 <input type="number" min="1" max="20" value={targetInput} onChange={e => setTargetInput(e.target.value)}
-                  className="w-24 px-3 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white text-sm focus:outline-none focus:border-indigo-400" />
+                  className="w-full sm:w-24 px-3 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white text-sm focus:outline-none focus:border-indigo-400" />
               </div>
               <div>
                 <label className="block text-xs text-gray-500 mb-1">New lock code</label>
                 <input type="text" value={lockCodeInput} onChange={e => setLockCodeInput(e.target.value)} placeholder="Set new code"
-                  className="w-36 px-3 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white text-sm focus:outline-none focus:border-indigo-400" />
+                  className="w-full sm:w-40 px-3 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white text-sm focus:outline-none focus:border-indigo-400" />
               </div>
               <button onClick={handleUpdateAndLock} disabled={!targetInput || !lockCodeInput.trim()}
-                className="px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-40">
+                className="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-40">
                 🔒 Update & Lock
               </button>
             </div>

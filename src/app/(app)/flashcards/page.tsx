@@ -153,26 +153,25 @@ export default function FlashcardsPage() {
       </div>
 
       {/* Filters */}
-      <div className="mb-6 space-y-2">
-        <div className="flex flex-wrap gap-2">
+      <div className="mb-5">
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
           {DIFFS.map(d => (
             <button
               key={d}
               onClick={() => setFilterDiff(d)}
-              className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shrink-0 ${
                 filterDiff === d ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'
               }`}
             >
               {d}
             </button>
           ))}
-        </div>
-        <div className="flex flex-wrap gap-2">
+          <span className="w-px bg-gray-200 shrink-0" />
           {SOURCES.map(s => (
             <button
               key={s.value}
               onClick={() => setFilterSource(s.value)}
-              className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shrink-0 ${
                 filterSource === s.value ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'
               }`}
             >

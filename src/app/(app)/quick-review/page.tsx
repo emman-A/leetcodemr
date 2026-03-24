@@ -200,17 +200,17 @@ export default function QuickReviewPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-none">
         {DIFFS.map(d => (
           <button key={d} onClick={() => setFilterDiff(d)}
-            className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shrink-0 ${
               filterDiff === d ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'
             }`}>{d}</button>
         ))}
-        <div className="w-px bg-gray-200 mx-0.5" />
+        <div className="w-px bg-gray-200 mx-0.5 shrink-0" />
         {SOURCES.map(s => (
           <button key={s.value} onClick={() => setFilterSrc(s.value)}
-            className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shrink-0 ${
               filterSrc === s.value ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'
             }`}>{s.label}</button>
         ))}

@@ -143,36 +143,38 @@ export default function LearnPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
       {/* Filter bar */}
-      <div className="flex items-center gap-2 flex-wrap mb-4">
-        {['All', 'Easy', 'Medium', 'Hard'].map(d => (
+      <div className="mb-4">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          {['All', 'Easy', 'Medium', 'Hard'].map(d => (
+            <button
+              key={d}
+              onClick={() => { setFilterDiff(d); setIdx(0); router.push('/learn/0', { scroll: false }) }}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shrink-0 ${
+                filterDiff === d
+                  ? 'bg-indigo-600 text-white border-indigo-600'
+                  : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'
+              }`}
+            >{d}</button>
+          ))}
+          <span className="w-px h-5 bg-gray-200 shrink-0" />
+          {['All', 'Grind 169', 'Denny Zhang', 'Premium 98', 'CodeSignal 21'].map(s => (
+            <button
+              key={s}
+              onClick={() => { setFilterSource(s); setIdx(0); router.push('/learn/0', { scroll: false }) }}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shrink-0 ${
+                filterSource === s
+                  ? 'bg-indigo-600 text-white border-indigo-600'
+                  : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'
+              }`}
+            >{s}</button>
+          ))}
           <button
-            key={d}
-            onClick={() => { setFilterDiff(d); setIdx(0); router.push('/learn/0', { scroll: false }) }}
-            className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
-              filterDiff === d
-                ? 'bg-indigo-600 text-white border-indigo-600'
-                : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'
-            }`}
-          >{d}</button>
-        ))}
-        <span className="w-px h-5 bg-gray-200" />
-        {['All', 'Grind 169', 'Denny Zhang', 'Premium 98', 'CodeSignal 21'].map(s => (
-          <button
-            key={s}
-            onClick={() => { setFilterSource(s); setIdx(0); router.push('/learn/0', { scroll: false }) }}
-            className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
-              filterSource === s
-                ? 'bg-indigo-600 text-white border-indigo-600'
-                : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'
-            }`}
-          >{s}</button>
-        ))}
-        <button
-          onClick={() => setShowList(v => !v)}
-          className="ml-auto flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border border-gray-200 bg-white text-gray-500 hover:border-indigo-300 transition-colors"
-        >
-          <List size={12} /> {showList ? 'Hide list' : 'All questions'}
-        </button>
+            onClick={() => setShowList(v => !v)}
+            className="ml-auto flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold border border-gray-200 bg-white text-gray-500 hover:border-indigo-300 transition-colors shrink-0"
+          >
+            <List size={12} /> {showList ? 'Hide' : 'All Qs'}
+          </button>
+        </div>
       </div>
 
       {/* Question list dropdown */}

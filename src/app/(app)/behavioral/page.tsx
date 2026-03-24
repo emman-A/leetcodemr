@@ -166,12 +166,12 @@ export default function BehavioralPage() {
       </div>
 
       {/* Category filter */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-none">
         {CATEGORIES.map(c => (
           <button
             key={c}
             onClick={() => setCat(c)}
-            className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shrink-0 ${
               cat === c ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'
             }`}
           >
