@@ -21,8 +21,7 @@ interface Question {
 
 type Language = 'python' | 'javascript' | 'java' | 'cpp'
 
-const JUDGE0_SUBMIT = '/api/run-code'
-const JUDGE0_GET = (token: string) => `/api/run-code?token=${token}`
+const RUN_CODE_API = '/api/run-code'
 const LANG_CONFIG: Record<Language, { label: string; judge0Id: number; starter: string }> = {
   python:     { label: 'Python',     judge0Id: 71,  starter: '# Write your Python solution here\n\n' },
   javascript: { label: 'JavaScript', judge0Id: 63,  starter: '// Write your JavaScript solution here\n\n' },
@@ -111,29 +110,21 @@ export default function PracticePage() {
 
   async function runCode() {
     setRunning(true)
-    setOutput('Submitting…')
+    setOutput('Running…')
     try {
       const cfg = LANG_CONFIG[lang]
-      const submitRes = await fetch(JUDGE0_SUBMIT, {
+      const res = await fetch(RUN_CODE_API, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ source_code: code, language_id: cfg.judge0Id }),
       })
-      const submitted = await submitRes.json()
-      if (!submitted?.token) {
-        setOutput(`Error: ${submitted?.message || JSON.stringify(submitted)}`)
+      const result = await res.json()
+
+      if (result?.error) {
+        setOutput(`Error: ${result.error}`)
         setRunning(false)
         return
       }
-      setOutput('Running…')
-      let result: any = null
-      for (let attempt = 0; attempt < 20; attempt++) {
-        await new Promise(r => setTimeout(r, 800))
-        const r = await fetch(JUDGE0_GET(submitted.token))
-        result = await r.json()
-        if (result?.status?.id > 2) break
-      }
-      if (!result) { setOutput('Timed out.'); setRunning(false); return }
 
       const statusId = result?.status?.id ?? 0
       const statusDesc = result?.status?.description || 'Unknown'
@@ -146,6 +137,8 @@ export default function PracticePage() {
         setOutput(`🔴 Compile Error:\n${compileErr || stderr}`)
       } else if (statusId >= 7 && statusId <= 12) {
         setOutput(`🔴 ${statusDesc}${time}${stderr ? '\n\n' + stderr : ''}`)
+      } else if (!stdout && !stderr) {
+        setOutput(`⚠️ No output — make sure to print your result.\n[${statusDesc}${time}]`)
       } else {
         setOutput(stdout + (stderr ? `\nSTDERR:\n${stderr}` : '') + `\n[${statusDesc}${time}]`)
       }

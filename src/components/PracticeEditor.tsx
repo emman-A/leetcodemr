@@ -3,9 +3,8 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { RotateCcw, Code2, Play, ChevronDown, ChevronUp } from 'lucide-react'
 
-// Judge0 CE — proxied through Next.js API to avoid CORS
-const JUDGE0_SUBMIT = '/api/run-code'
-const JUDGE0_GET = (token: string) => `/api/run-code?token=${token}`
+// Code execution — proxied server-side through Next.js API
+const RUN_CODE_API = '/api/run-code'
 const JUDGE0_LANG: Record<string, number> = {
   python: 71,  // Python 3.8.1
   cpp:    54,  // C++ (GCC 9.2.0)
@@ -279,33 +278,21 @@ int main() {
 
   const runCode = async () => {
     setRunning(true)
-    setOutput('Submitting…')
+    setOutput('Running…')
     setShowOutput(true)
     try {
-      // Step 1: submit
-      const submitRes = await fetch(JUDGE0_SUBMIT, {
+      const res = await fetch(RUN_CODE_API, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ source_code: code, language_id: JUDGE0_LANG[lang] }),
       })
-      const submitted = await submitRes.json()
-      if (!submitted?.token) {
-        setOutput(`Error: ${submitted?.message || JSON.stringify(submitted)}`)
+      const result = await res.json()
+
+      if (result?.error) {
+        setOutput(`Error: ${result.error}`)
         setRunning(false)
         return
       }
-
-      // Step 2: poll until done (statuses 1=In Queue, 2=Processing)
-      setOutput('Running…')
-      let result: any = null
-      for (let attempt = 0; attempt < 20; attempt++) {
-        await new Promise(r => setTimeout(r, 800))
-        const r = await fetch(JUDGE0_GET(submitted.token))
-        result = await r.json()
-        if (result?.status?.id > 2) break  // done
-      }
-
-      if (!result) { setOutput('Timed out waiting for result.'); setRunning(false); return }
 
       const statusId = result?.status?.id ?? 0
       const statusDesc = result?.status?.description || 'Unknown'
@@ -315,10 +302,8 @@ int main() {
       const time = result?.time ? ` · ${result.time}s` : ''
 
       if (statusId === 6 || compileErr) {
-        // Compile error
         setOutput(`🔴 Compile Error:\n${compileErr || stderr}`)
       } else if (statusId >= 7 && statusId <= 12) {
-        // Runtime errors (SIGABRT, SIGSEGV, TLE, MLE, etc.)
         setOutput(`🔴 ${statusDesc}${time}${stderr ? '\n\n' + stderr : ''}`)
       } else if (!stdout && !stderr) {
         setOutput(`⚠️ No output — make sure to print your result.\n[${statusDesc}${time}]`)
