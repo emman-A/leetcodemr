@@ -57,10 +57,10 @@ export default function LoginPage() {
                 onChange={e => setPasscode(e.target.value)}
                 placeholder="Your passcode"
                 autoFocus
-                className={`w-full px-4 py-3 border-2 rounded-xl text-sm focus:outline-none transition-colors pr-11 font-mono tracking-widest text-gray-900 placeholder-gray-400 ${
+                className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-colors pr-11 font-mono tracking-widest text-gray-900 placeholder-gray-400 ${
                   error ? 'border-red-400 bg-red-50' : 'border-gray-200 focus:border-indigo-400 bg-white'
                 }`}
-                style={{ color: '#111827', WebkitTextFillColor: '#111827' }}
+                style={{ color: '#111827', WebkitTextFillColor: '#111827', fontSize: '16px' }}
               />
               <button
                 type="button"

@@ -426,7 +426,7 @@ int main() {
         </div>
       </div>
 
-      <div>
+      <div className="practice-cm-wrap">
         {typeof window !== 'undefined' && CodeMirror && theme && (
           <CodeMirror
             value={code}
@@ -442,7 +442,8 @@ int main() {
           <textarea
             value={code}
             onChange={e => handleChange(e.target.value)}
-            className="w-full h-[320px] p-4 font-mono text-sm bg-gray-900 text-gray-100 resize-none focus:outline-none"
+            className="w-full h-[320px] p-4 font-mono bg-gray-900 text-gray-100 resize-none focus:outline-none"
+            style={{ fontSize: '16px' }}
           />
         )}
       </div>

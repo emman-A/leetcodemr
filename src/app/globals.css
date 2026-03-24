@@ -33,3 +33,41 @@ body {
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+/* Practice editor — responsive font sizes matching solution viewer.
+   maximum-scale=1 in viewport prevents auto-zoom so small fonts are safe. */
+.practice-cm-wrap .cm-content,
+.practice-cm-wrap .cm-line {
+  font-size: 8px;
+  touch-action: manipulation;
+}
+@media (min-width: 640px) {
+  .practice-cm-wrap .cm-content,
+  .practice-cm-wrap .cm-line {
+    font-size: 10px;
+  }
+}
+@media (min-width: 768px) {
+  .practice-cm-wrap .cm-content,
+  .practice-cm-wrap .cm-line {
+    font-size: 12px;
+  }
+}
+@media (min-width: 1024px) {
+  .practice-cm-wrap .cm-content,
+  .practice-cm-wrap .cm-line {
+    font-size: 13px;
+  }
+}
+
+/* Prevent iOS auto-zoom on all inputs/textareas/selects — font-size must be ≥16px to avoid zoom */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="date"],
+input[type="search"],
+textarea,
+select {
+  font-size: 16px !important;
+}
