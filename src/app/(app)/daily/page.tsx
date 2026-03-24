@@ -144,10 +144,14 @@ export default function DailyPage() {
       question_order: order,
       lock_code: planCode.trim(),
     }
-    await saveStudyPlan(newPlan)
-    setPlan(newPlan)
+    const ok = await saveStudyPlan(newPlan)
     setGenerating(false)
-    toast.success('Study plan created!')
+    if (ok) {
+      setPlan(newPlan)
+      toast.success('Study plan created!')
+    } else {
+      toast.error('Failed to save plan — check Supabase RLS policies.')
+    }
   }
 
   async function handleResetConfirm() {

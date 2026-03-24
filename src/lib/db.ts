@@ -56,7 +56,7 @@ export async function updateProgress(questionId: number, data: any) {
     lastReviewed = null
   }
 
-  await supabase.from('progress').upsert({
+  const { error: upsertErr } = await supabase.from('progress').upsert({
     user_id: USER_ID,
     question_id: questionId,
     solved: data.solved ?? existing?.solved ?? false,
@@ -68,6 +68,7 @@ export async function updateProgress(questionId: number, data: any) {
     last_reviewed: lastReviewed,
     updated_at: new Date().toISOString(),
   }, { onConflict: 'user_id,question_id' })
+  if (upsertErr) console.error('[db] updateProgress:', upsertErr.message)
 
   await logActivity()
 }
@@ -202,11 +203,12 @@ export async function addGemsVisited(cardId: string) {
 
 // ─── Study Plan ───────────────────────────────────────────────────────────────
 export async function getStudyPlan() {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('study_plan')
     .select('*')
     .eq('user_id', USER_ID)
     .single()
+  if (error && error.code !== 'PGRST116') console.error('[db] getStudyPlan:', error.message)
   return data
 }
 
@@ -216,15 +218,18 @@ export async function saveStudyPlan(plan: {
   question_order: number[]
   lock_code: string
 }) {
-  await supabase.from('study_plan').upsert({
+  const { error } = await supabase.from('study_plan').upsert({
     user_id: USER_ID,
     ...plan,
     created_at: new Date().toISOString(),
   }, { onConflict: 'user_id' })
+  if (error) console.error('[db] saveStudyPlan:', error.message)
+  return !error
 }
 
 export async function clearStudyPlan() {
-  await supabase.from('study_plan').delete().eq('user_id', USER_ID)
+  const { error } = await supabase.from('study_plan').delete().eq('user_id', USER_ID)
+  if (error) console.error('[db] clearStudyPlan:', error.message)
 }
 
 // ─── Daily Target ─────────────────────────────────────────────────────────────
