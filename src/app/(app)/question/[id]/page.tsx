@@ -244,15 +244,6 @@ export default function QuestionPage() {
         />
       </div>
 
-      {/* Practice page link */}
-      <div className="flex justify-center mt-4 mb-6">
-        <Link
-          href={`/practice/${question.id}`}
-          className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-md"
-        >
-          <Terminal size={18} /> Full Practice (Run Code)
-        </Link>
-      </div>
     </div>
   )
 }

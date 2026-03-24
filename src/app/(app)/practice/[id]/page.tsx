@@ -125,7 +125,6 @@ export default function PracticePage() {
         questionId={question.id}
         starterPython={question.starter_python}
         starterCpp={question.starter_cpp}
-        hideRunCode
       />
 
       {/* Solution panel */}
