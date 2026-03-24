@@ -21,7 +21,8 @@ interface Question {
 
 type Language = 'python' | 'javascript' | 'java' | 'cpp'
 
-const JUDGE0_URL = 'https://ce.judge0.com/submissions?base64_encoded=false&wait=true'
+const JUDGE0_SUBMIT = 'https://ce.judge0.com/submissions?base64_encoded=false'
+const JUDGE0_GET = (token: string) => `https://ce.judge0.com/submissions/${token}?base64_encoded=false`
 const LANG_CONFIG: Record<Language, { label: string; judge0Id: number; starter: string }> = {
   python:     { label: 'Python',     judge0Id: 71,  starter: '# Write your Python solution here\n\n' },
   javascript: { label: 'JavaScript', judge0Id: 63,  starter: '// Write your JavaScript solution here\n\n' },
@@ -110,31 +111,49 @@ export default function PracticePage() {
 
   async function runCode() {
     setRunning(true)
-    setOutput('Running...')
+    setOutput('Submitting…')
     try {
       const cfg = LANG_CONFIG[lang]
-      const res = await fetch(JUDGE0_URL, {
+      const submitRes = await fetch(JUDGE0_SUBMIT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ source_code: code, language_id: cfg.judge0Id }),
       })
-      const result = await res.json()
+      const submitted = await submitRes.json()
+      if (!submitted?.token) {
+        setOutput(`Error: ${submitted?.message || JSON.stringify(submitted)}`)
+        setRunning(false)
+        return
+      }
+      setOutput('Running…')
+      let result: any = null
+      for (let attempt = 0; attempt < 20; attempt++) {
+        await new Promise(r => setTimeout(r, 800))
+        const r = await fetch(JUDGE0_GET(submitted.token))
+        result = await r.json()
+        if (result?.status?.id > 2) break
+      }
+      if (!result) { setOutput('Timed out.'); setRunning(false); return }
+
+      const statusId = result?.status?.id ?? 0
+      const statusDesc = result?.status?.description || 'Unknown'
       const stdout = result?.stdout || ''
       const stderr = result?.stderr || ''
       const compileErr = result?.compile_output || ''
-      const status = result?.status?.description || ''
       const time = result?.time ? ` · ${result.time}s` : ''
 
-      if (compileErr) {
-        setOutput(`Compile Error:\n${compileErr}`)
+      if (statusId === 6 || compileErr) {
+        setOutput(`🔴 Compile Error:\n${compileErr || stderr}`)
+      } else if (statusId >= 7 && statusId <= 12) {
+        setOutput(`🔴 ${statusDesc}${time}${stderr ? '\n\n' + stderr : ''}`)
       } else {
-        setOutput(stdout + (stderr ? `\nSTDERR:\n${stderr}` : '') + `\n[${status}${time}]`)
+        setOutput(stdout + (stderr ? `\nSTDERR:\n${stderr}` : '') + `\n[${statusDesc}${time}]`)
       }
 
       await savePracticeSession(id, lang, code, result)
       toast.success('Code executed!')
     } catch (err) {
-      setOutput(`Error running code: ${err}`)
+      setOutput(`Error: ${err}`)
       toast.error('Failed to run code')
     }
     setRunning(false)
