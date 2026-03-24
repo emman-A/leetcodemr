@@ -19,10 +19,18 @@
   }
 }
 
+html {
+  /* Prevent iOS Safari rubber-band snap-back to top */
+  overscroll-behavior: none;
+  /* Preserve scroll position across re-renders */
+  scroll-behavior: auto;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overscroll-behavior: none;
 }
 
 /* Hide scrollbar on overflow-x-auto filter rows */
