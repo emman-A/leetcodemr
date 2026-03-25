@@ -36,7 +36,7 @@ export async function updateProgress(questionId: number, data: any) {
     .eq('question_id', questionId)
     .single()
 
-  const SR_INTERVALS = [1, 3, 7, 14, 30, 60]
+  const SR_INTERVALS = [3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 18, 24, 30, 45, 60]
   let reviewCount = existing?.review_count ?? 0
   let nextReview = existing?.next_review ?? null
   let lastReviewed = existing?.last_reviewed ?? null
@@ -383,7 +383,7 @@ export async function setInterviewDate(target_date: string, company: string) {
 }
 
 // ─── Spaced Repetition ───────────────────────────────────────────────────────
-const SR_INTERVALS = [1, 3, 7, 14, 30, 60]
+const SR_INTERVALS = [3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 18, 24, 30, 45, 60]
 
 export async function completeReview(questionId: number) {
   const { data: existing } = await supabase
