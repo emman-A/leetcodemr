@@ -1,6 +1,5 @@
 'use client'
-export const dynamic = 'force-dynamic'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import {
   ChevronLeft, ChevronRight, Brain, CheckCircle, Star,
@@ -42,7 +41,7 @@ function formatLocalDate(dateStr: string) {
   return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-export default function LearnPage() {
+function LearnInner() {
   const params = useParams()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -466,5 +465,13 @@ export default function LearnPage() {
         </>
       )}
     </div>
+  )
+}
+
+export default function LearnPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-32 text-gray-400 animate-pulse text-sm">Loading...</div>}>
+      <LearnInner />
+    </Suspense>
   )
 }

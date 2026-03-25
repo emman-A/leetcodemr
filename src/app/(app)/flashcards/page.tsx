@@ -1,6 +1,5 @@
 'use client'
-export const dynamic = 'force-dynamic'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { ChevronLeft, ChevronRight, Shuffle, RotateCcw, Layers, CheckCircle, Circle } from 'lucide-react'
 import { getFcVisited, addFcVisited } from '@/lib/db'
@@ -37,7 +36,7 @@ function shuffle<T>(arr: T[]): T[] {
   return a
 }
 
-export default function FlashcardsPage() {
+function FlashcardsInner() {
   const searchParams = useSearchParams()
   const initDiff    = searchParams.get('diff')    || 'All'
   const initSource  = searchParams.get('source')  || 'All'
@@ -321,5 +320,13 @@ export default function FlashcardsPage() {
         </>
       )}
     </div>
+  )
+}
+
+export default function FlashcardsPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-32 text-gray-400 animate-pulse text-sm">Loading flashcards...</div>}>
+      <FlashcardsInner />
+    </Suspense>
   )
 }
