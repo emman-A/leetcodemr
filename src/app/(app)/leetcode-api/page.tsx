@@ -5,8 +5,9 @@ import {
   Search, Trophy, CheckCircle, XCircle, Loader2, User,
   Play, Send, Key, Eye, EyeOff, ChevronDown, ChevronUp,
   AlertCircle, Clock, Cpu, Info, Calendar, ExternalLink,
-  Tag, ChevronRight,
+  Tag, ChevronRight, Star,
 } from 'lucide-react'
+import { getProgress, updateProgress } from '@/lib/db'
 
 const CodeMirror = dynamic(() => import('@uiw/react-codemirror').then(m => m.default), { ssr: false })
 
@@ -140,6 +141,16 @@ export default function LeetCodePage() {
   const [runMode,    setRunMode]    = useState<'test' | 'submit' | null>(null)
   const [pollMsg,    setPollMsg]    = useState('')
   const [result,     setResult]     = useState<LCResult | null>(null)
+  const [solvedStatus, setSolvedStatus] = useState<'marked' | 'already' | 'not-in-library' | null>(null)
+
+  /* App question list — loaded once to match solved-sync */
+  const [appQuestions, setAppQuestions] = useState<{ id: number; slug: string }[]>([])
+  useEffect(() => {
+    fetch('/questions_full.json')
+      .then(r => r.json())
+      .then((qs: { id: number; slug: string }[]) => setAppQuestions(qs))
+      .catch(() => {})
+  }, [])
   const [resultErr,  setResultErr]  = useState('')
 
   /* Left panel tab */
@@ -243,7 +254,7 @@ export default function LeetCodePage() {
   }
 
   /* ── Poll ── */
-  const poll = useCallback(async (checkId: string, slug: string) => {
+  const poll = useCallback(async (checkId: string, slug: string, mode: 'test' | 'submit') => {
     for (let i = 0; i < 30; i++) {
       await new Promise(r => setTimeout(r, 1000))
       setPollMsg(`Judging… ${i + 1}s`)
@@ -253,16 +264,37 @@ export default function LeetCodePage() {
       })
       const data: LCResult = await res.json()
       if (data.state !== 'PENDING' && data.state !== 'STARTED') {
-        setResult(data); setRunning(false); setPollMsg(''); setBottomTab('result'); return
+        setResult(data); setRunning(false); setPollMsg(''); setBottomTab('result')
+
+        /* ── Sync to app if Accepted on a Submit ── */
+        if (mode === 'submit' && data.status_code === 10 && question) {
+          const qFrontendId = parseInt(question.questionFrontendId)
+          const match = appQuestions.find(q => q.id === qFrontendId || q.slug === question.titleSlug)
+          if (!match) {
+            setSolvedStatus('not-in-library')
+          } else {
+            const prog = await getProgress()
+            const alreadySolved = Array.isArray(prog)
+              ? prog.some((p: any) => p.question_id === match.id && p.solved)
+              : (prog as any)?.[String(match.id)]?.solved
+            if (alreadySolved) {
+              setSolvedStatus('already')
+            } else {
+              await updateProgress(match.id, { solved: true })
+              setSolvedStatus('marked')
+            }
+          }
+        }
+        return
       }
     }
     setResultErr('Timed out.'); setRunning(false); setPollMsg('')
-  }, [session, csrfToken])
+  }, [session, csrfToken, question, appQuestions])
 
   /* ── Run test ── */
   const runTest = async () => {
     if (!question || !sessionOK) return
-    setRunning(true); setRunMode('test'); setResult(null); setResultErr(''); setPollMsg('Sending…'); setBottomTab('result')
+    setRunning(true); setRunMode('test'); setResult(null); setResultErr(''); setSolvedStatus(null); setPollMsg('Sending…'); setBottomTab('result')
     try {
       const res = await fetch('/api/leetcode/test', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -270,14 +302,14 @@ export default function LeetCodePage() {
       })
       const data = await res.json()
       if (data.error) { setResultErr(data.error); setRunning(false); setPollMsg(''); return }
-      await poll(data.interpret_id, question.titleSlug)
+      await poll(data.interpret_id, question.titleSlug, 'test')
     } catch (e) { setResultErr(String(e)); setRunning(false); setPollMsg('') }
   }
 
   /* ── Submit ── */
   const runSubmit = async () => {
     if (!question || !sessionOK) return
-    setRunning(true); setRunMode('submit'); setResult(null); setResultErr(''); setPollMsg('Submitting…'); setBottomTab('result')
+    setRunning(true); setRunMode('submit'); setResult(null); setResultErr(''); setSolvedStatus(null); setPollMsg('Submitting…'); setBottomTab('result')
     try {
       const res = await fetch('/api/leetcode/submit', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -285,7 +317,7 @@ export default function LeetCodePage() {
       })
       const data = await res.json()
       if (data.error) { setResultErr(data.error); setRunning(false); setPollMsg(''); return }
-      await poll(data.submission_id, question.titleSlug)
+      await poll(data.submission_id, question.titleSlug, 'submit')
     } catch (e) { setResultErr(String(e)); setRunning(false); setPollMsg('') }
   }
 
@@ -641,6 +673,26 @@ export default function LeetCodePage() {
                             </span>
                           )}
                         </div>
+
+                        {/* App sync badge — only on Submit + Accepted */}
+                        {solvedStatus === 'marked' && (
+                          <div className="flex items-center gap-1.5 text-xs text-green-400 bg-green-500/10 border border-green-500/20 rounded-lg px-3 py-1.5">
+                            <Star size={11} className="fill-green-400" />
+                            Marked as solved in your app — spaced repetition started
+                          </div>
+                        )}
+                        {solvedStatus === 'already' && (
+                          <div className="flex items-center gap-1.5 text-xs text-gray-400 bg-gray-700/30 border border-gray-600/20 rounded-lg px-3 py-1.5">
+                            <CheckCircle size={11} />
+                            Already solved in your app
+                          </div>
+                        )}
+                        {solvedStatus === 'not-in-library' && (
+                          <div className="flex items-center gap-1.5 text-xs text-yellow-500 bg-yellow-500/10 border border-yellow-500/20 rounded-lg px-3 py-1.5">
+                            <AlertCircle size={11} />
+                            Not in your app&apos;s 331 question library — solved on LeetCode only
+                          </div>
+                        )}
 
                         {/* Perf (submit only) */}
                         {isAC && runMode === 'submit' && (
