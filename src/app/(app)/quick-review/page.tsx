@@ -56,7 +56,8 @@ export default function QuickReviewPage() {
     let filtered = all
     if (filterDiff !== 'All') filtered = filtered.filter(q => q.difficulty === filterDiff)
     if (filterSrc !== 'All') filtered = filtered.filter(q => (q.source || []).includes(filterSrc))
-    const newDeck = shuffle(filtered)
+    const ORDER: Record<string, number> = { Easy: 0, Medium: 1, Hard: 2 }
+    const newDeck = [...filtered].sort((a, b) => (ORDER[a.difficulty] ?? 1) - (ORDER[b.difficulty] ?? 1))
     setDeck(newDeck)
     deckRef.current = newDeck
     resetSession(newDeck)
