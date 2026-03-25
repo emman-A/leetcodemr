@@ -380,6 +380,7 @@ export default function LearnPage() {
             </div>
             <PracticeEditor
               questionId={q.id}
+              slug={q.slug}
               starterPython={(q as any).starter_python}
               starterCpp={(q as any).starter_cpp}
             />

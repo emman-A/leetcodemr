@@ -239,6 +239,7 @@ export default function QuestionPage() {
         </div>
         <PracticeEditor
           questionId={question.id}
+          slug={question.slug}
           starterPython={question.starter_python}
           starterCpp={question.starter_cpp}
         />

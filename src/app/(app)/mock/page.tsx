@@ -366,6 +366,7 @@ export default function MockInterviewPage() {
           {/* Practice Editor — full features */}
           <PracticeEditor
             questionId={question.id}
+            slug={question.slug}
             starterPython={question.starter_python}
             starterCpp={question.starter_cpp}
           />

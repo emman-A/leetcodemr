@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import dynamic from 'next/dynamic'
-import { RotateCcw, Code2, Play, ChevronDown, ChevronUp } from 'lucide-react'
+import { RotateCcw, Code2, Play, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
 import { getPracticeSession, savePracticeSession } from '@/lib/db'
 
 // Code execution — proxied server-side through Next.js API
@@ -57,12 +57,13 @@ const TOOLBAR: Record<string, { row1: { k: string; v: string; c: number }[]; row
 
 interface PracticeEditorProps {
   questionId: number
+  slug?: string
   starterPython?: string
   starterCpp?: string
   hideRunCode?: boolean
 }
 
-export default function PracticeEditor({ questionId, starterPython, starterCpp, hideRunCode = false }: PracticeEditorProps) {
+export default function PracticeEditor({ questionId, slug, starterPython, starterCpp, hideRunCode = false }: PracticeEditorProps) {
   const [lang, setLang] = useState<'python' | 'cpp'>('python')
   const [code, setCode] = useState('')
   const [saved, setSaved] = useState(false)
@@ -411,6 +412,19 @@ int main() {
         <div className="flex items-center gap-2 min-w-0">
           <Code2 size={14} className="text-indigo-400 shrink-0" />
           <span className="text-xs font-bold text-gray-200 truncate">Practice — write it from memory</span>
+          {slug && (
+            <a
+              href={`https://leetcode.com/problems/${slug}/`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={e => e.stopPropagation()}
+              className="flex items-center gap-1 text-xs text-yellow-400 hover:text-yellow-300 transition-colors shrink-0 ml-1"
+              title="Open on LeetCode"
+            >
+              <ExternalLink size={11} />
+              <span className="hidden sm:inline">LeetCode</span>
+            </a>
+          )}
           {saved && <span className="text-xs text-green-400 ml-1 shrink-0">saved ✓</span>}
         </div>
         <div className="flex items-center gap-1 bg-[#313244] rounded-lg p-0.5">
