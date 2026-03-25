@@ -296,8 +296,7 @@ export default function PatternsPage() {
     await addPatternFcVisited(id)
   }, [])
 
-  if (loading) return <div className="text-center py-32 text-gray-400 animate-pulse text-sm">Loading patterns…</div>
-
+  // Hooks must be before any early returns
   const patternData = useMemo(() =>
     PATTERNS.map(p => {
       const qs = questions.filter(q => (q.tags || []).some(t => p.tags.includes(t)))
@@ -310,6 +309,8 @@ export default function PatternsPage() {
 
   const getMode = (id: string) => viewMode[id] || 'flashcards'
   const setMode = (id: string, mode: string) => setViewMode(prev => ({ ...prev, [id]: mode }))
+
+  if (loading) return <div className="text-center py-32 text-gray-400 animate-pulse text-sm">Loading patterns…</div>
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
