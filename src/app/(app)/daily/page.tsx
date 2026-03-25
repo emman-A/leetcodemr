@@ -28,7 +28,11 @@ interface StudyPlan {
 }
 
 function todayISO() {
-  return new Date().toISOString().split('T')[0]
+  const d = new Date()
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
 function fmtDate(iso: string) {
@@ -71,10 +75,24 @@ function getTodayInfo(plan: StudyPlan, allQuestions: Question[], progress: Recor
     return { complete: true, totalDays, finishDate, dayNumber: totalDays, daysLeft: 0 }
   }
 
-  const dayNumber = diffDays + 1
+  // Stay on the first incomplete day — don't advance by calendar date alone
+  let activeDayIndex = diffDays
+  for (let i = 0; i <= diffDays; i++) {
+    const { questionIds } = getDayInfo(plan, i, allQuestions, progress)
+    const allSolved = questionIds.every(id => {
+      const p = progress[String(id)]
+      return p && p.solved
+    })
+    if (!allSolved) {
+      activeDayIndex = i
+      break
+    }
+  }
+
+  const dayNumber = activeDayIndex + 1
   const daysLeft = totalDays - dayNumber
 
-  const { questionIds, questions } = getDayInfo(plan, diffDays, allQuestions, progress)
+  const { questionIds, questions } = getDayInfo(plan, activeDayIndex, allQuestions, progress)
 
   return {
     pending: false,
