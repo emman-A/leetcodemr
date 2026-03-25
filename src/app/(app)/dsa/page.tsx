@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Code2, RotateCcw, BookOpen } from 'lucide-react'
 import { DSA_CATEGORIES } from './data'
 import { TUTORIAL_SECTIONS } from './tutorials-data'
+import DsaCodeBlock from '@/components/DsaCodeBlock'
 
 type Mode = 'templates' | 'tutorials'
 
@@ -147,12 +148,12 @@ export default function DSAPage() {
                   return (
                     <div
                       key={card.id}
-                      className={`rounded-2xl border transition-all duration-200 overflow-hidden cursor-pointer ${
+                      className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                         isFlipped
-                          ? 'border-indigo-200 bg-gray-950'
-                          : 'border-gray-200 bg-white hover:border-indigo-300 hover:shadow-md'
+                          ? 'border-indigo-300 bg-[#1e2130]'
+                          : 'border-gray-200 bg-white hover:border-indigo-300 hover:shadow-md cursor-pointer'
                       }`}
-                      onClick={() => toggleFlip(card.id)}
+                      onClick={() => !isFlipped && toggleFlip(card.id)}
                     >
                       {!isFlipped ? (
                         <div className="p-5 min-h-[110px] flex flex-col justify-between">
@@ -177,9 +178,10 @@ export default function DSAPage() {
                           </div>
                         </div>
                       ) : (
-                        <div onClick={e => e.stopPropagation()}>
-                          {card.snippets.length > 1 && (
-                            <div className="flex gap-1 px-4 pt-3">
+                        <div>
+                          {/* Language selector + flip back */}
+                          <div className="flex items-center justify-between px-4 pt-3 pb-1">
+                            <div className="flex gap-1">
                               {card.snippets.map(s => (
                                 <button
                                   key={s.lang}
@@ -187,26 +189,22 @@ export default function DSAPage() {
                                   className={`text-xs px-3 py-1 rounded-full font-semibold transition-colors ${
                                     lang === s.lang
                                       ? 'bg-indigo-600 text-white'
-                                      : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                                      : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
                                   }`}
                                 >
                                   {s.lang}
                                 </button>
                               ))}
                             </div>
-                          )}
-                          <pre
-                            className="p-4 text-green-300 font-mono overflow-x-auto leading-relaxed"
-                            style={{ fontSize: '11px' }}
-                          >
-                            <code>{snippet?.code}</code>
-                          </pre>
-                          <div
-                            className="px-4 pb-3 text-right cursor-pointer"
-                            onClick={() => toggleFlip(card.id)}
-                          >
-                            <span className="text-xs text-gray-500 hover:text-gray-300">← flip back</span>
+                            <button
+                              onClick={() => toggleFlip(card.id)}
+                              className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+                            >
+                              ← flip back
+                            </button>
                           </div>
+
+                          {snippet && <DsaCodeBlock code={snippet.code} lang={lang} />}
                         </div>
                       )}
                     </div>
@@ -221,7 +219,7 @@ export default function DSAPage() {
       {/* ===== TUTORIALS MODE ===== */}
       {mode === 'tutorials' && (
         <>
-          {/* Section tabs (Basic Topics / Graph Theory / Math / Strings) */}
+          {/* Section tabs */}
           <div className="flex flex-wrap gap-2 mb-4">
             {TUTORIAL_SECTIONS.map(sec => (
               <button
@@ -285,12 +283,12 @@ export default function DSAPage() {
                   return (
                     <div
                       key={card.id}
-                      className={`rounded-2xl border transition-all duration-200 overflow-hidden cursor-pointer ${
+                      className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                         isFlipped
-                          ? 'border-violet-200 bg-gray-950'
-                          : 'border-gray-200 bg-white hover:border-violet-300 hover:shadow-md'
+                          ? 'border-violet-300 bg-[#1e2130]'
+                          : 'border-gray-200 bg-white hover:border-violet-300 hover:shadow-md cursor-pointer'
                       }`}
-                      onClick={() => toggleTutFlip(card.id)}
+                      onClick={() => !isFlipped && toggleTutFlip(card.id)}
                     >
                       {!isFlipped ? (
                         <div className="p-5 min-h-[120px] flex flex-col justify-between">
@@ -316,9 +314,10 @@ export default function DSAPage() {
                           </div>
                         </div>
                       ) : (
-                        <div onClick={e => e.stopPropagation()}>
-                          {card.snippets.length > 1 && (
-                            <div className="flex gap-1 px-4 pt-3">
+                        <div>
+                          {/* Language selector + flip back */}
+                          <div className="flex items-center justify-between px-4 pt-3 pb-1">
+                            <div className="flex gap-1">
                               {card.snippets.map(s => (
                                 <button
                                   key={s.lang}
@@ -326,26 +325,22 @@ export default function DSAPage() {
                                   className={`text-xs px-3 py-1 rounded-full font-semibold transition-colors ${
                                     lang === s.lang
                                       ? 'bg-violet-600 text-white'
-                                      : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                                      : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
                                   }`}
                                 >
                                   {s.lang}
                                 </button>
                               ))}
                             </div>
-                          )}
-                          <pre
-                            className="p-4 text-green-300 font-mono overflow-x-auto leading-relaxed"
-                            style={{ fontSize: '11px' }}
-                          >
-                            <code>{snippet?.code}</code>
-                          </pre>
-                          <div
-                            className="px-4 pb-3 text-right cursor-pointer"
-                            onClick={() => toggleTutFlip(card.id)}
-                          >
-                            <span className="text-xs text-gray-500 hover:text-gray-300">← flip back</span>
+                            <button
+                              onClick={() => toggleTutFlip(card.id)}
+                              className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+                            >
+                              ← flip back
+                            </button>
                           </div>
+
+                          {snippet && <DsaCodeBlock code={snippet.code} lang={lang} />}
                         </div>
                       )}
                     </div>
