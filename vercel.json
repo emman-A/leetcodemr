@@ -6,8 +6,8 @@
   },
   "crons": [
     {
-      "path": "/api/notify-daily?secret=REPLACE_WITH_CRON_SECRET",
-      "schedule": "*/30 * * * *"
+      "path": "/api/notify-daily",
+      "schedule": "0 13 * * *"
     }
   ]
 }
