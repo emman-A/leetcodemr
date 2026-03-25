@@ -62,9 +62,11 @@ export default function StatsPage() {
           const dayIds = plan.question_order.slice(day * perDay, day * perDay + perDay)
           const solvedCount = dayIds.filter((id: number) => prog[String(id)]?.solved).length
           if (solvedCount > 0) {
-            const date = new Date(plan.start_date + 'T00:00:00')
-            date.setDate(date.getDate() + day)
-            log[date.toISOString().split('T')[0]] = solvedCount
+            // Use UTC midnight so date keys match db.ts todayISO() and StreakCalendar
+            const date = new Date(plan.start_date + 'T00:00:00Z')
+            date.setUTCDate(date.getUTCDate() + day)
+            const key = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`
+            log[key] = solvedCount
           }
         }
         setPlanLog(log)

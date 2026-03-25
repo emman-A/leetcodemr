@@ -1,6 +1,8 @@
 'use client'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Pause, Play, SkipForward, RotateCcw, Zap, CheckCircle } from 'lucide-react'
+import { shuffle } from '@/lib/utils'
+import { DIFFICULTY_LEVELS, QUESTION_SOURCES } from '@/lib/constants'
 import DifficultyBadge from '@/components/DifficultyBadge'
 import CodePanel from '@/components/CodePanel'
 
@@ -16,23 +18,6 @@ interface Question {
 
 const Q_SECS = 15
 const SOL_SECS = 15
-const DIFFS = ['All', 'Easy', 'Medium', 'Hard']
-const SOURCES = [
-  { label: 'All',           value: 'All' },
-  { label: 'Grind 169',     value: 'Grind 169' },
-  { label: 'Denny Zhang',   value: 'Denny Zhang' },
-  { label: 'Premium 98',    value: 'Premium 98' },
-  { label: 'CodeSignal 21', value: 'CodeSignal' },
-]
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
-}
 
 export default function QuickReviewPage() {
   const [all, setAll] = useState<Question[]>([])
@@ -201,14 +186,14 @@ export default function QuickReviewPage() {
 
       {/* Filters */}
       <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-none">
-        {DIFFS.map(d => (
+        {DIFFICULTY_LEVELS.map(d => (
           <button key={d} onClick={() => setFilterDiff(d)}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shrink-0 ${
               filterDiff === d ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'
             }`}>{d}</button>
         ))}
         <div className="w-px bg-gray-200 mx-0.5 shrink-0" />
-        {SOURCES.map(s => (
+        {QUESTION_SOURCES.map(s => (
           <button key={s.value} onClick={() => setFilterSrc(s.value)}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shrink-0 ${
               filterSrc === s.value ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'

@@ -1,11 +1,12 @@
 'use client'
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   ChevronDown, ChevronRight, ChevronLeft, Shuffle, RotateCcw,
   CheckCircle, Circle, List, Layers,
 } from 'lucide-react'
 import { getProgress, getPatternFcVisited, addPatternFcVisited } from '@/lib/db'
+import { shuffle } from '@/lib/utils'
 import DifficultyBadge from '@/components/DifficultyBadge'
 import CodePanel from '@/components/CodePanel'
 
@@ -64,13 +65,20 @@ const PALETTE: [string, string, string][] = [
   ['bg-zinc-50',    'border-zinc-200',    'bg-zinc-500'],
 ]
 
-function shuffleArr<T>(arr: T[]): T[] {
-  const a = [...arr]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
+// Only renders the image block if the image actually loads — no dead zone on 404s
+function ImageIfExists({ id, title }: { id: number; title: string }) {
+  const [loaded, setLoaded] = useState(false)
+  return (
+    <>
+      <img
+        src={`/question-images/${id}.jpg`}
+        alt={title}
+        className={`mx-4 mb-4 w-[calc(100%-2rem)] rounded-lg border border-gray-100 ${loaded ? 'block' : 'hidden'}`}
+        onLoad={() => setLoaded(true)}
+        onError={() => setLoaded(false)}
+      />
+    </>
+  )
 }
 
 function PatternFlashcards({
@@ -95,14 +103,14 @@ function PatternFlashcards({
   useEffect(() => {
     if (prevQsRef.current !== questions) {
       prevQsRef.current = questions
-      setDeck(shuffled ? shuffleArr(questions) : questions)
+      setDeck(shuffled ? shuffle(questions) : questions)
       setIdx(0)
       setFlipped(false)
     }
   }, [questions, shuffled])
 
   useEffect(() => {
-    setDeck(shuffled ? shuffleArr(questions) : questions)
+    setDeck(shuffled ? shuffle(questions) : questions)
     setIdx(0)
     setFlipped(false)
   }, [shuffled])
@@ -197,14 +205,7 @@ function PatternFlashcards({
             <div className="px-4 py-5 flex items-center justify-center min-h-[100px]">
               <h3 className="text-base font-bold text-gray-800 text-center leading-snug">{card.title}</h3>
             </div>
-            <div className="px-4 pb-4" onClick={e => e.stopPropagation()}>
-              <img
-                src={`/question-images/${card.id}.jpg`}
-                alt={card.title}
-                className="w-full rounded-lg border border-gray-100"
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
-              />
-            </div>
+            <ImageIfExists id={card.id} title={card.title} />
           </div>
         ) : (
           <div className="bg-white rounded-xl border border-indigo-200 shadow-sm overflow-hidden">
@@ -297,11 +298,13 @@ export default function PatternsPage() {
 
   if (loading) return <div className="text-center py-32 text-gray-400 animate-pulse text-sm">Loading patterns…</div>
 
-  const patternData = PATTERNS.map(p => {
-    const qs = questions.filter(q => (q.tags || []).some(t => p.tags.includes(t)))
-    const solvedCount = qs.filter(q => progress[String(q.id)]?.solved).length
-    return { ...p, questions: qs, solved: solvedCount, total: qs.length }
-  }).filter(p => p.total > 0)
+  const patternData = useMemo(() =>
+    PATTERNS.map(p => {
+      const qs = questions.filter(q => (q.tags || []).some(t => p.tags.includes(t)))
+      const solvedCount = qs.filter(q => progress[String(q.id)]?.solved).length
+      return { ...p, questions: qs, solved: solvedCount, total: qs.length }
+    }).filter(p => p.total > 0),
+  [questions, progress])
 
   const totalSolved = questions.filter(q => progress[String(q.id)]?.solved).length
 

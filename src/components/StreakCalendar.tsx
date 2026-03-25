@@ -1,21 +1,28 @@
 'use client'
 import { useMemo, useRef, useEffect } from 'react'
 
+function utcKey(d: Date): string {
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`
+}
+
 function getWeeks(log: Record<string, number>) {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const start = new Date(today)
-  start.setDate(start.getDate() - (51 * 7 + today.getDay()))
+  // Use UTC dates throughout so keys match how db.ts stores dates (new Date().toISOString().split('T')[0])
+  const now = new Date()
+  const todayKey = utcKey(now)
+  const todayUTC = new Date(todayKey + 'T00:00:00Z')  // UTC midnight of today
+
+  const startUTC = new Date(todayUTC)
+  startUTC.setUTCDate(startUTC.getUTCDate() - (51 * 7 + todayUTC.getUTCDay()))
 
   const weeks: { key: string; count: number; date: Date }[][] = []
-  const d = new Date(start)
-  while (d <= today) {
+  const d = new Date(startUTC)
+  while (utcKey(d) <= todayKey) {
     const week: { key: string; count: number; date: Date }[] = []
     for (let i = 0; i < 7; i++) {
-      const key = d.toISOString().split('T')[0]
-      const future = d > today
+      const key = utcKey(d)
+      const future = key > todayKey
       week.push({ key, count: future ? -1 : (log[key] || 0), date: new Date(d) })
-      d.setDate(d.getDate() + 1)
+      d.setUTCDate(d.getUTCDate() + 1)
     }
     weeks.push(week)
   }
@@ -65,9 +72,9 @@ export default function StreakCalendar({ log = {}, target = 0 }: StreakCalendarP
   weeks.forEach((week, wi) => {
     const firstDay = week.find(d => d.count >= 0)
     if (firstDay) {
-      const m = firstDay.date.getMonth()
+      const m = firstDay.date.getUTCMonth()
       const prev = wi > 0 ? weeks[wi - 1].find(d => d.count >= 0) : null
-      if (!prev || prev.date.getMonth() !== m) {
+      if (!prev || prev.date.getUTCMonth() !== m) {
         const lastLabel = monthLabels[monthLabels.length - 1]
         if (!lastLabel || wi - lastLabel.wi >= 3) {
           monthLabels.push({ wi, label: MONTHS[m] })
@@ -113,7 +120,7 @@ export default function StreakCalendar({ log = {}, target = 0 }: StreakCalendarP
                 {week.map(day => (
                   <div
                     key={day.key}
-                    title={day.count < 0 ? '' : day.count === 0 ? `${day.date.toDateString()} — nothing solved` : `${day.date.toDateString()} — ${day.count} solved`}
+                    title={day.count < 0 ? '' : day.count === 0 ? `${day.key} — nothing solved` : `${day.key} — ${day.count} solved`}
                     className={`rounded-sm ${cellColor(day.count)}`}
                     style={{ width: `${CELL}px`, height: `${CELL}px` }}
                   />

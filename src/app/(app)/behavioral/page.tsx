@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { BookOpen, Shuffle, RotateCcw, ChevronLeft, ChevronRight, CheckCircle, Circle } from 'lucide-react'
 import { getBehavioralVisited, addBehavioralVisited } from '@/lib/db'
+import { shuffle } from '@/lib/utils'
 
 interface Story {
   title: string
@@ -38,15 +39,6 @@ const STORY_STYLES = [
   { idle: 'bg-amber-50 text-amber-700 border-amber-200', active: 'bg-amber-600 text-white border-amber-600' },
 ]
 
-function shuffleArr<T>(arr: T[]): T[] {
-  const a = [...arr]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
-}
-
 export default function BehavioralPage() {
   const [allQuestions, setAllQuestions] = useState<BehavioralQuestion[]>([])
   const [cat, setCat] = useState('All')
@@ -76,7 +68,7 @@ export default function BehavioralPage() {
   useEffect(() => {
     if (!allQuestions.length) return
     const filtered = cat === 'All' ? allQuestions : allQuestions.filter(q => q.category === cat)
-    setDeck(isShuffled ? shuffleArr(filtered) : filtered)
+    setDeck(isShuffled ? shuffle(filtered) : filtered)
     setIdx(0)
     setFlipped(false)
     setStoryTab(0)

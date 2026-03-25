@@ -5,6 +5,7 @@ import {
   Timer, Zap, CheckCircle, XCircle, RotateCcw, Trophy, Lock, Unlock
 } from 'lucide-react'
 import { getProgress, updateProgress, getMockSessions, saveMockSession, type MockSessionRecord } from '@/lib/db'
+import { formatTime } from '@/lib/utils'
 import PracticeEditor from '@/components/PracticeEditor'
 import DifficultyBadge from '@/components/DifficultyBadge'
 import DescriptionRenderer from '@/components/DescriptionRenderer'
@@ -27,12 +28,6 @@ interface Question {
 
 type Phase = 'setup' | 'active' | 'done'
 type Outcome = 'solved' | 'gave_up' | 'timeout'
-
-function fmt(secs: number): string {
-  const m = Math.floor(secs / 60).toString().padStart(2, '0')
-  const s = (secs % 60).toString().padStart(2, '0')
-  return `${m}:${s}`
-}
 
 // Re-export from db shape into local view shape
 interface SessionRecord {
@@ -260,7 +255,7 @@ export default function MockInterviewPage() {
                       {s.outcome === 'solved' ? '✓' : s.outcome === 'timeout' ? '⏰' : '✗'}
                     </span>
                     <span className="truncate flex-1 min-w-0">{s.questionTitle}</span>
-                    <span className="text-gray-400 shrink-0">{fmt(s.elapsedSeconds || 0)}</span>
+                    <span className="text-gray-400 shrink-0">{formatTime(s.elapsedSeconds || 0)}</span>
                     <span className="text-gray-300 shrink-0">{s.date}</span>
                   </div>
                 ))}
@@ -281,7 +276,7 @@ export default function MockInterviewPage() {
           >
             <div className="flex items-center justify-between gap-3 mb-2">
               <div className={`text-4xl font-black font-mono shrink-0 ${urgent ? 'text-red-600 animate-pulse' : 'text-indigo-700'}`}>
-                {fmt(timeLeft)}
+                {formatTime(timeLeft)}
               </div>
               <div className="flex gap-2">
                 <button
@@ -307,7 +302,7 @@ export default function MockInterviewPage() {
             {!answerUnlocked && (
               <p className="text-xs mt-1.5 text-gray-500 flex items-center gap-1">
                 <Lock size={10} /> Answer reveals in{' '}
-                <span className="font-mono font-bold text-indigo-500">{fmt(timeUntilReveal)}</span>
+                <span className="font-mono font-bold text-indigo-500">{formatTime(timeUntilReveal)}</span>
               </p>
             )}
             {answerUnlocked && (
@@ -379,7 +374,7 @@ export default function MockInterviewPage() {
                 <p className="text-sm font-bold text-gray-500 mb-1">Answer locked</p>
                 <p className="text-xs text-gray-400">
                   Solution reveals in{' '}
-                  <span className="font-mono font-bold text-indigo-500">{fmt(timeUntilReveal)}</span> — keep trying!
+                  <span className="font-mono font-bold text-indigo-500">{formatTime(timeUntilReveal)}</span> — keep trying!
                 </p>
               </div>
             ) : (
@@ -431,7 +426,7 @@ export default function MockInterviewPage() {
               </div>
               {sessions[0] && (
                 <p className="text-xs text-gray-400 mt-1">
-                  Time taken: <span className="font-mono font-semibold">{fmt(sessions[0].elapsedSeconds || 0)}</span>
+                  Time taken: <span className="font-mono font-semibold">{formatTime(sessions[0].elapsedSeconds || 0)}</span>
                 </p>
               )}
             </div>

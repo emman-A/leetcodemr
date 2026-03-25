@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { getProgress, getDueReviews, completeReview } from '@/lib/db'
+import { isDue, formatLocalDate } from '@/lib/utils'
 import DifficultyBadge from '@/components/DifficultyBadge'
 import { Brain, CheckCircle, Clock, CalendarCheck, Flame, Trophy, TrendingUp } from 'lucide-react'
 
@@ -12,27 +13,12 @@ interface Question {
   tags: string[]
 }
 
-const SR_INTERVALS = [1, 3, 7, 14, 30, 60]
-function nextIntervalDays(rc: number) {
-  return SR_INTERVALS[Math.min(rc, SR_INTERVALS.length - 1)]
-}
-function isDue(nextReview: string) {
-  const [y, m, d] = nextReview.split('-').map(Number)
-  const rev = new Date(y, m - 1, d)
-  const today = new Date(); today.setHours(0, 0, 0, 0)
-  return rev <= today
-}
 function daysUntil(nextReview: string) {
   const [y, m, d] = nextReview.split('-').map(Number)
   const rev = new Date(y, m - 1, d)
   const today = new Date(); today.setHours(0, 0, 0, 0)
   return Math.round((rev.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 }
-function formatLocalDate(dateStr: string) {
-  const [y, m, d] = dateStr.split('-').map(Number)
-  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-}
-
 const STATUS_STYLE: Record<string, string> = {
   mastered: 'bg-green-100 text-green-700 border-green-300',
   revised:  'bg-orange-100 text-orange-700 border-orange-300',

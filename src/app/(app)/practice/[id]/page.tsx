@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, CheckCircle, Clock, Code2, ChevronDown, ChevronUp } from 'lucide-react'
 import { getProgress, updateProgress, addTimeSpent } from '@/lib/db'
+import { formatTime } from '@/lib/utils'
 import DifficultyBadge from '@/components/DifficultyBadge'
 import CodePanel from '@/components/CodePanel'
 import PracticeEditor from '@/components/PracticeEditor'
@@ -18,12 +19,6 @@ interface Question {
   cpp_solution?: string
   starter_python?: string
   starter_cpp?: string
-}
-
-function formatTime(seconds: number) {
-  const m = Math.floor(seconds / 60)
-  const s = seconds % 60
-  return `${m}:${s.toString().padStart(2, '0')}`
 }
 
 export default function PracticePage() {

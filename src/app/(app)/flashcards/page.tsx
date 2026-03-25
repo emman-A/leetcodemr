@@ -3,6 +3,8 @@ import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { ChevronLeft, ChevronRight, Shuffle, RotateCcw, Layers, CheckCircle, Circle } from 'lucide-react'
 import { getFcVisited, addFcVisited } from '@/lib/db'
+import { shuffle } from '@/lib/utils'
+import { DIFFICULTY_LEVELS, QUESTION_SOURCES } from '@/lib/constants'
 import DifficultyBadge from '@/components/DifficultyBadge'
 import CodePanel from '@/components/CodePanel'
 
@@ -16,24 +18,6 @@ interface Question {
   python_solution?: string
   cpp_solution?: string
   description?: string
-}
-
-const DIFFS = ['All', 'Easy', 'Medium', 'Hard']
-const SOURCES = [
-  { label: 'All', value: 'All' },
-  { label: 'Grind 169', value: 'Grind 169' },
-  { label: 'Denny Zhang', value: 'Denny Zhang' },
-  { label: 'Premium 98', value: 'Premium 98' },
-  { label: 'CodeSignal', value: 'CodeSignal' },
-]
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
 }
 
 function FlashcardsInner() {
@@ -170,7 +154,7 @@ function FlashcardsInner() {
       {/* Filters */}
       <div className="mb-5">
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-          {DIFFS.map(d => (
+          {DIFFICULTY_LEVELS.map(d => (
             <button
               key={d}
               onClick={() => setFilterDiff(d)}
@@ -182,7 +166,7 @@ function FlashcardsInner() {
             </button>
           ))}
           <span className="w-px bg-gray-200 shrink-0" />
-          {SOURCES.map(s => (
+          {QUESTION_SOURCES.map(s => (
             <button
               key={s.value}
               onClick={() => setFilterSource(s.value)}

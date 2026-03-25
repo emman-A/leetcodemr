@@ -1,9 +1,9 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Gem, Copy, Check, ChevronLeft, ChevronRight, Shuffle, RotateCcw, CheckCircle, Circle } from 'lucide-react'
 import { addGemsVisited, getGemsVisited } from '@/lib/db'
+import { shuffle } from '@/lib/utils'
 import { GEMS_CARDS, GEMS_CATEGORIES, GEMS_CAT_COLOR } from '@/data/gemsCards'
-import { useEffect } from 'react'
 
 interface GemCard {
   id: string
@@ -15,15 +15,6 @@ interface GemCard {
   attach?: string | null
   type: string
   body: string
-}
-
-function shuffleArr<T>(arr: T[]): T[] {
-  const a = [...arr]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
 }
 
 export default function GemsPage() {
@@ -43,7 +34,7 @@ export default function GemsPage() {
   useEffect(() => {
     const all = GEMS_CARDS as GemCard[]
     const filtered = cat === 'All' ? all : all.filter(c => c.category === cat)
-    setDeck(isShuffled ? shuffleArr(filtered) : filtered)
+    setDeck(isShuffled ? shuffle(filtered) : filtered)
     setIdx(0)
     setFlipped(false)
   }, [cat, isShuffled])

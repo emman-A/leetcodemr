@@ -6,6 +6,7 @@ import {
   BookOpen, List, Eye, EyeOff
 } from 'lucide-react'
 import { getProgress, updateProgress, completeReview } from '@/lib/db'
+import { isDue, formatLocalDate, nextIntervalDays } from '@/lib/utils'
 import DifficultyBadge from '@/components/DifficultyBadge'
 import CodePanel from '@/components/CodePanel'
 import DescriptionRenderer from '@/components/DescriptionRenderer'
@@ -23,22 +24,6 @@ interface Question {
   python_solution?: string
   cpp_solution?: string
   doocs_url?: string
-}
-
-const SR_INTERVALS = [1, 3, 7, 14, 30, 60]
-function nextIntervalDays(rc: number) {
-  return SR_INTERVALS[Math.min(rc, SR_INTERVALS.length - 1)]
-}
-function isDue(nextReview: string | null) {
-  if (!nextReview) return false
-  const [y, m, d] = nextReview.split('-').map(Number)
-  const date = new Date(y, m - 1, d)
-  const today = new Date(); today.setHours(0, 0, 0, 0)
-  return date <= today
-}
-function formatLocalDate(dateStr: string) {
-  const [y, m, d] = dateStr.split('-').map(Number)
-  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
 function LearnInner() {
