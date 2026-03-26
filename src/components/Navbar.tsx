@@ -8,23 +8,30 @@ import {
   Calendar, Info, Timer, Code2, Zap
 } from 'lucide-react'
 
-const NAV_LINKS = [
-  { href: '/',              label: 'Questions',    icon: Home },
-  { href: '/daily',         label: 'Daily',        icon: Calendar },
+// Practice & solving group
+const PRACTICE_LINKS = [
+  { href: '/',             label: 'Questions',  icon: Home },
+  { href: '/daily',        label: 'Daily',      icon: Calendar },
+  { href: '/learn/0',      label: 'Learn',      icon: BookOpen },
+  { href: '/mock',         label: 'Mock',       icon: Timer },
+  { href: '/leetcode-api', label: 'LeetCode',   icon: Zap },
+]
+
+// Study tools & resources group
+const TOOLS_LINKS = [
   { href: '/stats',         label: 'Stats',        icon: BarChart2 },
   { href: '/review',        label: 'Reviews',      icon: Brain },
-  { href: '/learn/0',       label: 'Learn',        icon: BookOpen },
   { href: '/flashcards',    label: 'Flashcards',   icon: Layers },
   { href: '/quick-review',  label: 'Quick Review', icon: Clock },
   { href: '/patterns',      label: 'Patterns',     icon: GitBranch },
   { href: '/behavioral',    label: 'Behavioral',   icon: MessageSquare },
   { href: '/gems',          label: 'Gems',         icon: Gem },
   { href: '/system-design', label: 'System Design',icon: Server },
-  { href: '/mock',          label: 'Mock',         icon: Timer },
   { href: '/dsa',           label: 'DSA',          icon: Code2 },
-  { href: '/leetcode-api',  label: 'LeetCode',     icon: Zap },
   { href: '/about',         label: 'About',        icon: Info },
 ]
+
+const NAV_LINKS = [...PRACTICE_LINKS, ...TOOLS_LINKS]
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -63,10 +70,32 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Desktop Nav — wraps onto next row(s) if needed, no scrollbar */}
+        {/* Desktop Nav */}
         <div className="hidden md:flex flex-wrap items-center gap-1 pb-2">
-          {NAV_LINKS.map(({ href, label }) => {
+          {/* Practice group */}
+          {PRACTICE_LINKS.map(({ href, label }) => {
             const active = href === '/' ? pathname === '/' : pathname.startsWith(href)
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+                  active
+                    ? 'bg-indigo-50 text-indigo-600'
+                    : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+                }`}
+              >
+                {label}
+              </Link>
+            )
+          })}
+
+          {/* Divider */}
+          <span className="w-px h-4 bg-gray-200 mx-1 shrink-0" />
+
+          {/* Tools group */}
+          {TOOLS_LINKS.map(({ href, label }) => {
+            const active = pathname.startsWith(href)
             return (
               <Link
                 key={href}
@@ -87,7 +116,9 @@ export default function Navbar() {
       {/* Mobile menu */}
       {open && (
         <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1">
-          {NAV_LINKS.map(({ href, label, icon: Icon }) => {
+          {/* Practice group */}
+          <p className="px-3 pt-1 pb-0.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Practice</p>
+          {PRACTICE_LINKS.map(({ href, label, icon: Icon }) => {
             const active = href === '/' ? pathname === '/' : pathname.startsWith(href)
             return (
               <Link
@@ -95,9 +126,7 @@ export default function Navbar() {
                 href={href}
                 onClick={() => setOpen(false)}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  active
-                    ? 'bg-indigo-50 text-indigo-600'
-                    : 'text-gray-600 hover:bg-gray-50'
+                  active ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 <Icon size={16} />
@@ -105,6 +134,30 @@ export default function Navbar() {
               </Link>
             )
           })}
+
+          {/* Divider */}
+          <div className="h-px bg-gray-100 my-2" />
+
+          {/* Tools group */}
+          <p className="px-3 pt-1 pb-0.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Tools</p>
+          {TOOLS_LINKS.map(({ href, label, icon: Icon }) => {
+            const active = pathname.startsWith(href)
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  active ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <Icon size={16} />
+                {label}
+              </Link>
+            )
+          })}
+
+          <div className="h-px bg-gray-100 my-2" />
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 w-full transition-colors"
