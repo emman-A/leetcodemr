@@ -1,12 +1,13 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, CheckCircle, Clock, Code2, ChevronDown, ChevronUp } from 'lucide-react'
+import { ArrowLeft, CheckCircle, Clock, Code2, ChevronDown, ChevronUp, BookOpen, ExternalLink } from 'lucide-react'
 import { getProgress, updateProgress, addTimeSpent } from '@/lib/db'
 import { formatTime } from '@/lib/utils'
 import DifficultyBadge from '@/components/DifficultyBadge'
 import CodePanel from '@/components/CodePanel'
 import LeetCodeEditor from '@/components/LeetCodeEditor'
+import DescriptionRenderer from '@/components/DescriptionRenderer'
 import toast from 'react-hot-toast'
 
 interface Question {
@@ -15,6 +16,10 @@ interface Question {
   slug: string
   difficulty: string
   tags: string[]
+  source: string[]
+  description?: string
+  explanation?: string
+  doocs_url?: string
   python_solution?: string
   cpp_solution?: string
   starter_python?: string
@@ -30,6 +35,7 @@ export default function PracticePage() {
   const [loading, setLoading] = useState(true)
   const [solved, setSolved] = useState(false)
   const [showSolution, setShowSolution] = useState(false)
+  const [leftTab, setLeftTab] = useState<'description' | 'solution'>('description')
   const [timer, setTimer] = useState(0)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const startRef = useRef(Date.now())
@@ -72,35 +78,32 @@ export default function PracticePage() {
   if (!question) return <div className="text-center py-32 text-red-400 text-sm">Question not found.</div>
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+    <div className="flex flex-col h-[calc(100vh-56px)]">
+      {/* Top bar */}
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 bg-white shrink-0 gap-3 flex-wrap">
         <div className="flex items-center gap-3 min-w-0">
           <button onClick={() => router.back()} className="text-gray-400 hover:text-gray-700 transition-colors shrink-0">
-            <ArrowLeft size={20} />
+            <ArrowLeft size={18} />
           </button>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-gray-400 font-mono shrink-0">#{question.id}</span>
-              <h1 className="font-bold text-gray-800 text-base leading-snug truncate">{question.title}</h1>
-              <DifficultyBadge difficulty={question.difficulty} />
-            </div>
-            <div className="flex flex-wrap gap-1 mt-1">
-              {(question.tags || []).slice(0, 3).map(t => (
-                <span key={t} className="text-xs bg-gray-100 text-gray-400 px-2 py-0.5 rounded-full">{t}</span>
-              ))}
-            </div>
-          </div>
+          <span className="text-xs text-gray-400 font-mono shrink-0">#{question.id}</span>
+          <h1 className="font-bold text-gray-800 text-sm leading-snug truncate">{question.title}</h1>
+          <DifficultyBadge difficulty={question.difficulty} />
+          <a
+            href={`https://leetcode.com/problems/${question.slug}/`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 text-gray-300 hover:text-orange-400 transition-colors"
+            title="Open on LeetCode"
+          >
+            <ExternalLink size={12} />
+          </a>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          {/* Timer */}
           <div className="flex items-center gap-1.5 bg-gray-100 px-3 py-1.5 rounded-lg text-sm font-mono font-semibold text-gray-600">
             <Clock size={13} />
             {formatTime(timer)}
           </div>
-
-          {/* Mark Solved */}
           <button
             onClick={handleMarkSolved}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors border ${
@@ -115,28 +118,100 @@ export default function PracticePage() {
         </div>
       </div>
 
-      {/* Full-featured Practice Editor */}
-      <LeetCodeEditor appQuestionId={question.id} slug={question.slug} />
+      {/* Split layout */}
+      <div className="flex flex-1 overflow-hidden gap-0">
 
-      {/* Solution panel */}
-      {(question.python_solution || question.cpp_solution) && (
-        <div className="mt-4 rounded-xl border border-gray-200 overflow-hidden">
-          <button
-            onClick={() => setShowSolution(s => !s)}
-            className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-sm font-semibold text-gray-600"
-          >
-            <span className="flex items-center gap-2">
-              <Code2 size={14} /> View Solution
-            </span>
-            {showSolution ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          </button>
-          {showSolution && (
-            <div className="p-4">
+        {/* LEFT — Question info */}
+        <div className="w-[42%] shrink-0 flex flex-col border-r border-gray-100 overflow-hidden">
+          {/* Tab bar */}
+          <div className="flex border-b border-gray-100 bg-white shrink-0">
+            <button
+              onClick={() => setLeftTab('description')}
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors ${
+                leftTab === 'description'
+                  ? 'border-indigo-500 text-indigo-600'
+                  : 'border-transparent text-gray-400 hover:text-gray-600'
+              }`}
+            >
+              <BookOpen size={12} /> Description
+            </button>
+            {(question.python_solution || question.cpp_solution) && (
+              <button
+                onClick={() => setLeftTab('solution')}
+                className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors ${
+                  leftTab === 'solution'
+                    ? 'border-indigo-500 text-indigo-600'
+                    : 'border-transparent text-gray-400 hover:text-gray-600'
+                }`}
+              >
+                <Code2 size={12} /> Solution
+              </button>
+            )}
+          </div>
+
+          {/* Tab content */}
+          <div className="flex-1 overflow-y-auto p-4">
+            {leftTab === 'description' && (
+              <div>
+                {/* Tags */}
+                {(question.tags || []).length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {question.tags.map(t => (
+                      <span key={t} className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{t}</span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Description */}
+                {question.description ? (
+                  <DescriptionRenderer description={question.description} />
+                ) : (
+                  <div className="text-sm text-gray-400 italic">
+                    No description available.{' '}
+                    <a
+                      href={`https://leetcode.com/problems/${question.slug}/`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-indigo-500 hover:underline"
+                    >
+                      View on LeetCode ↗
+                    </a>
+                  </div>
+                )}
+
+                {/* Explanation */}
+                {question.explanation && (
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Explanation</p>
+                    <DescriptionRenderer explanation={question.explanation} />
+                  </div>
+                )}
+
+                {/* Source companies */}
+                {(question.source || []).length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Asked by</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {question.source.map(s => (
+                        <span key={s} className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-medium">{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {leftTab === 'solution' && (
               <CodePanel pythonCode={question.python_solution} cppCode={question.cpp_solution} />
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      )}
+
+        {/* RIGHT — Code editor + tests */}
+        <div className="flex-1 overflow-y-auto">
+          <LeetCodeEditor appQuestionId={question.id} slug={question.slug} />
+        </div>
+      </div>
     </div>
   )
 }
