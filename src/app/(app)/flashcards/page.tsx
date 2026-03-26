@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation'
 import { ChevronLeft, ChevronRight, Shuffle, RotateCcw, Layers, CheckCircle, Circle } from 'lucide-react'
 import { getFcVisited, addFcVisited } from '@/lib/db'
 import { shuffle } from '@/lib/utils'
-import { DIFFICULTY_LEVELS, QUESTION_SOURCES } from '@/lib/constants'
+import { DIFFICULTY_LEVELS, QUESTION_SOURCES, QUICK_PATTERNS } from '@/lib/constants'
 import DifficultyBadge from '@/components/DifficultyBadge'
 import CodePanel from '@/components/CodePanel'
 
@@ -40,6 +40,9 @@ function FlashcardsInner() {
   const [loading, setLoading] = useState(true)
   const [filterDiff, setFilterDiff] = useState(initDiff)
   const [filterSource, setFilterSource] = useState(initSource)
+  const [filterPattern, setFilterPattern] = useState<string | null>(
+    initTags.length > 0 ? (QUICK_PATTERNS.find(p => p.tags.some(t => initTags.includes(t)))?.name ?? null) : null
+  )
   const [isShuffled, setIsShuffled] = useState(false)
   const [visited, setVisited] = useState<Set<number>>(new Set())
 
@@ -63,14 +66,17 @@ function FlashcardsInner() {
     if (filterDiff !== 'All') filtered = filtered.filter(q => q.difficulty === filterDiff)
     if (filterSource !== 'All') filtered = filtered.filter(q => (q.source || []).includes(filterSource))
     if (initSearch) filtered = filtered.filter(q => q.title.toLowerCase().includes(initSearch.toLowerCase()))
-    if (initTags.length > 0) filtered = filtered.filter(q => (q.tags || []).some(t => initTags.includes(t)))
+    if (filterPattern) {
+      const patTags = QUICK_PATTERNS.find(p => p.name === filterPattern)?.tags ?? []
+      filtered = filtered.filter(q => (q.tags || []).some(t => (patTags as readonly string[]).includes(t)))
+    }
     if (initStarred) filtered = filtered.filter(q => progress[q.id]?.starred)
     if (initSolved === true)  filtered = filtered.filter(q => progress[q.id]?.solved)
     if (initSolved === false) filtered = filtered.filter(q => !progress[q.id]?.solved)
     setDeck(isShuffled ? shuffle(filtered) : filtered)
     setIdx(0)
     setFlipped(false)
-  }, [filterDiff, filterSource, all, isShuffled])
+  }, [filterDiff, filterSource, filterPattern, all, isShuffled])
 
   const q = deck[idx] || null
 
@@ -155,29 +161,42 @@ function FlashcardsInner() {
       </div>
 
       {/* Filters */}
-      <div className="mb-5">
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+      <div className="mb-5 space-y-2">
+        {/* Difficulty + Source */}
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           {DIFFICULTY_LEVELS.map(d => (
-            <button
-              key={d}
-              onClick={() => setFilterDiff(d)}
+            <button key={d} onClick={() => setFilterDiff(d)}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shrink-0 ${
                 filterDiff === d ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'
-              }`}
-            >
+              }`}>
               {d}
             </button>
           ))}
           <span className="w-px bg-gray-200 shrink-0" />
           {QUESTION_SOURCES.map(s => (
-            <button
-              key={s.value}
-              onClick={() => setFilterSource(s.value)}
+            <button key={s.value} onClick={() => setFilterSource(s.value)}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shrink-0 ${
                 filterSource === s.value ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'
-              }`}
-            >
+              }`}>
               {s.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Pattern filter */}
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <button onClick={() => setFilterPattern(null)}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shrink-0 ${
+              !filterPattern ? 'bg-cyan-600 text-white border-cyan-600' : 'bg-white text-gray-500 border-gray-200 hover:border-cyan-300'
+            }`}>
+            All Patterns
+          </button>
+          {QUICK_PATTERNS.map(p => (
+            <button key={p.name} onClick={() => setFilterPattern(filterPattern === p.name ? null : p.name)}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shrink-0 ${
+                filterPattern === p.name ? 'bg-cyan-600 text-white border-cyan-600' : 'bg-white text-gray-500 border-gray-200 hover:border-cyan-300'
+              }`}>
+              {p.name}
             </button>
           ))}
         </div>

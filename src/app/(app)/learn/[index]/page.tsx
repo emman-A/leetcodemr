@@ -6,6 +6,7 @@ import {
   BookOpen, List, Code2, ExternalLink, Loader2, FileText, StickyNote,
 } from 'lucide-react'
 import { getProgress, updateProgress, completeReview } from '@/lib/db'
+import { QUICK_PATTERNS } from '@/lib/constants'
 import { isDue, formatLocalDate, nextIntervalDays } from '@/lib/utils'
 import DifficultyBadge from '@/components/DifficultyBadge'
 import CodePanel from '@/components/CodePanel'
@@ -66,9 +67,12 @@ function LearnInner() {
   const [showList, setShowList]     = useState(false)
   const [reviewDone, setReviewDone] = useState(false)
   const [leftTab, setLeftTab]       = useState<'description' | 'notes' | 'solution'>('description')
-  const [filterDiff, setFilterDiff]     = useState(initDiff)
-  const [filterSource, setFilterSource] = useState(initSource)
-  const [showFilters, setShowFilters]   = useState(false)
+  const [filterDiff, setFilterDiff]         = useState(initDiff)
+  const [filterSource, setFilterSource]     = useState(initSource)
+  const [filterPattern, setFilterPattern]   = useState<string | null>(
+    initTags.length > 0 ? (QUICK_PATTERNS.find(p => p.tags.some(t => initTags.includes(t)))?.name ?? null) : null
+  )
+  const [showFilters, setShowFilters]       = useState(false)
   const listRef = useRef<HTMLDivElement>(null)
 
   // Live LeetCode description
@@ -86,11 +90,15 @@ function LearnInner() {
     })
   }, [])
 
+  const activePatternTags = filterPattern
+    ? (QUICK_PATTERNS.find(p => p.name === filterPattern)?.tags ?? []) as readonly string[]
+    : (initTags.length > 0 ? initTags : []) as string[]
+
   const filtered = questions.filter(q => {
     if (filterDiff !== 'All' && q.difficulty !== filterDiff) return false
     if (filterSource !== 'All' && !(q.source || []).includes(filterSource)) return false
     if (initSearch && !q.title.toLowerCase().includes(initSearch.toLowerCase())) return false
-    if (initTags.length > 0 && !(q.tags || []).some(t => initTags.includes(t))) return false
+    if (activePatternTags.length > 0 && !(q.tags || []).some(t => activePatternTags.includes(t))) return false
     const p = progress[String(q.id)] || {}
     if (initStarred && !p.starred) return false
     if (initSolved === true  && !p.solved) return false
@@ -252,7 +260,7 @@ function LearnInner() {
         {/* Filters toggle */}
         <button onClick={() => setShowFilters(v => !v)}
           className={`px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors ${showFilters ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-200 text-gray-500 hover:border-indigo-300'}`}>
-          Filter {filterDiff !== 'All' || filterSource !== 'All' ? '•' : ''}
+          Filter {filterDiff !== 'All' || filterSource !== 'All' || filterPattern ? '•' : ''}
         </button>
 
         {q && (
@@ -281,20 +289,38 @@ function LearnInner() {
 
       {/* Filter pills row */}
       {showFilters && (
-        <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100 bg-gray-50 overflow-x-auto scrollbar-none shrink-0">
-          {['All', 'Easy', 'Medium', 'Hard'].map(d => (
-            <button key={d} onClick={() => { setFilterDiff(d); setIdx(0); router.push('/learn/0', { scroll: false }) }}
-              className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors shrink-0 ${filterDiff === d ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'}`}>
-              {d}
+        <div className="border-b border-gray-100 bg-gray-50 shrink-0 space-y-1 px-3 py-2">
+          {/* Difficulty + Source */}
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+            {['All', 'Easy', 'Medium', 'Hard'].map(d => (
+              <button key={d} onClick={() => { setFilterDiff(d); setIdx(0); router.push('/learn/0', { scroll: false }) }}
+                className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors shrink-0 ${filterDiff === d ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'}`}>
+                {d}
+              </button>
+            ))}
+            <span className="w-px h-4 bg-gray-300 shrink-0" />
+            {['All', 'Grind 169', 'Denny Zhang', 'Premium 98', 'CodeSignal'].map(s => (
+              <button key={s} onClick={() => { setFilterSource(s); setIdx(0); router.push('/learn/0', { scroll: false }) }}
+                className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors shrink-0 ${filterSource === s ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'}`}>
+                {s}
+              </button>
+            ))}
+          </div>
+
+          {/* Pattern filter */}
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+            <button onClick={() => { setFilterPattern(null); setIdx(0); router.push('/learn/0', { scroll: false }) }}
+              className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors shrink-0 ${!filterPattern ? 'bg-cyan-600 text-white border-cyan-600' : 'bg-white text-gray-500 border-gray-200 hover:border-cyan-300'}`}>
+              All Patterns
             </button>
-          ))}
-          <span className="w-px h-4 bg-gray-300 shrink-0" />
-          {['All', 'Grind 169', 'Denny Zhang', 'Premium 98', 'CodeSignal 21'].map(s => (
-            <button key={s} onClick={() => { setFilterSource(s); setIdx(0); router.push('/learn/0', { scroll: false }) }}
-              className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors shrink-0 ${filterSource === s ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'}`}>
-              {s}
-            </button>
-          ))}
+            {QUICK_PATTERNS.map(p => (
+              <button key={p.name}
+                onClick={() => { setFilterPattern(filterPattern === p.name ? null : p.name); setIdx(0); router.push('/learn/0', { scroll: false }) }}
+                className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors shrink-0 ${filterPattern === p.name ? 'bg-cyan-600 text-white border-cyan-600' : 'bg-white text-gray-500 border-gray-200 hover:border-cyan-300'}`}>
+                {p.name}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
