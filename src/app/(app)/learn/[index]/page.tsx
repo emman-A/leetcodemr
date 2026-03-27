@@ -399,12 +399,10 @@ function LearnInner() {
                   <Code2 size={12} /> Solution
                 </button>
               )}
-              {studyMode === 'hide' && (
-                <button onClick={() => setStudyMode(null)}
-                  className="ml-auto flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-orange-500 hover:text-orange-600 transition-colors">
-                  🧠 Challenge Mode
-                </button>
-              )}
+              <button onClick={() => setStudyMode(null)}
+                className={`ml-auto flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors ${studyMode === 'hide' ? 'text-orange-500 hover:text-orange-600' : 'text-gray-400 hover:text-gray-600'}`}>
+                🧠 {studyMode === 'hide' ? 'Challenge Mode' : 'Review Mode'}
+              </button>
             </div>
 
             {/* Panel content */}
