@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef, Suspense } from 'react'
+import ReactMarkdown from 'react-markdown'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import {
   ChevronLeft, ChevronRight, Brain, CheckCircle, Star,
@@ -82,6 +83,19 @@ function LearnInner() {
   const [lcLoading, setLcLoading]   = useState(false)
   const [isPremium, setIsPremium]   = useState(false)
 
+  // Editorial
+  const [editorial, setEditorial]       = useState<string | null>(null)
+  const [editorialLoad, setEditorialLoad] = useState(false)
+  const [lcSession, setLcSession]       = useState('')
+  const [lcCsrf, setLcCsrf]            = useState('')
+
+  useEffect(() => {
+    fetch('/api/lc-session').then(r => r.json()).then(d => {
+      setLcSession(d.lc_session ?? '')
+      setLcCsrf(d.lc_csrf ?? '')
+    }).catch(() => {})
+  }, [])
+
   useEffect(() => {
     Promise.all([
       fetch('/questions_full.json').then(r => r.json()),
@@ -161,6 +175,26 @@ function LearnInner() {
 
     return () => { cancelled = true; ctrl.abort(); clearTimeout(timer) }
   }, [q?.slug])
+
+  // Fetch editorial when solution tab opens (requires LeetCode session for premium)
+  useEffect(() => {
+    if (leftTab !== 'solution' || !q?.slug) return
+    setEditorial(null)
+    setEditorialLoad(true)
+    const body: Record<string, unknown> = {
+      query: 'query($s:String!){question(titleSlug:$s){solution{content paidOnly}}}',
+      variables: { s: q.slug },
+    }
+    if (lcSession && lcCsrf) { body.session = lcSession; body.csrfToken = lcCsrf }
+    fetch('/api/leetcode', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(r => r.json())
+      .then(data => {
+        const content = data?.data?.question?.solution?.content
+        if (content) setEditorial(content)
+      })
+      .catch(() => {})
+      .finally(() => setEditorialLoad(false))
+  }, [leftTab, q?.slug, lcSession, lcCsrf])
 
   const goNext = () => {
     if (safeIdx < filtered.length - 1) {
@@ -545,8 +579,45 @@ function LearnInner() {
 
               {/* ── Solution tab ── */}
               {leftTab === 'solution' && studyMode === 'show' && (
-                <div className="p-4">
+                <div className="p-4 space-y-4">
                   <CodePanel pythonCode={q.python_solution} cppCode={q.cpp_solution} />
+
+                  {/* ── LeetCode Editorial ── */}
+                  <div className="border border-indigo-100 rounded-xl overflow-hidden">
+                    <div className="flex items-center gap-2 px-4 py-2.5 bg-indigo-50 border-b border-indigo-100">
+                      <BookOpen size={13} className="text-indigo-500 shrink-0" />
+                      <span className="text-xs font-bold text-indigo-700">LeetCode Editorial</span>
+                    </div>
+                    {editorialLoad ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2 size={18} className="animate-spin text-indigo-400" />
+                      </div>
+                    ) : editorial ? (
+                      <div className="p-4 editorial-md text-sm text-gray-800 leading-relaxed">
+                        <ReactMarkdown
+                          components={{
+                            // Skip iframes (LeetCode playgrounds don't work cross-origin)
+                            iframe: () => null,
+                            // Style code blocks
+                            pre: ({ children }) => <pre className="bg-gray-50 border border-gray-200 rounded-lg p-3 overflow-x-auto text-xs my-3">{children}</pre>,
+                            code: ({ children, className }) => className ? <code>{children}</code> : <code className="bg-gray-100 text-orange-600 px-1 rounded text-xs">{children}</code>,
+                            h3: ({ children }) => <h3 className="font-bold text-gray-900 text-sm mt-4 mb-1">{children}</h3>,
+                            h4: ({ children }) => <h4 className="font-semibold text-gray-800 text-sm mt-3 mb-1">{children}</h4>,
+                            p: ({ children }) => <p className="my-2 text-sm leading-relaxed">{children}</p>,
+                            ul: ({ children }) => <ul className="list-disc pl-5 my-2 space-y-1 text-sm">{children}</ul>,
+                            ol: ({ children }) => <ol className="list-decimal pl-5 my-2 space-y-1 text-sm">{children}</ol>,
+                            strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
+                          }}
+                        >
+                          {editorial}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      <div className="py-6 text-center text-xs text-gray-400">
+                        No editorial available for this question.
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
               {leftTab === 'solution' && studyMode === 'hide' && (
