@@ -101,17 +101,32 @@ export default function LeetCodeEditor({ appQuestionId, slug }: Props) {
   /* ── Load CodeMirror extensions ── */
   useEffect(() => {
     async function loadExts() {
-      const [{ python }, { cpp }, { oneDark }] = await Promise.all([
+      const [{ python }, { cpp }, { oneDark }, viewMod, stateMod, cmdMod] = await Promise.all([
         import('@codemirror/lang-python'),
         import('@codemirror/lang-cpp'),
         import('@codemirror/theme-one-dark'),
+        import('@codemirror/view'),
+        import('@codemirror/state'),
+        import('@codemirror/commands'),
       ])
       setTheme(oneDark)
+      const { keymap } = viewMod
+      const { Prec } = stateMod
+      const { indentWithTab } = cmdMod
       const { indentationMarkers } = await import('@replit/codemirror-indentation-markers')
-      // No custom keymap — basicSetup already includes defaultKeymap (insertNewlineAndIndent for Enter)
-      // and @uiw/react-codemirror adds indentWithTab by default.
-      // Python/cpp language extensions provide the indentation rules used by both.
-      setExtensions([lang === 'python3' ? python() : cpp(), indentationMarkers()])
+      // smartEnter preserves current line indentation and adds 4 spaces after : or {
+      // Prec.highest ensures it runs before any other keymap handler
+      const smartEnter = (view: any) => {
+        const { from } = view.state.selection.main
+        const line = view.state.doc.lineAt(from)
+        const base = line.text.match(/^(\s*)/)?.[1] ?? ''
+        const extra = (line.text.trimEnd().endsWith(':') || line.text.trimEnd().endsWith('{')) ? '    ' : ''
+        const ins = '\n' + base + extra
+        view.dispatch({ changes: { from, to: from, insert: ins }, selection: { anchor: from + ins.length } })
+        return true
+      }
+      const keys = Prec.highest(keymap.of([{ key: 'Enter', run: smartEnter }, indentWithTab]))
+      setExtensions([lang === 'python3' ? python() : cpp(), keys, indentationMarkers()])
     }
     loadExts()
   }, [lang])
