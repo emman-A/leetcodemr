@@ -163,7 +163,7 @@ function FlashcardsInner() {
       {/* Filters */}
       <div className="mb-5 space-y-2">
         {/* Difficulty + Source */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+        <div className="flex flex-wrap gap-2">
           {DIFFICULTY_LEVELS.map(d => (
             <button key={d} onClick={() => setFilterDiff(d)}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shrink-0 ${
@@ -184,7 +184,7 @@ function FlashcardsInner() {
         </div>
 
         {/* Pattern filter */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+        <div className="flex flex-wrap gap-2">
           <button onClick={() => setFilterPattern(null)}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors shrink-0 ${
               !filterPattern ? 'bg-cyan-600 text-white border-cyan-600' : 'bg-white text-gray-500 border-gray-200 hover:border-cyan-300'

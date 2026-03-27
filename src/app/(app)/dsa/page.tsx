@@ -107,7 +107,7 @@ export default function DSAPage() {
       {mode === 'templates' && (
         <>
           {/* Category tabs */}
-          <div className="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-none">
+          <div className="flex flex-wrap gap-2 mb-6">
             {DSA_CATEGORIES.map(cat => (
               <button
                 key={cat.name}
@@ -215,7 +215,7 @@ export default function DSAPage() {
       {mode === 'tutorials' && (
         <>
           {/* Section tabs */}
-          <div className="flex gap-2 mb-4 overflow-x-auto pb-1 scrollbar-none">
+          <div className="flex flex-wrap gap-2 mb-4">
             {TUTORIAL_SECTIONS.map(sec => (
               <button
                 key={sec.section}
@@ -236,7 +236,7 @@ export default function DSAPage() {
 
           {/* Category sub-tabs */}
           {currentSection && (
-            <div className="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-none">
+            <div className="flex flex-wrap gap-2 mb-6">
               {currentSection.categories.map(cat => (
                 <button
                   key={cat.name}

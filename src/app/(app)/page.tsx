@@ -314,7 +314,7 @@ export default function HomePage() {
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search questions..."
             className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300" />
         </div>
-        <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-none">
+        <div className="flex flex-wrap gap-1">
           {DIFFICULTIES.map(d => (
             <button key={d} onClick={() => setDifficulty(d)}
               className={'px-3 py-1.5 rounded-full text-xs font-semibold transition-colors shrink-0 ' + (difficulty === d ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200')}>{d}</button>
@@ -337,7 +337,7 @@ export default function HomePage() {
         </div>
 
         {/* Pattern / category filter row */}
-        <div className="flex gap-1 overflow-x-auto pt-2 pb-1 scrollbar-none border-t border-gray-50 mt-2">
+        <div className="flex flex-wrap gap-1 pt-2 border-t border-gray-50 mt-2">
           <span className="text-xs text-gray-400 self-center shrink-0 mr-1">Pattern:</span>
           {activePattern && (
             <button onClick={() => setActivePattern(null)}

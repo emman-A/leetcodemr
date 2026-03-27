@@ -158,7 +158,7 @@ export default function BehavioralPage() {
       </div>
 
       {/* Category filter */}
-      <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-none">
+      <div className="flex flex-wrap gap-2 mb-4">
         {CATEGORIES.map(c => (
           <button
             key={c}

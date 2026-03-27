@@ -152,7 +152,7 @@ function SDFlashcards() {
       </div>
 
       {/* Category filter */}
-      <div className="flex gap-2 overflow-x-auto pb-2 mb-5 scrollbar-none">
+      <div className="flex flex-wrap gap-2 mb-5">
         {(SD_CATEGORIES as string[]).map(c => (
           <button
             key={c}

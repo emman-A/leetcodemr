@@ -293,7 +293,7 @@ function LearnInner() {
       {showFilters && (
         <div className="border-b border-gray-100 bg-gray-50 shrink-0 space-y-1 px-3 py-2">
           {/* Difficulty + Source */}
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+          <div className="flex items-center flex-wrap gap-2">
             {['All', 'Easy', 'Medium', 'Hard'].map(d => (
               <button key={d} onClick={() => { setFilterDiff(d); setIdx(0); router.push('/learn/0', { scroll: false }) }}
                 className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors shrink-0 ${filterDiff === d ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300'}`}>
@@ -310,7 +310,7 @@ function LearnInner() {
           </div>
 
           {/* Pattern filter */}
-          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+          <div className="flex items-center flex-wrap gap-2">
             <button onClick={() => { setFilterPattern(null); setIdx(0); router.push('/learn/0', { scroll: false }) }}
               className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors shrink-0 ${!filterPattern ? 'bg-cyan-600 text-white border-cyan-600' : 'bg-white text-gray-500 border-gray-200 hover:border-cyan-300'}`}>
               All Patterns
