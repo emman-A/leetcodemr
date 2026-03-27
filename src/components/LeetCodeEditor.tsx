@@ -101,22 +101,17 @@ export default function LeetCodeEditor({ appQuestionId, slug }: Props) {
   /* ── Load CodeMirror extensions ── */
   useEffect(() => {
     async function loadExts() {
-      const [{ python }, { cpp }, { oneDark }, viewMod, stateMod, cmdMod] = await Promise.all([
+      const [{ python }, { cpp }, { oneDark }] = await Promise.all([
         import('@codemirror/lang-python'),
         import('@codemirror/lang-cpp'),
         import('@codemirror/theme-one-dark'),
-        import('@codemirror/view'),
-        import('@codemirror/state'),
-        import('@codemirror/commands'),
       ])
       setTheme(oneDark)
-      const { keymap } = viewMod
-      const { Prec } = stateMod
-      const { indentWithTab, insertNewlineAndIndent } = cmdMod
       const { indentationMarkers } = await import('@replit/codemirror-indentation-markers')
-      // Prec.high beats basicSetup's defaultKeymap without blocking mobile IME events
-      const keys = Prec.high(keymap.of([{ key: 'Enter', run: insertNewlineAndIndent }, indentWithTab]))
-      setExtensions([lang === 'python3' ? python() : cpp(), keys, indentationMarkers()])
+      // No custom keymap — basicSetup already includes defaultKeymap (insertNewlineAndIndent for Enter)
+      // and @uiw/react-codemirror adds indentWithTab by default.
+      // Python/cpp language extensions provide the indentation rules used by both.
+      setExtensions([lang === 'python3' ? python() : cpp(), indentationMarkers()])
     }
     loadExts()
   }, [lang])

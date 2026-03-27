@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
@@ -81,8 +81,8 @@ export default function Navbar() {
         {/* Desktop Nav */}
         <div className="hidden md:flex flex-wrap items-center gap-1 pb-2">
           {[PRACTICE_LINKS, FLASHCARD_LINKS, TOPIC_LINKS, META_LINKS].map((group, gi) => (
-            <>
-              {gi > 0 && <span key={`div-${gi}`} className="w-px h-4 bg-gray-200 mx-1 shrink-0" />}
+            <React.Fragment key={gi}>
+              {gi > 0 && <span className="w-px h-4 bg-gray-200 mx-1 shrink-0" />}
               {group.map(({ href, label }) => {
                 const active = href === '/' ? pathname === '/' : pathname.startsWith(href)
                 return (
@@ -97,7 +97,7 @@ export default function Navbar() {
                   </Link>
                 )
               })}
-            </>
+            </React.Fragment>
           ))}
         </div>
       </div>
