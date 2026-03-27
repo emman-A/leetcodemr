@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import {
   Play, Send, Loader2, CheckCircle, XCircle, Clock, Cpu,
@@ -64,6 +64,9 @@ interface Props {
 
 /* ══════════════════════════════════════════════════════════ */
 export default function LeetCodeEditor({ appQuestionId, slug, onAccepted }: Props) {
+  const onAcceptedRef = useRef(onAccepted)
+  useEffect(() => { onAcceptedRef.current = onAccepted }, [onAccepted])
+
   /* Session */
   const [session,   setSession]   = useState('')
   const [csrf,      setCsrf]      = useState('')
@@ -206,7 +209,7 @@ export default function LeetCodeEditor({ appQuestionId, slug, onAccepted }: Prop
             await updateProgress(appQuestionId, { solved: true })
             setSolvedStatus('marked')
           }
-          onAccepted?.()
+          onAcceptedRef.current?.()
         }
         return
       }
