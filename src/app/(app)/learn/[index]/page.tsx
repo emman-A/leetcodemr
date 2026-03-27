@@ -183,16 +183,65 @@ function LearnInner() {
     if (leftTab !== 'solution' || !q?.slug) return
     setEditorial(null)
     setEditorialLoad(true)
-    const body: Record<string, unknown> = {
-      query: 'query($s:String!){question(titleSlug:$s){solution{content paidOnly}}}',
-      variables: { s: q.slug },
-    }
-    if (lcSession && lcCsrf) { body.session = lcSession; body.csrfToken = lcCsrf }
-    fetch('/api/leetcode', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    const creds = lcSession && lcCsrf ? { session: lcSession, csrfToken: lcCsrf } : {}
+    fetch('/api/leetcode', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: 'query($s:String!){question(titleSlug:$s){solution{content paidOnly}}}',
+        variables: { s: q.slug },
+        ...creds,
+      }),
+    })
       .then(r => r.json())
-      .then(data => {
+      .then(async data => {
         const content = data?.data?.question?.solution?.content
-        if (content) setEditorial(content)
+        if (!content) return
+
+        // Extract playground UUIDs from iframes
+        const iframeRe = /https:\/\/leetcode\.com\/playground\/([A-Za-z0-9]+)\/shared/g
+        const uuids: string[] = []
+        let m: RegExpExecArray | null
+        while ((m = iframeRe.exec(content)) !== null) {
+          if (!uuids.includes(m[1])) uuids.push(m[1])
+        }
+
+        if (uuids.length === 0) { setEditorial(content); return }
+
+        // Fetch code for each playground UUID (LeetCode API has intentional typo: playgoundUuid)
+        const codeMap: Record<string, string> = {}
+        await Promise.all(uuids.map(async uuid => {
+          try {
+            const res = await fetch('/api/leetcode', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                query: 'query($u:String!){allPlaygroundCodes(playgoundUuid:$u){code langSlug}}',
+                variables: { u: uuid },
+                ...creds,
+              }),
+            })
+            const d = await res.json()
+            const codes: Array<{ code: string; langSlug: string }> = d?.data?.allPlaygroundCodes ?? []
+            // Prefer python3 > python > cpp > first available
+            const pick = codes.find(c => c.langSlug === 'python3')
+              ?? codes.find(c => c.langSlug === 'python')
+              ?? codes.find(c => c.langSlug === 'cpp')
+              ?? codes[0]
+            if (pick) {
+              const lang = pick.langSlug === 'python3' ? 'python' : pick.langSlug
+              codeMap[uuid] = `\`\`\`${lang}\n${pick.code}\n\`\`\``
+            }
+          } catch { /* ignore individual failures */ }
+        }))
+
+        // Replace each iframe tag with the fetched code block (or strip if unavailable)
+        let processed = content
+        for (const uuid of uuids) {
+          const pat = new RegExp(`<iframe[^>]*leetcode\\.com/playground/${uuid}/shared[^>]*>\\s*</iframe>`, 'gs')
+          processed = processed.replace(pat, codeMap[uuid] ?? '')
+        }
+        setEditorial(processed)
       })
       .catch(() => {})
       .finally(() => setEditorialLoad(false))
@@ -618,15 +667,26 @@ function LearnInner() {
                             ul: ({ children }) => <ul className="my-2 space-y-1 pl-5 list-none">{children}</ul>,
                             ol: ({ children }) => <ol className="my-2 space-y-1 pl-5 list-decimal text-sm text-gray-700">{children}</ol>,
                             li: ({ children }) => <li className="text-sm text-gray-700 leading-relaxed flex gap-2"><span className="text-indigo-400 shrink-0 mt-0.5">•</span><span>{children}</span></li>,
-                            // Inline code
+                            // Inline code vs fenced code block
                             code: ({ children, className }) =>
                               className
-                                ? <code className="block">{children}</code>
+                                ? <code className="text-gray-100 text-xs font-mono whitespace-pre">{children}</code>
                                 : <code className="bg-indigo-50 text-indigo-700 border border-indigo-100 px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>,
-                            // Code blocks
-                            pre: ({ children }) => (
-                              <pre className="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto text-xs font-mono my-3 leading-relaxed">{children}</pre>
-                            ),
+                            // Code blocks — dark theme with language label
+                            pre: ({ children }) => {
+                              const code = (children as React.ReactElement<{ className?: string }>)
+                              const lang = (code?.props?.className ?? '').replace('language-', '') || null
+                              return (
+                                <div className="my-4 rounded-xl border border-gray-800 overflow-hidden">
+                                  {lang && (
+                                    <div className="flex items-center justify-between bg-gray-800 px-4 py-1.5">
+                                      <span className="text-xs font-mono text-gray-400">{lang}</span>
+                                    </div>
+                                  )}
+                                  <pre className="bg-gray-950 text-gray-100 p-4 overflow-x-auto text-xs font-mono leading-relaxed m-0">{children}</pre>
+                                </div>
+                              )
+                            },
                             // Horizontal rules as section dividers
                             hr: () => <hr className="my-4 border-gray-100" />,
                             // Bold
