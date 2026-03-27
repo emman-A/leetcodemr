@@ -1,6 +1,8 @@
 'use client'
 import { useState, useEffect, useRef, Suspense } from 'react'
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import rehypeRaw from 'rehype-raw'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import {
   ChevronLeft, ChevronRight, Brain, CheckCircle, Star,
@@ -583,37 +585,69 @@ function LearnInner() {
                   <CodePanel pythonCode={q.python_solution} cppCode={q.cpp_solution} />
 
                   {/* ── LeetCode Editorial ── */}
-                  <div className="border border-indigo-100 rounded-xl overflow-hidden">
-                    <div className="flex items-center gap-2 px-4 py-2.5 bg-indigo-50 border-b border-indigo-100">
-                      <BookOpen size={13} className="text-indigo-500 shrink-0" />
-                      <span className="text-xs font-bold text-indigo-700">LeetCode Editorial</span>
+                  <div className="rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                    <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-indigo-50 to-white border-b border-gray-200">
+                      <BookOpen size={14} className="text-indigo-500 shrink-0" />
+                      <span className="text-sm font-bold text-gray-800">Official Editorial</span>
+                      <span className="ml-auto text-xs text-indigo-400 font-medium">LeetCode</span>
                     </div>
                     {editorialLoad ? (
-                      <div className="flex items-center justify-center py-8">
-                        <Loader2 size={18} className="animate-spin text-indigo-400" />
+                      <div className="flex items-center justify-center py-10 gap-2 text-gray-400">
+                        <Loader2 size={16} className="animate-spin" />
+                        <span className="text-xs">Loading editorial…</span>
                       </div>
                     ) : editorial ? (
-                      <div className="p-4 editorial-md text-sm text-gray-800 leading-relaxed">
+                      <div className="p-5 editorial-content">
                         <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          rehypePlugins={[rehypeRaw]}
                           components={{
-                            // Skip iframes (LeetCode playgrounds don't work cross-origin)
+                            // Strip TOC, iframes, video divs
                             iframe: () => null,
-                            // Style code blocks
-                            pre: ({ children }) => <pre className="bg-gray-50 border border-gray-200 rounded-lg p-3 overflow-x-auto text-xs my-3">{children}</pre>,
-                            code: ({ children, className }) => className ? <code>{children}</code> : <code className="bg-gray-100 text-orange-600 px-1 rounded text-xs">{children}</code>,
-                            h3: ({ children }) => <h3 className="font-bold text-gray-900 text-sm mt-4 mb-1">{children}</h3>,
-                            h4: ({ children }) => <h4 className="font-semibold text-gray-800 text-sm mt-3 mb-1">{children}</h4>,
-                            p: ({ children }) => <p className="my-2 text-sm leading-relaxed">{children}</p>,
-                            ul: ({ children }) => <ul className="list-disc pl-5 my-2 space-y-1 text-sm">{children}</ul>,
-                            ol: ({ children }) => <ol className="list-decimal pl-5 my-2 space-y-1 text-sm">{children}</ol>,
+                            // Headings
+                            h2: ({ children }) => <h2 className="text-base font-bold text-gray-900 mt-6 mb-2 pb-1 border-b border-gray-100">{children}</h2>,
+                            h3: ({ children }) => <h3 className="text-sm font-bold text-indigo-700 mt-5 mb-2 flex items-center gap-1.5"><span className="w-1 h-4 bg-indigo-400 rounded-full inline-block shrink-0"/>{children}</h3>,
+                            h4: ({ children }) => <h4 className="text-sm font-semibold text-gray-700 mt-3 mb-1.5">{children}</h4>,
+                            // Paragraphs
+                            p: ({ children }) => {
+                              const text = String(children)
+                              if (text.startsWith('[TOC]') || text === '&nbsp;') return null
+                              return <p className="text-sm text-gray-700 leading-relaxed my-2.5">{children}</p>
+                            },
+                            // Lists
+                            ul: ({ children }) => <ul className="my-2 space-y-1 pl-5 list-none">{children}</ul>,
+                            ol: ({ children }) => <ol className="my-2 space-y-1 pl-5 list-decimal text-sm text-gray-700">{children}</ol>,
+                            li: ({ children }) => <li className="text-sm text-gray-700 leading-relaxed flex gap-2"><span className="text-indigo-400 shrink-0 mt-0.5">•</span><span>{children}</span></li>,
+                            // Inline code
+                            code: ({ children, className }) =>
+                              className
+                                ? <code className="block">{children}</code>
+                                : <code className="bg-indigo-50 text-indigo-700 border border-indigo-100 px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>,
+                            // Code blocks
+                            pre: ({ children }) => (
+                              <pre className="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto text-xs font-mono my-3 leading-relaxed">{children}</pre>
+                            ),
+                            // Horizontal rules as section dividers
+                            hr: () => <hr className="my-4 border-gray-100" />,
+                            // Bold
                             strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
+                            // Block quotes
+                            blockquote: ({ children }) => <blockquote className="border-l-4 border-indigo-300 pl-4 my-3 text-sm text-gray-600 italic">{children}</blockquote>,
+                            // Tables
+                            table: ({ children }) => <div className="overflow-x-auto my-3"><table className="text-xs border-collapse w-full">{children}</table></div>,
+                            th: ({ children }) => <th className="bg-gray-100 border border-gray-200 px-3 py-1.5 text-left font-semibold text-gray-700">{children}</th>,
+                            td: ({ children }) => <td className="border border-gray-200 px-3 py-1.5 text-gray-700">{children}</td>,
                           }}
                         >
-                          {editorial}
+                          {editorial
+                            .replace(/\[TOC\]/g, '')
+                            .replace(/<div[^>]*class="video-container"[^>]*>[\s\S]*?<\/div>/g, '')
+                            .replace(/\$\$([^$]+)\$\$/g, '`$1`')
+                            .trim()}
                         </ReactMarkdown>
                       </div>
                     ) : (
-                      <div className="py-6 text-center text-xs text-gray-400">
+                      <div className="py-8 text-center text-xs text-gray-400">
                         No editorial available for this question.
                       </div>
                     )}
