@@ -67,6 +67,7 @@ function LearnInner() {
   const [showList, setShowList]     = useState(false)
   const [reviewDone, setReviewDone] = useState(false)
   const [leftTab, setLeftTab]       = useState<'description' | 'notes' | 'solution'>('description')
+  const [studyMode, setStudyMode]   = useState<'show' | 'hide' | null>(null) // null = modal not answered yet
   const [filterDiff, setFilterDiff]         = useState(initDiff)
   const [filterSource, setFilterSource]     = useState(initSource)
   const [filterPattern, setFilterPattern]   = useState<string | null>(
@@ -204,6 +205,41 @@ function LearnInner() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-56px)]">
+
+      {/* ── Study mode modal ── */}
+      {studyMode === null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
+            <div className="flex items-center gap-2 mb-1">
+              <Brain size={20} className="text-indigo-600" />
+              <h2 className="text-lg font-black text-gray-900">Study Mode</h2>
+            </div>
+            <p className="text-sm text-gray-500 mb-5">How do you want to study this session?</p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => setStudyMode('hide')}
+                className="flex items-start gap-3 p-4 rounded-xl border-2 border-indigo-500 bg-indigo-50 text-left hover:bg-indigo-100 transition"
+              >
+                <span className="text-xl mt-0.5">🧠</span>
+                <div>
+                  <p className="font-bold text-indigo-700 text-sm">Challenge Mode</p>
+                  <p className="text-xs text-indigo-500 mt-0.5">Answers are hidden — try to solve before looking</p>
+                </div>
+              </button>
+              <button
+                onClick={() => setStudyMode('show')}
+                className="flex items-start gap-3 p-4 rounded-xl border-2 border-gray-200 text-left hover:border-gray-300 hover:bg-gray-50 transition"
+              >
+                <span className="text-xl mt-0.5">📖</span>
+                <div>
+                  <p className="font-bold text-gray-700 text-sm">Review Mode</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Answers are visible — study at your own pace</p>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Top bar ── */}
       <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100 bg-white shrink-0 flex-wrap">
@@ -357,10 +393,16 @@ function LearnInner() {
                 className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors ${leftTab === 'notes' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>
                 <StickyNote size={12} /> Notes
               </button>
-              {(q.python_solution || q.cpp_solution) && (
+              {(q.python_solution || q.cpp_solution) && studyMode === 'show' && (
                 <button onClick={() => setLeftTab('solution')}
                   className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors ${leftTab === 'solution' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-400 hover:text-gray-600'}`}>
                   <Code2 size={12} /> Solution
+                </button>
+              )}
+              {studyMode === 'hide' && (
+                <button onClick={() => setStudyMode(null)}
+                  className="ml-auto flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-orange-500 hover:text-orange-600 transition-colors">
+                  🧠 Challenge Mode
                 </button>
               )}
             </div>
@@ -504,9 +546,17 @@ function LearnInner() {
               )}
 
               {/* ── Solution tab ── */}
-              {leftTab === 'solution' && (
+              {leftTab === 'solution' && studyMode === 'show' && (
                 <div className="p-4">
                   <CodePanel pythonCode={q.python_solution} cppCode={q.cpp_solution} />
+                </div>
+              )}
+              {leftTab === 'solution' && studyMode === 'hide' && (
+                <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+                  <div className="text-4xl mb-3">🔒</div>
+                  <p className="font-bold text-gray-700 text-sm mb-1">Answers Hidden</p>
+                  <p className="text-xs text-gray-400 mb-4">You're in Challenge Mode. Try solving it yourself first!</p>
+                  <button onClick={() => setStudyMode(null)} className="text-xs text-indigo-500 underline">Change mode</button>
                 </div>
               )}
             </div>
