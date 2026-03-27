@@ -101,20 +101,21 @@ export default function LeetCodeEditor({ appQuestionId, slug }: Props) {
   /* ── Load CodeMirror extensions ── */
   useEffect(() => {
     async function loadExts() {
-      const [{ python }, { cpp }, { oneDark }, viewMod, cmdMod] = await Promise.all([
+      const [{ python }, { cpp }, { oneDark }, viewMod, stateMod, cmdMod] = await Promise.all([
         import('@codemirror/lang-python'),
         import('@codemirror/lang-cpp'),
         import('@codemirror/theme-one-dark'),
         import('@codemirror/view'),
+        import('@codemirror/state'),
         import('@codemirror/commands'),
       ])
       setTheme(oneDark)
       const { keymap } = viewMod
+      const { Prec } = stateMod
       const { indentWithTab, insertNewlineAndIndent } = cmdMod
       const { indentationMarkers } = await import('@replit/codemirror-indentation-markers')
-      // insertNewlineAndIndent uses CodeMirror's language-aware indentation on Enter,
-      // works correctly on desktop and mobile virtual keyboards alike
-      const keys = keymap.of([{ key: 'Enter', run: insertNewlineAndIndent }, indentWithTab])
+      // Prec.high beats basicSetup's defaultKeymap without blocking mobile IME events
+      const keys = Prec.high(keymap.of([{ key: 'Enter', run: insertNewlineAndIndent }, indentWithTab]))
       setExtensions([lang === 'python3' ? python() : cpp(), keys, indentationMarkers()])
     }
     loadExts()
