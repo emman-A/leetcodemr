@@ -3,10 +3,14 @@ import { useState, useEffect, useRef, Suspense } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
+import hljs from 'highlight.js/lib/core'
+import pythonLang from 'highlight.js/lib/languages/python'
+import cppLang from 'highlight.js/lib/languages/cpp'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import {
   ChevronLeft, ChevronRight, Brain, CheckCircle, Star,
   BookOpen, List, Code2, ExternalLink, Loader2, FileText, StickyNote,
+  Copy, Check,
 } from 'lucide-react'
 import { getProgress, updateProgress, completeReview } from '@/lib/db'
 import { QUICK_PATTERNS } from '@/lib/constants'
@@ -15,6 +19,45 @@ import DifficultyBadge from '@/components/DifficultyBadge'
 import CodePanel from '@/components/CodePanel'
 import StatusRadio from '@/components/StatusRadio'
 import LeetCodeEditor from '@/components/LeetCodeEditor'
+
+hljs.registerLanguage('python', pythonLang)
+hljs.registerLanguage('cpp', cppLang)
+
+function EditorialCodeBlock({ code, lang }: { code: string; lang: string }) {
+  const codeRef = useRef<HTMLElement>(null)
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    if (codeRef.current && code && (lang === 'python' || lang === 'cpp')) {
+      codeRef.current.removeAttribute('data-highlighted')
+      codeRef.current.textContent = code
+      hljs.highlightElement(codeRef.current)
+    }
+  }, [code, lang])
+
+  const copy = async () => {
+    await navigator.clipboard.writeText(code)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <div className="rounded-xl overflow-hidden border border-gray-700 bg-[#282c34] my-4">
+      <div className="flex items-center justify-between px-4 py-2 bg-[#21252b] border-b border-gray-700">
+        <span className="text-xs font-semibold text-gray-400">{lang === 'cpp' ? 'C++' : lang === 'python' ? 'Python' : lang}</span>
+        <button onClick={copy} className="flex items-center gap-1 text-xs text-gray-400 hover:text-white transition-colors">
+          {copied ? <Check size={13} className="text-green-400" /> : <Copy size={13} />}
+          {copied ? 'Copied!' : 'Copy'}
+        </button>
+      </div>
+      <div className="overflow-x-auto">
+        <pre className="p-4 text-[12px] leading-relaxed m-0 bg-[#282c34]">
+          <code ref={codeRef} className={`language-${lang}`}>{code}</code>
+        </pre>
+      </div>
+    </div>
+  )
+}
 
 interface Question {
   id: number
@@ -667,25 +710,17 @@ function LearnInner() {
                             ul: ({ children }) => <ul className="my-2 space-y-1 pl-5 list-none">{children}</ul>,
                             ol: ({ children }) => <ol className="my-2 space-y-1 pl-5 list-decimal text-sm text-gray-700">{children}</ol>,
                             li: ({ children }) => <li className="text-sm text-gray-700 leading-relaxed flex gap-2"><span className="text-indigo-400 shrink-0 mt-0.5">•</span><span>{children}</span></li>,
-                            // Inline code vs fenced code block
+                            // Inline code
                             code: ({ children, className }) =>
                               className
-                                ? <code className="text-gray-100 text-xs font-mono whitespace-pre">{children}</code>
+                                ? <code className="text-[12px] font-mono">{children}</code>
                                 : <code className="bg-indigo-50 text-indigo-700 border border-indigo-100 px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>,
-                            // Code blocks — dark theme with language label
+                            // Fenced code blocks — syntax highlighted, same style as CodePanel
                             pre: ({ children }) => {
-                              const code = (children as React.ReactElement<{ className?: string }>)
-                              const lang = (code?.props?.className ?? '').replace('language-', '') || null
-                              return (
-                                <div className="my-4 rounded-xl border border-gray-800 overflow-hidden">
-                                  {lang && (
-                                    <div className="flex items-center justify-between bg-gray-800 px-4 py-1.5">
-                                      <span className="text-xs font-mono text-gray-400">{lang}</span>
-                                    </div>
-                                  )}
-                                  <pre className="bg-gray-950 text-gray-100 p-4 overflow-x-auto text-xs font-mono leading-relaxed m-0">{children}</pre>
-                                </div>
-                              )
+                              const child = children as React.ReactElement<{ className?: string; children?: string }>
+                              const lang = (child?.props?.className ?? '').replace('language-', '') || 'text'
+                              const code = child?.props?.children ?? ''
+                              return <EditorialCodeBlock code={String(code).trimEnd()} lang={lang} />
                             },
                             // Horizontal rules as section dividers
                             hr: () => <hr className="my-4 border-gray-100" />,
