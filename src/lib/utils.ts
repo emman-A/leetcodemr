@@ -37,7 +37,7 @@ export function isDue(nextReview: string | null): boolean {
 }
 
 // ── Spaced repetition ────────────────────────────────────────────────────────
-export const SR_INTERVALS = [3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 18, 24, 30, 45, 60]
+export const SR_INTERVALS = [2, 4, 8, 16, 32, 64, 128, 256, 365]
 
 export function nextIntervalDays(reviewCount: number): number {
   return SR_INTERVALS[Math.min(reviewCount, SR_INTERVALS.length - 1)]
