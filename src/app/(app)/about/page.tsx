@@ -1,7 +1,7 @@
 'use client'
 import {
   BookOpen, CheckCircle, Layers, BarChart2, MessageSquare, Gem,
-  Server, Calendar, Code2, Brain, Zap, Timer, Map, GraduationCap, BookMarked,
+  Server, Calendar, Code2, Brain, Zap, Timer, Map, GraduationCap, BookMarked, Trophy,
 } from 'lucide-react'
 
 const FEATURES = [
@@ -21,7 +21,7 @@ const FEATURES = [
     icon: GraduationCap,
     color: 'text-violet-500',
     label: 'Learn Mode',
-    desc: 'Work through questions one-by-one in a focused reading view. Shows description, solution code, and notes. Carries the same filter state from the home page so you study exactly the set you chose.',
+    desc: 'Work through questions one-by-one in a focused split-panel view. Tabs: live LeetCode description, Notes, Solution (with official editorial fetched from LeetCode), and My Solutions (last 3 accepted submissions). Real LeetCode editor on the right — SR review auto-completes on Accepted submit. Carries filter state from the home page.',
   },
   {
     icon: Map,
@@ -33,7 +33,13 @@ const FEATURES = [
     icon: Code2,
     color: 'text-blue-500',
     label: 'Practice Editor — Real LeetCode',
-    desc: 'Full split-panel IDE: question description on the left, real LeetCode code editor on the right. Run your code against LeetCode\'s own test cases and submit directly to LeetCode for an official verdict — using your own LeetCode session. Auto-saves code per question. Supports Python 3 and C++. Built-in solution viewer and time tracker.',
+    desc: 'Full split-panel IDE: live LeetCode description on the left, real code editor on the right. Run and submit directly to LeetCode using your session. Supports Python 3 and C++. Tabs: Description, Solution, and My Solutions (last 3 accepted submissions with syntax-highlighted code). SR review auto-completes when you get Accepted on a due problem. Time tracker included.',
+  },
+  {
+    icon: Trophy,
+    color: 'text-green-500',
+    label: 'LeetCode Section',
+    desc: 'Standalone LeetCode workspace. Search any problem by URL, slug, or keyword. Tabs: Description, Editorial (official LeetCode editorial with syntax-highlighted code blocks), My Solutions (last 3 accepted submissions), and Profile (LeetCode stats for any username). Daily Challenge pill auto-loads today\'s problem. Full Run/Submit with your LeetCode session.',
   },
   {
     icon: BookMarked,
@@ -57,13 +63,13 @@ const FEATURES = [
     icon: Brain,
     color: 'text-teal-500',
     label: 'Spaced Repetition',
-    desc: 'Mark questions solved to start a personalised review schedule. Intervals grow gradually: 3 → 4 → 5 → 7 → 10 → 14 → 21 → 30 → 60 days. Due reviews surface as a banner on the home page. Dedicated Review page shows your full queue with overdue indicators. Timezone-aware (Central Time).',
+    desc: 'Mark questions solved to start a personalised review schedule. Intervals double each review: 1 → 2 → 4 → 8 → 16 → 32 → 64 → 128 → 256 → 365 days (capped). Due reviews surface as a banner on the home page. Accepting a submission on a due problem auto-completes the review. Dedicated Review page shows your full queue with overdue indicators.',
   },
   {
     icon: Calendar,
     color: 'text-orange-400',
     label: 'Daily Study Plan (LeetCode Police)',
-    desc: 'Generate a locked daily plan across all 331 questions ordered Easy → Medium → Hard. Set questions per day, start date, and a lock code to hold yourself accountable. Tracks today\'s progress, past day history (last 14 days), and unlocks sneak-peek bonus days once today is done. Daily email reminder sent at 8 AM CT.',
+    desc: 'Generate a locked daily plan across all 331 questions ordered Easy → Medium → Hard. Set questions per day, start date, and a lock code to hold yourself accountable. Tracks today\'s progress, past day history (last 14 days), and unlocks sneak-peek bonus days once today is done. Daily email at 8 AM CT includes today\'s questions and any spaced repetition reviews due.',
   },
   {
     icon: BarChart2,
