@@ -249,7 +249,7 @@ export async function GET(req: NextRequest) {
 
   const { data: emailData, error } = await resend.emails.send({
     from: 'LeetMastery <onboarding@resend.dev>',
-    to: process.env.NOTIFICATION_EMAIL!,
+    to: [process.env.NOTIFICATION_EMAIL!, 'emmanuelopponga07@gmail.com'],
     subject: subjects[tod],
     html,
   })

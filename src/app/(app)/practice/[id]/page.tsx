@@ -2,8 +2,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, CheckCircle, Clock, Code2, BookOpen, ExternalLink, Loader2 } from 'lucide-react'
-import { getProgress, updateProgress, addTimeSpent } from '@/lib/db'
-import { formatTime } from '@/lib/utils'
+import { getProgress, updateProgress, addTimeSpent, completeReview } from '@/lib/db'
+import { formatTime, isDue } from '@/lib/utils'
 import DifficultyBadge from '@/components/DifficultyBadge'
 import CodePanel from '@/components/CodePanel'
 import LeetCodeEditor from '@/components/LeetCodeEditor'
@@ -53,6 +53,8 @@ export default function PracticePage() {
 
   const [question, setQuestion] = useState<Question | null>(null)
   const [solved, setSolved] = useState(false)
+  const [nextReview, setNextReview] = useState<string | null>(null)
+  const [reviewDone, setReviewDone] = useState(false)
   const [leftTab, setLeftTab] = useState<'description' | 'solution'>('description')
   const [mobilePanel, setMobilePanel] = useState<'description' | 'editor'>('description')
   const [timer, setTimer] = useState(0)
@@ -77,6 +79,7 @@ export default function PracticePage() {
       if (!q) return
       setQuestion(q)
       setSolved(!!prog[String(id)]?.solved)
+      setNextReview(prog[String(id)]?.next_review ?? null)
     }
     load()
   }, [id])
@@ -147,6 +150,16 @@ export default function PracticePage() {
       if (elapsed > 5) addTimeSpent(id, elapsed)
     }
   }, [id])
+
+  const due = isDue(nextReview) && solved
+
+  async function handleCompleteReview() {
+    if (reviewDone) return
+    setReviewDone(true)
+    const result = await completeReview(id)
+    setNextReview(result.next_review)
+    toast.success(`✓ Review done! Next review: ${result.next_review}`)
+  }
 
   async function handleMarkSolved() {
     if (!question) return
@@ -317,7 +330,7 @@ export default function PracticePage() {
         {/* RIGHT — LeetCode editor + tests */}
         <div className={`${mobilePanel === 'editor' ? 'flex flex-col' : 'hidden'} md:flex flex-1 min-h-0 overflow-x-hidden`}>
           {question ? (
-            <LeetCodeEditor appQuestionId={question.id} slug={question.slug} />
+            <LeetCodeEditor appQuestionId={question.id} slug={question.slug} onAccepted={due && !reviewDone ? handleCompleteReview : undefined} />
           ) : (
             <div className="flex items-center justify-center h-full text-gray-300 text-sm gap-2">
               <Loader2 size={16} className="animate-spin" /> Loading editor...
