@@ -117,7 +117,7 @@ export async function GET(req: NextRequest) {
   }
 
   // ── Build email ─────────────────────────────────────────────────────────────
-  const appUrl = 'https://leetcodemr.vercel.app'
+  const appUrl = 'https://leetcodemr-gamma.vercel.app/'
   const dayNumber = activeDayIndex + 1
   const hour = nowHourCT()
   const tod = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : hour < 21 ? 'evening' : 'night'
