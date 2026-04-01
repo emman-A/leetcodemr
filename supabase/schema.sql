@@ -155,3 +155,51 @@ CREATE TABLE IF NOT EXISTS fc_daily_log (
   question_ids INTEGER[] DEFAULT '{}',
   UNIQUE(user_id, date)
 );
+
+-- Row Level Security (see migrations/20260331000000_enable_rls.sql for apply order)
+-- Policies: anon/authenticated may only access rows with user_id = 'emmanuel'
+ALTER TABLE progress ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "app_user_emmanuel" ON progress FOR ALL TO anon, authenticated
+  USING (user_id = 'emmanuel') WITH CHECK (user_id = 'emmanuel');
+ALTER TABLE activity_log ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "app_user_emmanuel" ON activity_log FOR ALL TO anon, authenticated
+  USING (user_id = 'emmanuel') WITH CHECK (user_id = 'emmanuel');
+ALTER TABLE solved_log ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "app_user_emmanuel" ON solved_log FOR ALL TO anon, authenticated
+  USING (user_id = 'emmanuel') WITH CHECK (user_id = 'emmanuel');
+ALTER TABLE fc_visited ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "app_user_emmanuel" ON fc_visited FOR ALL TO anon, authenticated
+  USING (user_id = 'emmanuel') WITH CHECK (user_id = 'emmanuel');
+ALTER TABLE behavioral_visited ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "app_user_emmanuel" ON behavioral_visited FOR ALL TO anon, authenticated
+  USING (user_id = 'emmanuel') WITH CHECK (user_id = 'emmanuel');
+ALTER TABLE gems_visited ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "app_user_emmanuel" ON gems_visited FOR ALL TO anon, authenticated
+  USING (user_id = 'emmanuel') WITH CHECK (user_id = 'emmanuel');
+ALTER TABLE pattern_fc_visited ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "app_user_emmanuel" ON pattern_fc_visited FOR ALL TO anon, authenticated
+  USING (user_id = 'emmanuel') WITH CHECK (user_id = 'emmanuel');
+ALTER TABLE study_plan ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "app_user_emmanuel" ON study_plan FOR ALL TO anon, authenticated
+  USING (user_id = 'emmanuel') WITH CHECK (user_id = 'emmanuel');
+ALTER TABLE daily_target ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "app_user_emmanuel" ON daily_target FOR ALL TO anon, authenticated
+  USING (user_id = 'emmanuel') WITH CHECK (user_id = 'emmanuel');
+ALTER TABLE practice_sessions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "app_user_emmanuel" ON practice_sessions FOR ALL TO anon, authenticated
+  USING (user_id = 'emmanuel') WITH CHECK (user_id = 'emmanuel');
+ALTER TABLE time_tracking ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "app_user_emmanuel" ON time_tracking FOR ALL TO anon, authenticated
+  USING (user_id = 'emmanuel') WITH CHECK (user_id = 'emmanuel');
+ALTER TABLE mock_sessions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "app_user_emmanuel" ON mock_sessions FOR ALL TO anon, authenticated
+  USING (user_id = 'emmanuel') WITH CHECK (user_id = 'emmanuel');
+ALTER TABLE interview_date ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "app_user_emmanuel" ON interview_date FOR ALL TO anon, authenticated
+  USING (user_id = 'emmanuel') WITH CHECK (user_id = 'emmanuel');
+ALTER TABLE user_settings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "app_user_emmanuel" ON user_settings FOR ALL TO anon, authenticated
+  USING (user_id = 'emmanuel') WITH CHECK (user_id = 'emmanuel');
+ALTER TABLE fc_daily_log ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "app_user_emmanuel" ON fc_daily_log FOR ALL TO anon, authenticated
+  USING (user_id = 'emmanuel') WITH CHECK (user_id = 'emmanuel');
