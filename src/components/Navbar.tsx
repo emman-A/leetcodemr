@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import {
   BookOpen, Menu, X, LogOut, Home, BarChart2, Brain,
   Layers, GitBranch, MessageSquare, Gem, Server, Clock,
-  Calendar, Info, Timer, Code2, Zap
+  Calendar, Info, Timer, Code2, Zap, Gamepad2
 } from 'lucide-react'
 
 // Group 1 — Practice & solving
@@ -22,6 +22,7 @@ const PRACTICE_LINKS = [
 const FLASHCARD_LINKS = [
   { href: '/flashcards',   label: 'Flashcards',   icon: Layers },
   { href: '/quick-review', label: 'Quick Review', icon: Clock },
+  { href: '/line-game',    label: 'Line Recall',  icon: Gamepad2 },
   { href: '/gems',         label: 'Gems',         icon: Gem },
   { href: '/dsa',          label: 'DSA',          icon: Code2 },
 ]
