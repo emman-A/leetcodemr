@@ -22,7 +22,7 @@ const PRACTICE_LINKS = [
 const FLASHCARD_LINKS = [
   { href: '/flashcards',   label: 'Flashcards',   icon: Layers },
   { href: '/quick-review', label: 'Quick Review', icon: Clock },
-  { href: '/line-game',    label: 'Line Recall',  icon: Gamepad2 },
+  { href: '/line-game',    label: 'LeetGame',     icon: Gamepad2 },
   { href: '/gems',         label: 'Gems',         icon: Gem },
   { href: '/dsa',          label: 'DSA',          icon: Code2 },
 ]

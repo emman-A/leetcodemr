@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, ListOrdered } from 'lucide-react'
+import { ArrowLeft, ChevronLeft, ChevronRight, ListOrdered } from 'lucide-react'
 import { pickBlankLines, normalizeAnswerLine, type BlankLinePick } from '@/lib/lineGame/pickBlankLines'
 import LineGameHighlightedCode, { splitLeadingIndent } from '@/components/line-game/LineGameHighlightedCode'
 import DifficultyBadge from '@/components/DifficultyBadge'
@@ -34,9 +34,12 @@ function buildInitialBlanks(blanks: BlankLinePick[]): BlankUiState[] {
 export default function LineGameSession({
   deck,
   startIndex = 0,
+  onBackToList,
 }: {
   deck: LineGameQuestion[]
   startIndex?: number
+  /** When set, shows control to return to the LeetGame question picker */
+  onBackToList?: () => void
 }) {
   const [idx, setIdx] = useState(startIndex)
   const [sessionRecall, setSessionRecall] = useState(0)
@@ -116,6 +119,16 @@ export default function LineGameSession({
   if (!q.python_solution) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-8">
+        {onBackToList && (
+          <button
+            type="button"
+            onClick={onBackToList}
+            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 mb-4 transition-colors"
+          >
+            <ArrowLeft size={16} />
+            All questions
+          </button>
+        )}
         <p className="text-gray-600 mb-4">No Python solution for this problem.</p>
         <button
           type="button"
@@ -131,6 +144,16 @@ export default function LineGameSession({
   if (!picked || picked.blanks.length === 0) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-8">
+        {onBackToList && (
+          <button
+            type="button"
+            onClick={onBackToList}
+            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 mb-4 transition-colors"
+          >
+            <ArrowLeft size={16} />
+            All questions
+          </button>
+        )}
         <div className="flex items-center gap-2 mb-2">
           <h1 className="text-xl font-bold text-gray-900">{q.title}</h1>
           <DifficultyBadge difficulty={q.difficulty} />
@@ -152,6 +175,16 @@ export default function LineGameSession({
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 pb-24">
       <header className="mb-6">
+        {onBackToList && (
+          <button
+            type="button"
+            onClick={onBackToList}
+            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 mb-3 transition-colors"
+          >
+            <ArrowLeft size={16} />
+            All questions
+          </button>
+        )}
         <div className="flex flex-wrap items-center gap-2 mb-1">
           <h1 className="text-xl font-bold text-gray-900">{q.title}</h1>
           <DifficultyBadge difficulty={q.difficulty} />
