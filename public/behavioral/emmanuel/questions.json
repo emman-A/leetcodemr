@@ -1,0 +1,1766 @@
+[
+    {
+        "id": 1,
+        "category": "Background",
+        "question": "Tell me about yourself.",
+        "stories": [
+            {
+                "title": "Education & foundations",
+                "situation": "I’m Emmanuel Acheampong, finishing my B.S. in Computer Science at Grambling State University (May 2027). I’m on the Dean’s List (’24 and ’25), a Presidential Scholarship recipient, and I earned gold at the Vanda African Math Olympiad in 2018. Coursework that shaped me: Object-Oriented Programming, Software Engineering, Data Structures & Algorithms, and Operating Systems.",
+                "task": "What I want interviewers to remember: I don’t just take classes—I pair theory with internships and shipped products where impact is measurable.",
+                "action": "Alongside school I’ve interned at Geaux Network (Associate Software Developer, remote, summer 2025) and Hubtel LTD (Software Engineer Intern, Ghana, 2023). I’ve also built MedDiagnose AI (health-tech + ML), VisualizeMyAlgorithm (1,000+ learners), and a Mini-Compiler used by 50+ developers.",
+                "result": "The through-line is production engineering: tests, observability, and traceability—whether I’m on gRPC/protobuf services, a Kafka pipeline, or a React front end."
+            },
+            {
+                "title": "Geaux Network — platform & traceability",
+                "situation": "At Geaux Network I worked with engineering and content on a Change History View in TypeScript and SCSS, pulling together multiple backend event sources so edits to podcasts and media metadata were auditable.",
+                "task": "Ship something useful for traceability without waiting for every legacy system to unify.",
+                "action": "I collaborated across teams to prioritize high-signal protobuf-backed events first, added integration coverage on the merged read path, and helped harden the Java/gRPC API layer—where we roughly doubled measured data accuracy on the ingestion path and supported podcast distribution to 10,000+ monthly listeners.",
+                "result": "Creators and admins got a clearer audit trail; releases stayed on schedule with a defined backlog for the remaining sources."
+            },
+            {
+                "title": "Hubtel — real-time systems",
+                "situation": "At Hubtel LTD I built a scalable real-time pipeline with Apache Kafka Connect, MQTT, and PostgreSQL to process high-volume events for transaction-driven services, and I shipped 20+ automated tests (Spring Boot, JUnit, Postman) that materially improved reliability on payment workflows.",
+                "task": "Make failures visible faster without destabilizing money paths.",
+                "action": "I traced broker → sink, added metrics and tests at integration boundaries, and implemented a Firebase push-notification path for critical status updates—tuning delivery so critical pushes met sub-10ms latency targets where the stack allowed.",
+                "result": "Downtime detection improved by about 40% versus our baseline; reliability on targeted services rose roughly 80%; fewer repeat incidents on payment flows."
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "category": "Conflict & Communication",
+        "question": "Tell me about a time you had a disagreement with your manager.",
+        "stories": [
+            {
+                "title": "Change History: event consolidation",
+                "situation": "Geaux Network — Associate Software Developer Intern, May–Aug 2025, remote. Problem: engineering and content both needed audit trails for podcast and media edits, but events lived in multiple backends with inconsistent schemas.",
+                "task": "Goal: ship Change History (TypeScript, SCSS) that improves traceability on v1 without blocking the release on full consolidation.",
+                "action": "Steps: (1) Joint session with engineering + content to rank event sources by traceability value per engineering week. (2) Phase 1 UI: highest-signal protobuf-backed events first. (3) Integration tests on merged read path before adding sources.",
+                "result": "Outcome: stronger traceability for targeted workflows; stable release cadence; backlog defined for remaining sources."
+            },
+            {
+                "title": "Spring Boot test expansion",
+                "situation": "Problem: failures appeared at integration boundaries (DB, messaging, HTTP), not in isolated unit tests — typical for payment-related Spring services.",
+                "task": "Goal: increase confidence on money-touching code paths.",
+                "action": "Steps: 20+ tests using Spring Boot, JUnit, Postman; cases centered on transaction boundaries, retries, and known failure modes.",
+                "result": "Outcome: ~80% reliability lift in targeted areas (team measurement); regressions caught pre-release more often."
+            },
+            {
+                "title": "Cross-officer conflict",
+                "situation": "Conflict: officers split on hackathons vs corporate sessions vs K-12 outreach.",
+                "task": "Goal: single quarterly roadmap with measurable targets.",
+                "action": "Resolution: attendance data + survey; map sponsor dollars to dated events; vote written priority list in meeting.",
+                "result": "Outcome: fewer debate loops; execution tracked to agreed metrics."
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "category": "Conflict & Communication",
+        "question": "Tell me about a situation when you had a conflict with a teammate.",
+        "stories": [
+            {
+                "title": "Change History: event consolidation",
+                "situation": "Geaux Network — Associate Software Developer Intern, May–Aug 2025, remote. Problem: engineering and content both needed audit trails for podcast and media edits, but events lived in multiple backends with inconsistent schemas.",
+                "task": "Goal: ship Change History (TypeScript, SCSS) that improves traceability on v1 without blocking the release on full consolidation.",
+                "action": "Steps: (1) Joint session with engineering + content to rank event sources by traceability value per engineering week. (2) Phase 1 UI: highest-signal protobuf-backed events first. (3) Integration tests on merged read path before adding sources.",
+                "result": "Outcome: stronger traceability for targeted workflows; stable release cadence; backlog defined for remaining sources."
+            },
+            {
+                "title": "Spring Boot test expansion",
+                "situation": "Problem: failures appeared at integration boundaries (DB, messaging, HTTP), not in isolated unit tests — typical for payment-related Spring services.",
+                "task": "Goal: increase confidence on money-touching code paths.",
+                "action": "Steps: 20+ tests using Spring Boot, JUnit, Postman; cases centered on transaction boundaries, retries, and known failure modes.",
+                "result": "Outcome: ~80% reliability lift in targeted areas (team measurement); regressions caught pre-release more often."
+            },
+            {
+                "title": "ColorStack hackathon win",
+                "situation": "Event: ColorStack Winter Hackathon 2024 — ~1,000 participants worldwide.",
+                "task": "Goal: MVP + demo script with zero live-integration failure on stage.",
+                "action": "Execution: scope freeze day one; FE/BE owners; rehearsed demo; fallback if API unstable.",
+                "result": "Outcome: 1st place Winter 2024; demo completed without outage."
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "category": "Failure & Growth",
+        "question": "Tell me about a time you failed. How did you deal with the situation?",
+        "stories": [
+            {
+                "title": "ML + clinical translation",
+                "situation": "Gap: engineers report accuracy; clinicians need override rules, failure modes, shift-time usability.",
+                "task": "Goal: assistive ML with explicit human checkpoints.",
+                "action": "Steps: plain-language model explanation in UI; documented uncertainty; UI blocks high-risk actions without clinician acknowledgment.",
+                "result": "Outcome: trust in rounds; automation limited to routing, alerts, eligibility prep — within hospital risk tolerance."
+            },
+            {
+                "title": "Correctness first",
+                "situation": "Failure mode: lexer/parser edge cases produced corrupt IR; optimizations hid bugs.",
+                "task": "Goal: green parser/lexer suite before optimization passes.",
+                "action": "Steps: expand grammar tests; regression tokens; gate optimizations on passing baseline.",
+                "result": "Outcome: stable IR; other students added passes without mystery failures."
+            },
+            {
+                "title": "gRPC service layer + tests",
+                "situation": "Context: internal services moving to Java + gRPC + Protocol Buffers for podcast ingestion and distribution (10,000+ monthly listeners). Ingestion errors propagate to creators and listeners.",
+                "task": "Goal: raise measured data accuracy on the ingestion path; keep protobuf contracts testable at the RPC boundary.",
+                "action": "Steps: extend Java service layer; tighten .proto files; add end-to-end tests across gRPC; validate against real ingestion runs, not mocks only.",
+                "result": "Outcome: ~2× measured accuracy on ingestion path (team metric); safer downstream integrations."
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "category": "Leadership",
+        "question": "Describe a time when you led a team. What was the outcome?",
+        "stories": [
+            {
+                "title": "NSBE Gen-Sec + partnerships",
+                "situation": "Role: NSBE — General Secretary, Jan 2025–present, Grambling State University.",
+                "task": "Goal: grow technical membership; convert sponsor conversations into funded programs.",
+                "action": "Plan: officer alignment from member surveys; sponsor packets with attendance + outcomes; recurring technical events.",
+                "result": "Outcome: 300+ members; ~$3K technical partnerships (resume figure); higher CS engagement vs prior term."
+            },
+            {
+                "title": "MedDiagnose stack + pilot",
+                "situation": "Project: MedDiagnose AI — Python, TypeScript, FastAPI, TensorFlow, React. Features: real-time monitoring, NIHSS scoring, RBAC, automated tPA eligibility.",
+                "task": "Goal: Louisiana hospital pilot optimized for workflow time — not leaderboard accuracy.",
+                "action": "Execution: FastAPI + React + model integration; Random Forest stroke-risk ~45% — positioned as decision support only; workflow KPIs agreed with neurologists.",
+                "result": "Outcome: pilot completed; ~35% reduction in time-to-treatment (pilot metric); assistive workflow, not autonomous diagnosis."
+            },
+            {
+                "title": "VisualizeMyAlgorithm scale",
+                "situation": "Product: VisualizeMyAlgorithm (React) — pathfinding, sorting, NN-style demos. Reach: 1,000+ learners.",
+                "task": "Goal: classroom-scale performance + teaching clarity.",
+                "action": "Build: modular components (Dijkstra, A*, Minimax, NN demos); explicit step state machine; batched rendering pipeline.",
+                "result": "Outcome: ~40% faster self-reported time-to-understanding (informal classroom timing); stable under concurrent classroom load."
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "category": "Pressure & Resilience",
+        "question": "Tell me about a time you worked well under pressure.",
+        "stories": [
+            {
+                "title": "ColorStack hackathon win",
+                "situation": "Event: ColorStack Winter Hackathon 2024 — ~1,000 participants worldwide.",
+                "task": "Goal: MVP + demo script with zero live-integration failure on stage.",
+                "action": "Execution: scope freeze day one; FE/BE owners; rehearsed demo; fallback if API unstable.",
+                "result": "Outcome: 1st place Winter 2024; demo completed without outage."
+            },
+            {
+                "title": "RBAC, logging, and a11y on RPC",
+                "situation": "Constraint: creator vs admin flows on overlapping surfaces; compliance requires auditable mutations and usable UI for both roles.",
+                "task": "Goal: RBAC on sensitive gRPC methods + structured logs + accessibility coverage — without stalling feature delivery.",
+                "action": "Steps: enforce role rules on critical RPCs; log interaction events on mutations; keyboard + screen-reader pass on primary creator/admin screens tied to those RPCs.",
+                "result": "Outcome: fewer wrong-role failures in QA; clearer audit trail; explicit creator/admin behavior."
+            },
+            {
+                "title": "Kafka/MQTT/Postgres pipeline",
+                "situation": "Hubtel LTD — Software Engineer Intern, Jun–Sep 2023, Ghana. Problem: high-volume system events for transaction-heavy services; slow failure detection hurt availability and trust.",
+                "task": "Goal: shorten detection time for pipeline failures without destabilizing payment paths.",
+                "action": "Stack + method: Kafka Connect → MQTT → PostgreSQL; trace broker to sink; integration tests + metrics to localize failures before restart-first debugging.",
+                "result": "Outcome: ~40% faster downtime detection (team baseline); fewer blind incidents on payment flows."
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "category": "Decision Making",
+        "question": "Provide an example of a time when you had to make a difficult decision.",
+        "stories": [
+            {
+                "title": "Change History: event consolidation",
+                "situation": "Geaux Network — Associate Software Developer Intern, May–Aug 2025, remote. Problem: engineering and content both needed audit trails for podcast and media edits, but events lived in multiple backends with inconsistent schemas.",
+                "task": "Goal: ship Change History (TypeScript, SCSS) that improves traceability on v1 without blocking the release on full consolidation.",
+                "action": "Steps: (1) Joint session with engineering + content to rank event sources by traceability value per engineering week. (2) Phase 1 UI: highest-signal protobuf-backed events first. (3) Integration tests on merged read path before adding sources.",
+                "result": "Outcome: stronger traceability for targeted workflows; stable release cadence; backlog defined for remaining sources."
+            },
+            {
+                "title": "ML + clinical translation",
+                "situation": "Gap: engineers report accuracy; clinicians need override rules, failure modes, shift-time usability.",
+                "task": "Goal: assistive ML with explicit human checkpoints.",
+                "action": "Steps: plain-language model explanation in UI; documented uncertainty; UI blocks high-risk actions without clinician acknowledgment.",
+                "result": "Outcome: trust in rounds; automation limited to routing, alerts, eligibility prep — within hospital risk tolerance."
+            },
+            {
+                "title": "Kafka/MQTT/Postgres pipeline",
+                "situation": "Hubtel LTD — Software Engineer Intern, Jun–Sep 2023, Ghana. Problem: high-volume system events for transaction-heavy services; slow failure detection hurt availability and trust.",
+                "task": "Goal: shorten detection time for pipeline failures without destabilizing payment paths.",
+                "action": "Stack + method: Kafka Connect → MQTT → PostgreSQL; trace broker to sink; integration tests + metrics to localize failures before restart-first debugging.",
+                "result": "Outcome: ~40% faster downtime detection (team baseline); fewer blind incidents on payment flows."
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "category": "Initiative",
+        "question": "Describe a time when you went above and beyond the requirements for a project.",
+        "stories": [
+            {
+                "title": "RBAC, logging, and a11y on RPC",
+                "situation": "Constraint: creator vs admin flows on overlapping surfaces; compliance requires auditable mutations and usable UI for both roles.",
+                "task": "Goal: RBAC on sensitive gRPC methods + structured logs + accessibility coverage — without stalling feature delivery.",
+                "action": "Steps: enforce role rules on critical RPCs; log interaction events on mutations; keyboard + screen-reader pass on primary creator/admin screens tied to those RPCs.",
+                "result": "Outcome: fewer wrong-role failures in QA; clearer audit trail; explicit creator/admin behavior."
+            },
+            {
+                "title": "Spring Boot test expansion",
+                "situation": "Problem: failures appeared at integration boundaries (DB, messaging, HTTP), not in isolated unit tests — typical for payment-related Spring services.",
+                "task": "Goal: increase confidence on money-touching code paths.",
+                "action": "Steps: 20+ tests using Spring Boot, JUnit, Postman; cases centered on transaction boundaries, retries, and known failure modes.",
+                "result": "Outcome: ~80% reliability lift in targeted areas (team measurement); regressions caught pre-release more often."
+            },
+            {
+                "title": "State + performance",
+                "situation": "Issue: large graph state → React rerender storms → dropped frames on mid-tier laptops.",
+                "task": "Goal: smooth stepping on classroom hardware.",
+                "action": "Steps: batch updates per simulation tick; memoize graph structures; per-frame work budget.",
+                "result": "Outcome: usable in lecture halls without high-end GPUs."
+            }
+        ]
+    },
+    {
+        "id": 9,
+        "category": "Learning & Adaptability",
+        "question": "How do you handle a situation where you don't know the answer to a question?",
+        "stories": [
+            {
+                "title": "gRPC service layer + tests",
+                "situation": "Context: internal services moving to Java + gRPC + Protocol Buffers for podcast ingestion and distribution (10,000+ monthly listeners). Ingestion errors propagate to creators and listeners.",
+                "task": "Goal: raise measured data accuracy on the ingestion path; keep protobuf contracts testable at the RPC boundary.",
+                "action": "Steps: extend Java service layer; tighten .proto files; add end-to-end tests across gRPC; validate against real ingestion runs, not mocks only.",
+                "result": "Outcome: ~2× measured accuracy on ingestion path (team metric); safer downstream integrations."
+            },
+            {
+                "title": "Kafka/MQTT/Postgres pipeline",
+                "situation": "Hubtel LTD — Software Engineer Intern, Jun–Sep 2023, Ghana. Problem: high-volume system events for transaction-heavy services; slow failure detection hurt availability and trust.",
+                "task": "Goal: shorten detection time for pipeline failures without destabilizing payment paths.",
+                "action": "Stack + method: Kafka Connect → MQTT → PostgreSQL; trace broker to sink; integration tests + metrics to localize failures before restart-first debugging.",
+                "result": "Outcome: ~40% faster downtime detection (team baseline); fewer blind incidents on payment flows."
+            },
+            {
+                "title": "Correctness first",
+                "situation": "Failure mode: lexer/parser edge cases produced corrupt IR; optimizations hid bugs.",
+                "task": "Goal: green parser/lexer suite before optimization passes.",
+                "action": "Steps: expand grammar tests; regression tokens; gate optimizations on passing baseline.",
+                "result": "Outcome: stable IR; other students added passes without mystery failures."
+            }
+        ]
+    },
+    {
+        "id": 10,
+        "category": "Feedback",
+        "question": "Describe a time you received tough or critical feedback.",
+        "stories": [
+            {
+                "title": "Service-layer maintainability",
+                "situation": "Problem (Geaux): gRPC/protobuf code passed tests but was hard to extend — unclear module boundaries and error semantics for RPC callers.",
+                "task": "Goal: make protobuf packages and failures obvious to the next engineer.",
+                "action": "Steps: reorganize .proto packaging; add contract tests at RPC boundary; document error codes and retry expectations for consumers.",
+                "result": "Outcome: faster reviews; fewer integration surprises on the next features."
+            },
+            {
+                "title": "ML calibration reality check",
+                "situation": "Problem: MedDiagnose dashboard led with raw ~45% RF accuracy — mentors flagged that non-technical readers would misinterpret it as diagnostic certainty.",
+                "task": "Goal: align reporting with how clinicians decide (workflow + calibration), not leaderboard metrics.",
+                "action": "Steps: add calibration / confusion context in UI copy; lead with time-to-treatment and pilot workflow KPIs; demote headline accuracy.",
+                "result": "Outcome: dashboard used in rounds; clinicians engaged because risk was framed correctly."
+            },
+            {
+                "title": "Compiler scope creep",
+                "situation": "Problem: Mini-Compiler — I added optimization passes before lexer/parser tests covered edge tokens; reviewer flagged premature optimization.",
+                "task": "Goal: stabilize parse → IR before measuring optimization wins.",
+                "action": "Steps: freeze IR optimizations; expand lexer/parser regression suite; re-enable optimizations with before/after benchmarks.",
+                "result": "Outcome: stable compiler baseline; optimizations became credible and reproducible."
+            }
+        ]
+    },
+    {
+        "id": 11,
+        "category": "Feedback",
+        "question": "Describe a time when you had to give someone difficult feedback. How did you handle it?",
+        "stories": [
+            {
+                "title": "Peer tests at Hubtel",
+                "situation": "Problem: Teammate opened PR on Spring service; integration tests skipped a payment edge case I had seen fail in staging.",
+                "task": "Goal: block merge on evidence, not opinion — without personal attack.",
+                "action": "Steps: reproduce with Postman + attach logs; propose JUnit + Testcontainers case for that path; frame as shared quality bar.",
+                "result": "Outcome: tests added; PR merged; regression guarded."
+            },
+            {
+                "title": "NSBE officer workload",
+                "situation": "Problem: Officer over-promised event attendance; sponsors and volunteers burned when numbers missed.",
+                "task": "Goal: reset expectations with data — private 1:1, respectful tone.",
+                "action": "Steps: show attendance vs promised; propose smaller committed events; separate critique of numbers from strengths (marketing).",
+                "result": "Outcome: next quarter hit sponsor-facing targets without volunteer burnout."
+            },
+            {
+                "title": "Hackathon scope",
+                "situation": "Problem: ColorStack Winter — teammate wanted live ML API with <12h left; integration risk too high for demo.",
+                "task": "Goal: stable demo path + honest technical story.",
+                "action": "Steps: mock inference boundary; record golden outputs; rehearse failover.",
+                "result": "Outcome: on-time submission; winning demo with no live flake."
+            }
+        ]
+    },
+    {
+        "id": 12,
+        "category": "Prioritisation",
+        "question": "Tell me about a time when you had to prioritize your tasks quickly.",
+        "stories": [
+            {
+                "title": "Change History: event consolidation",
+                "situation": "Geaux Network — Associate Software Developer Intern, May–Aug 2025, remote. Problem: engineering and content both needed audit trails for podcast and media edits, but events lived in multiple backends with inconsistent schemas.",
+                "task": "Goal: ship Change History (TypeScript, SCSS) that improves traceability on v1 without blocking the release on full consolidation.",
+                "action": "Steps: (1) Joint session with engineering + content to rank event sources by traceability value per engineering week. (2) Phase 1 UI: highest-signal protobuf-backed events first. (3) Integration tests on merged read path before adding sources.",
+                "result": "Outcome: stronger traceability for targeted workflows; stable release cadence; backlog defined for remaining sources."
+            },
+            {
+                "title": "Kafka/MQTT/Postgres pipeline",
+                "situation": "Hubtel LTD — Software Engineer Intern, Jun–Sep 2023, Ghana. Problem: high-volume system events for transaction-heavy services; slow failure detection hurt availability and trust.",
+                "task": "Goal: shorten detection time for pipeline failures without destabilizing payment paths.",
+                "action": "Stack + method: Kafka Connect → MQTT → PostgreSQL; trace broker to sink; integration tests + metrics to localize failures before restart-first debugging.",
+                "result": "Outcome: ~40% faster downtime detection (team baseline); fewer blind incidents on payment flows."
+            },
+            {
+                "title": "Balance with coursework",
+                "situation": "Constraint: Dean’s List, Presidential Scholarship, and hackathon deadlines in the same academic term.",
+                "task": "Goal: ship a defensible demo without losing scholarship GPA.",
+                "action": "Method: fixed scope budget before the hackathon; reuse UI modules across projects; hard feature freeze in the final 12 hours.",
+                "result": "Outcome: demos delivered on schedule; GPA stayed within scholarship requirements."
+            }
+        ]
+    },
+    {
+        "id": 13,
+        "category": "Problem Solving",
+        "question": "Describe a time when you anticipated potential problems and developed preventive measures.",
+        "stories": [
+            {
+                "title": "RBAC, logging, and a11y on RPC",
+                "situation": "Constraint: creator vs admin flows on overlapping surfaces; compliance requires auditable mutations and usable UI for both roles.",
+                "task": "Goal: RBAC on sensitive gRPC methods + structured logs + accessibility coverage — without stalling feature delivery.",
+                "action": "Steps: enforce role rules on critical RPCs; log interaction events on mutations; keyboard + screen-reader pass on primary creator/admin screens tied to those RPCs.",
+                "result": "Outcome: fewer wrong-role failures in QA; clearer audit trail; explicit creator/admin behavior."
+            },
+            {
+                "title": "Spring Boot test expansion",
+                "situation": "Problem: failures appeared at integration boundaries (DB, messaging, HTTP), not in isolated unit tests — typical for payment-related Spring services.",
+                "task": "Goal: increase confidence on money-touching code paths.",
+                "action": "Steps: 20+ tests using Spring Boot, JUnit, Postman; cases centered on transaction boundaries, retries, and known failure modes.",
+                "result": "Outcome: ~80% reliability lift in targeted areas (team measurement); regressions caught pre-release more often."
+            },
+            {
+                "title": "Full-stack reliability",
+                "situation": "Risk: real-time monitoring — UI errors mimic clinical emergencies; RBAC errors expose PHI.",
+                "task": "Goal: load-stable UI + correct role separation end to end.",
+                "action": "Steps: RBAC on all sensitive routes; consistent API error schema; optimize React paths on time-critical monitoring views.",
+                "result": "Outcome: pilot sessions without access-control incidents; IT checklist satisfied for role separation."
+            }
+        ]
+    },
+    {
+        "id": 14,
+        "category": "Stakeholder Management",
+        "question": "Describe a situation where you had to deal with a difficult customer or stakeholder.",
+        "stories": [
+            {
+                "title": "ML + clinical translation",
+                "situation": "Gap: engineers report accuracy; clinicians need override rules, failure modes, shift-time usability.",
+                "task": "Goal: assistive ML with explicit human checkpoints.",
+                "action": "Steps: plain-language model explanation in UI; documented uncertainty; UI blocks high-risk actions without clinician acknowledgment.",
+                "result": "Outcome: trust in rounds; automation limited to routing, alerts, eligibility prep — within hospital risk tolerance."
+            },
+            {
+                "title": "Change History: event consolidation",
+                "situation": "Geaux Network — Associate Software Developer Intern, May–Aug 2025, remote. Problem: engineering and content both needed audit trails for podcast and media edits, but events lived in multiple backends with inconsistent schemas.",
+                "task": "Goal: ship Change History (TypeScript, SCSS) that improves traceability on v1 without blocking the release on full consolidation.",
+                "action": "Steps: (1) Joint session with engineering + content to rank event sources by traceability value per engineering week. (2) Phase 1 UI: highest-signal protobuf-backed events first. (3) Integration tests on merged read path before adding sources.",
+                "result": "Outcome: stronger traceability for targeted workflows; stable release cadence; backlog defined for remaining sources."
+            },
+            {
+                "title": "Engineering identity",
+                "situation": "Member need: interview prep + technical projects — not generic PD.",
+                "task": "Goal: NSBE = CS interview prep hub on campus.",
+                "action": "Programming: DSA workshops; intro system design; internship pipeline sessions aligned to real loops.",
+                "result": "Outcome: higher CS attendance and retention vs non-technical programming."
+            }
+        ]
+    },
+    {
+        "id": 15,
+        "category": "Failure & Growth",
+        "question": "Tell me about a time when you missed a deadline. What happened, and how did you handle it?",
+        "stories": [
+            {
+                "title": "Compiler milestone slip",
+                "situation": "Problem: Public Mini-Compiler release promised optimizations; lexer tests incomplete — demo failed on rare tokenization input.",
+                "task": "Goal: restore trust + ship stable artifact quickly.",
+                "action": "Steps: notify stakeholders same day; defer non-critical optimizations; hotfix branch after lexer tests green.",
+                "result": "Outcome: stable release within days; process change — no public date without test gate."
+            },
+            {
+                "title": "ML + clinical translation",
+                "situation": "Gap: engineers report accuracy; clinicians need override rules, failure modes, shift-time usability.",
+                "task": "Goal: assistive ML with explicit human checkpoints.",
+                "action": "Steps: plain-language model explanation in UI; documented uncertainty; UI blocks high-risk actions without clinician acknowledgment.",
+                "result": "Outcome: trust in rounds; automation limited to routing, alerts, eligibility prep — within hospital risk tolerance."
+            },
+            {
+                "title": "gRPC service layer + tests",
+                "situation": "Context: internal services moving to Java + gRPC + Protocol Buffers for podcast ingestion and distribution (10,000+ monthly listeners). Ingestion errors propagate to creators and listeners.",
+                "task": "Goal: raise measured data accuracy on the ingestion path; keep protobuf contracts testable at the RPC boundary.",
+                "action": "Steps: extend Java service layer; tighten .proto files; add end-to-end tests across gRPC; validate against real ingestion runs, not mocks only.",
+                "result": "Outcome: ~2× measured accuracy on ingestion path (team metric); safer downstream integrations."
+            }
+        ]
+    },
+    {
+        "id": 16,
+        "category": "Pressure & Resilience",
+        "question": "Describe a time when your workload was heavy and how you handled it.",
+        "stories": [
+            {
+                "title": "Balance with coursework",
+                "situation": "Constraint: Dean’s List, Presidential Scholarship, and hackathon deadlines in the same academic term.",
+                "task": "Goal: ship a defensible demo without losing scholarship GPA.",
+                "action": "Method: fixed scope budget before the hackathon; reuse UI modules across projects; hard feature freeze in the final 12 hours.",
+                "result": "Outcome: demos delivered on schedule; GPA stayed within scholarship requirements."
+            },
+            {
+                "title": "RBAC, logging, and a11y on RPC",
+                "situation": "Constraint: creator vs admin flows on overlapping surfaces; compliance requires auditable mutations and usable UI for both roles.",
+                "task": "Goal: RBAC on sensitive gRPC methods + structured logs + accessibility coverage — without stalling feature delivery.",
+                "action": "Steps: enforce role rules on critical RPCs; log interaction events on mutations; keyboard + screen-reader pass on primary creator/admin screens tied to those RPCs.",
+                "result": "Outcome: fewer wrong-role failures in QA; clearer audit trail; explicit creator/admin behavior."
+            },
+            {
+                "title": "NSBE Gen-Sec + partnerships",
+                "situation": "Role: NSBE — General Secretary, Jan 2025–present, Grambling State University.",
+                "task": "Goal: grow technical membership; convert sponsor conversations into funded programs.",
+                "action": "Plan: officer alignment from member surveys; sponsor packets with attendance + outcomes; recurring technical events.",
+                "result": "Outcome: 300+ members; ~$3K technical partnerships (resume figure); higher CS engagement vs prior term."
+            }
+        ]
+    },
+    {
+        "id": 17,
+        "category": "Learning & Adaptability",
+        "question": "Tell me about a time when you had to deal with a significant change at work. How did you adapt?",
+        "stories": [
+            {
+                "title": "gRPC service layer + tests",
+                "situation": "Context: internal services moving to Java + gRPC + Protocol Buffers for podcast ingestion and distribution (10,000+ monthly listeners). Ingestion errors propagate to creators and listeners.",
+                "task": "Goal: raise measured data accuracy on the ingestion path; keep protobuf contracts testable at the RPC boundary.",
+                "action": "Steps: extend Java service layer; tighten .proto files; add end-to-end tests across gRPC; validate against real ingestion runs, not mocks only.",
+                "result": "Outcome: ~2× measured accuracy on ingestion path (team metric); safer downstream integrations."
+            },
+            {
+                "title": "Kafka/MQTT/Postgres pipeline",
+                "situation": "Hubtel LTD — Software Engineer Intern, Jun–Sep 2023, Ghana. Problem: high-volume system events for transaction-heavy services; slow failure detection hurt availability and trust.",
+                "task": "Goal: shorten detection time for pipeline failures without destabilizing payment paths.",
+                "action": "Stack + method: Kafka Connect → MQTT → PostgreSQL; trace broker to sink; integration tests + metrics to localize failures before restart-first debugging.",
+                "result": "Outcome: ~40% faster downtime detection (team baseline); fewer blind incidents on payment flows."
+            },
+            {
+                "title": "Full-stack reliability",
+                "situation": "Risk: real-time monitoring — UI errors mimic clinical emergencies; RBAC errors expose PHI.",
+                "task": "Goal: load-stable UI + correct role separation end to end.",
+                "action": "Steps: RBAC on all sensitive routes; consistent API error schema; optimize React paths on time-critical monitoring views.",
+                "result": "Outcome: pilot sessions without access-control incidents; IT checklist satisfied for role separation."
+            }
+        ]
+    },
+    {
+        "id": 18,
+        "category": "Initiative",
+        "question": "Describe a situation where you saw a problem and took the initiative to correct it rather than waiting for someone else.",
+        "stories": [
+            {
+                "title": "RBAC, logging, and a11y on RPC",
+                "situation": "Constraint: creator vs admin flows on overlapping surfaces; compliance requires auditable mutations and usable UI for both roles.",
+                "task": "Goal: RBAC on sensitive gRPC methods + structured logs + accessibility coverage — without stalling feature delivery.",
+                "action": "Steps: enforce role rules on critical RPCs; log interaction events on mutations; keyboard + screen-reader pass on primary creator/admin screens tied to those RPCs.",
+                "result": "Outcome: fewer wrong-role failures in QA; clearer audit trail; explicit creator/admin behavior."
+            },
+            {
+                "title": "Spring Boot test expansion",
+                "situation": "Problem: failures appeared at integration boundaries (DB, messaging, HTTP), not in isolated unit tests — typical for payment-related Spring services.",
+                "task": "Goal: increase confidence on money-touching code paths.",
+                "action": "Steps: 20+ tests using Spring Boot, JUnit, Postman; cases centered on transaction boundaries, retries, and known failure modes.",
+                "result": "Outcome: ~80% reliability lift in targeted areas (team measurement); regressions caught pre-release more often."
+            },
+            {
+                "title": "VisualizeMyAlgorithm scale",
+                "situation": "Product: VisualizeMyAlgorithm (React) — pathfinding, sorting, NN-style demos. Reach: 1,000+ learners.",
+                "task": "Goal: classroom-scale performance + teaching clarity.",
+                "action": "Build: modular components (Dijkstra, A*, Minimax, NN demos); explicit step state machine; batched rendering pipeline.",
+                "result": "Outcome: ~40% faster self-reported time-to-understanding (informal classroom timing); stable under concurrent classroom load."
+            }
+        ]
+    },
+    {
+        "id": 19,
+        "category": "Conflict & Communication",
+        "question": "Describe a time when there was a conflict within your team. How did you help resolve it? Did you do anything to prevent it in future?",
+        "stories": [
+            {
+                "title": "Change History: event consolidation",
+                "situation": "Geaux Network — Associate Software Developer Intern, May–Aug 2025, remote. Problem: engineering and content both needed audit trails for podcast and media edits, but events lived in multiple backends with inconsistent schemas.",
+                "task": "Goal: ship Change History (TypeScript, SCSS) that improves traceability on v1 without blocking the release on full consolidation.",
+                "action": "Steps: (1) Joint session with engineering + content to rank event sources by traceability value per engineering week. (2) Phase 1 UI: highest-signal protobuf-backed events first. (3) Integration tests on merged read path before adding sources.",
+                "result": "Outcome: stronger traceability for targeted workflows; stable release cadence; backlog defined for remaining sources."
+            },
+            {
+                "title": "Cross-officer conflict",
+                "situation": "Conflict: officers split on hackathons vs corporate sessions vs K-12 outreach.",
+                "task": "Goal: single quarterly roadmap with measurable targets.",
+                "action": "Resolution: attendance data + survey; map sponsor dollars to dated events; vote written priority list in meeting.",
+                "result": "Outcome: fewer debate loops; execution tracked to agreed metrics."
+            },
+            {
+                "title": "ColorStack hackathon win",
+                "situation": "Event: ColorStack Winter Hackathon 2024 — ~1,000 participants worldwide.",
+                "task": "Goal: MVP + demo script with zero live-integration failure on stage.",
+                "action": "Execution: scope freeze day one; FE/BE owners; rehearsed demo; fallback if API unstable.",
+                "result": "Outcome: 1st place Winter 2024; demo completed without outage."
+            }
+        ]
+    },
+    {
+        "id": 20,
+        "category": "Learning & Adaptability",
+        "question": "Describe a time when you went out of your comfort zone. Why did you do it? What lessons did you learn?",
+        "stories": [
+            {
+                "title": "gRPC service layer + tests",
+                "situation": "Context: internal services moving to Java + gRPC + Protocol Buffers for podcast ingestion and distribution (10,000+ monthly listeners). Ingestion errors propagate to creators and listeners.",
+                "task": "Goal: raise measured data accuracy on the ingestion path; keep protobuf contracts testable at the RPC boundary.",
+                "action": "Steps: extend Java service layer; tighten .proto files; add end-to-end tests across gRPC; validate against real ingestion runs, not mocks only.",
+                "result": "Outcome: ~2× measured accuracy on ingestion path (team metric); safer downstream integrations."
+            },
+            {
+                "title": "Kafka/MQTT/Postgres pipeline",
+                "situation": "Hubtel LTD — Software Engineer Intern, Jun–Sep 2023, Ghana. Problem: high-volume system events for transaction-heavy services; slow failure detection hurt availability and trust.",
+                "task": "Goal: shorten detection time for pipeline failures without destabilizing payment paths.",
+                "action": "Stack + method: Kafka Connect → MQTT → PostgreSQL; trace broker to sink; integration tests + metrics to localize failures before restart-first debugging.",
+                "result": "Outcome: ~40% faster downtime detection (team baseline); fewer blind incidents on payment flows."
+            },
+            {
+                "title": "MedDiagnose stack + pilot",
+                "situation": "Project: MedDiagnose AI — Python, TypeScript, FastAPI, TensorFlow, React. Features: real-time monitoring, NIHSS scoring, RBAC, automated tPA eligibility.",
+                "task": "Goal: Louisiana hospital pilot optimized for workflow time — not leaderboard accuracy.",
+                "action": "Execution: FastAPI + React + model integration; Random Forest stroke-risk ~45% — positioned as decision support only; workflow KPIs agreed with neurologists.",
+                "result": "Outcome: pilot completed; ~35% reduction in time-to-treatment (pilot metric); assistive workflow, not autonomous diagnosis."
+            }
+        ]
+    },
+    {
+        "id": 21,
+        "category": "Pressure & Resilience",
+        "question": "Describe a time when you delivered a project under a tight deadline.",
+        "stories": [
+            {
+                "title": "ColorStack hackathon win",
+                "situation": "Event: ColorStack Winter Hackathon 2024 — ~1,000 participants worldwide.",
+                "task": "Goal: MVP + demo script with zero live-integration failure on stage.",
+                "action": "Execution: scope freeze day one; FE/BE owners; rehearsed demo; fallback if API unstable.",
+                "result": "Outcome: 1st place Winter 2024; demo completed without outage."
+            },
+            {
+                "title": "Change History: event consolidation",
+                "situation": "Geaux Network — Associate Software Developer Intern, May–Aug 2025, remote. Problem: engineering and content both needed audit trails for podcast and media edits, but events lived in multiple backends with inconsistent schemas.",
+                "task": "Goal: ship Change History (TypeScript, SCSS) that improves traceability on v1 without blocking the release on full consolidation.",
+                "action": "Steps: (1) Joint session with engineering + content to rank event sources by traceability value per engineering week. (2) Phase 1 UI: highest-signal protobuf-backed events first. (3) Integration tests on merged read path before adding sources.",
+                "result": "Outcome: stronger traceability for targeted workflows; stable release cadence; backlog defined for remaining sources."
+            },
+            {
+                "title": "MedDiagnose stack + pilot",
+                "situation": "Project: MedDiagnose AI — Python, TypeScript, FastAPI, TensorFlow, React. Features: real-time monitoring, NIHSS scoring, RBAC, automated tPA eligibility.",
+                "task": "Goal: Louisiana hospital pilot optimized for workflow time — not leaderboard accuracy.",
+                "action": "Execution: FastAPI + React + model integration; Random Forest stroke-risk ~45% — positioned as decision support only; workflow KPIs agreed with neurologists.",
+                "result": "Outcome: pilot completed; ~35% reduction in time-to-treatment (pilot metric); assistive workflow, not autonomous diagnosis."
+            }
+        ]
+    },
+    {
+        "id": 22,
+        "category": "Failure & Growth",
+        "question": "Describe a time when you took a big risk and it failed.",
+        "stories": [
+            {
+                "title": "ML + clinical translation",
+                "situation": "Gap: engineers report accuracy; clinicians need override rules, failure modes, shift-time usability.",
+                "task": "Goal: assistive ML with explicit human checkpoints.",
+                "action": "Steps: plain-language model explanation in UI; documented uncertainty; UI blocks high-risk actions without clinician acknowledgment.",
+                "result": "Outcome: trust in rounds; automation limited to routing, alerts, eligibility prep — within hospital risk tolerance."
+            },
+            {
+                "title": "Mini-compiler engineering",
+                "situation": "Project: Mini-Compiler — C, C++, Python, Yacc. Audience: students learning compiler construction.",
+                "task": "Goal: correct reference implementation suitable for coursework extension.",
+                "action": "Implementation: lexer, parser, IR, constant folding, dead-code elimination, structured compiler error messages.",
+                "result": "Outcome: 50+ users; ~35% self-reported reduction in debug time vs unstructured edit-compile cycles."
+            },
+            {
+                "title": "gRPC service layer + tests",
+                "situation": "Context: internal services moving to Java + gRPC + Protocol Buffers for podcast ingestion and distribution (10,000+ monthly listeners). Ingestion errors propagate to creators and listeners.",
+                "task": "Goal: raise measured data accuracy on the ingestion path; keep protobuf contracts testable at the RPC boundary.",
+                "action": "Steps: extend Java service layer; tighten .proto files; add end-to-end tests across gRPC; validate against real ingestion runs, not mocks only.",
+                "result": "Outcome: ~2× measured accuracy on ingestion path (team metric); safer downstream integrations."
+            }
+        ]
+    },
+    {
+        "id": 23,
+        "category": "Design & Product",
+        "question": "How would you design or test a product to make sure it's diverse and inclusive to all users?",
+        "stories": [
+            {
+                "title": "RBAC + a11y baseline",
+                "situation": "Problem: Creator vs admin UIs depend on gRPC permissions — keyboard and screen-reader paths must match role capabilities.",
+                "task": "Goal: inclusive acceptance criteria before merge — not a late QA pass.",
+                "action": "Steps: define test matrix (role × critical flow); run a11y checks on RPC-backed screens; block merge on restricted-role failures.",
+                "result": "Outcome: caught permission + a11y gaps in QA; reduced production-only failures."
+            },
+            {
+                "title": "Full-stack reliability",
+                "situation": "Risk: real-time monitoring — UI errors mimic clinical emergencies; RBAC errors expose PHI.",
+                "task": "Goal: load-stable UI + correct role separation end to end.",
+                "action": "Steps: RBAC on all sensitive routes; consistent API error schema; optimize React paths on time-critical monitoring views.",
+                "result": "Outcome: pilot sessions without access-control incidents; IT checklist satisfied for role separation."
+            },
+            {
+                "title": "Pedagogy + engineering",
+                "situation": "Teaching constraint: each frame must map to a checkable invariant (frontier, relaxed edge, etc.).",
+                "task": "Goal: tie every animation to pseudocode — zero unexplained motion.",
+                "action": "Steps: label invariant in UI at each step; sync visual state to algorithm state vector.",
+                "result": "Outcome: improved retention on follow-up quizzes (informal instructor feedback)."
+            }
+        ]
+    },
+    {
+        "id": 24,
+        "category": "Communication",
+        "question": "Describe a time you had to explain a complex technical concept to someone non-technical.",
+        "stories": [
+            {
+                "title": "ML + clinical translation",
+                "situation": "Gap: engineers report accuracy; clinicians need override rules, failure modes, shift-time usability.",
+                "task": "Goal: assistive ML with explicit human checkpoints.",
+                "action": "Steps: plain-language model explanation in UI; documented uncertainty; UI blocks high-risk actions without clinician acknowledgment.",
+                "result": "Outcome: trust in rounds; automation limited to routing, alerts, eligibility prep — within hospital risk tolerance."
+            },
+            {
+                "title": "Change History: event consolidation",
+                "situation": "Geaux Network — Associate Software Developer Intern, May–Aug 2025, remote. Problem: engineering and content both needed audit trails for podcast and media edits, but events lived in multiple backends with inconsistent schemas.",
+                "task": "Goal: ship Change History (TypeScript, SCSS) that improves traceability on v1 without blocking the release on full consolidation.",
+                "action": "Steps: (1) Joint session with engineering + content to rank event sources by traceability value per engineering week. (2) Phase 1 UI: highest-signal protobuf-backed events first. (3) Integration tests on merged read path before adding sources.",
+                "result": "Outcome: stronger traceability for targeted workflows; stable release cadence; backlog defined for remaining sources."
+            },
+            {
+                "title": "Pedagogy + engineering",
+                "situation": "Teaching constraint: each frame must map to a checkable invariant (frontier, relaxed edge, etc.).",
+                "task": "Goal: tie every animation to pseudocode — zero unexplained motion.",
+                "action": "Steps: label invariant in UI at each step; sync visual state to algorithm state vector.",
+                "result": "Outcome: improved retention on follow-up quizzes (informal instructor feedback)."
+            }
+        ]
+    },
+    {
+        "id": 25,
+        "category": "Conflict & Communication",
+        "question": "Tell me about a time you disagreed with a colleague. How did you handle the situation?",
+        "stories": [
+            {
+                "title": "Change History: event consolidation",
+                "situation": "Geaux Network — Associate Software Developer Intern, May–Aug 2025, remote. Problem: engineering and content both needed audit trails for podcast and media edits, but events lived in multiple backends with inconsistent schemas.",
+                "task": "Goal: ship Change History (TypeScript, SCSS) that improves traceability on v1 without blocking the release on full consolidation.",
+                "action": "Steps: (1) Joint session with engineering + content to rank event sources by traceability value per engineering week. (2) Phase 1 UI: highest-signal protobuf-backed events first. (3) Integration tests on merged read path before adding sources.",
+                "result": "Outcome: stronger traceability for targeted workflows; stable release cadence; backlog defined for remaining sources."
+            },
+            {
+                "title": "Spring Boot test expansion",
+                "situation": "Problem: failures appeared at integration boundaries (DB, messaging, HTTP), not in isolated unit tests — typical for payment-related Spring services.",
+                "task": "Goal: increase confidence on money-touching code paths.",
+                "action": "Steps: 20+ tests using Spring Boot, JUnit, Postman; cases centered on transaction boundaries, retries, and known failure modes.",
+                "result": "Outcome: ~80% reliability lift in targeted areas (team measurement); regressions caught pre-release more often."
+            },
+            {
+                "title": "Cross-officer conflict",
+                "situation": "Conflict: officers split on hackathons vs corporate sessions vs K-12 outreach.",
+                "task": "Goal: single quarterly roadmap with measurable targets.",
+                "action": "Resolution: attendance data + survey; map sponsor dollars to dated events; vote written priority list in meeting.",
+                "result": "Outcome: fewer debate loops; execution tracked to agreed metrics."
+            }
+        ]
+    },
+    {
+        "id": 26,
+        "category": "Collaboration",
+        "question": "Give an example of a time you had to collaborate effectively with a team from a different department.",
+        "stories": [
+            {
+                "title": "Change History: event consolidation",
+                "situation": "Geaux Network — Associate Software Developer Intern, May–Aug 2025, remote. Problem: engineering and content both needed audit trails for podcast and media edits, but events lived in multiple backends with inconsistent schemas.",
+                "task": "Goal: ship Change History (TypeScript, SCSS) that improves traceability on v1 without blocking the release on full consolidation.",
+                "action": "Steps: (1) Joint session with engineering + content to rank event sources by traceability value per engineering week. (2) Phase 1 UI: highest-signal protobuf-backed events first. (3) Integration tests on merged read path before adding sources.",
+                "result": "Outcome: stronger traceability for targeted workflows; stable release cadence; backlog defined for remaining sources."
+            },
+            {
+                "title": "MedDiagnose stack + pilot",
+                "situation": "Project: MedDiagnose AI — Python, TypeScript, FastAPI, TensorFlow, React. Features: real-time monitoring, NIHSS scoring, RBAC, automated tPA eligibility.",
+                "task": "Goal: Louisiana hospital pilot optimized for workflow time — not leaderboard accuracy.",
+                "action": "Execution: FastAPI + React + model integration; Random Forest stroke-risk ~45% — positioned as decision support only; workflow KPIs agreed with neurologists.",
+                "result": "Outcome: pilot completed; ~35% reduction in time-to-treatment (pilot metric); assistive workflow, not autonomous diagnosis."
+            },
+            {
+                "title": "NSBE Gen-Sec + partnerships",
+                "situation": "Role: NSBE — General Secretary, Jan 2025–present, Grambling State University.",
+                "task": "Goal: grow technical membership; convert sponsor conversations into funded programs.",
+                "action": "Plan: officer alignment from member surveys; sponsor packets with attendance + outcomes; recurring technical events.",
+                "result": "Outcome: 300+ members; ~$3K technical partnerships (resume figure); higher CS engagement vs prior term."
+            }
+        ]
+    },
+    {
+        "id": 27,
+        "category": "Technical",
+        "question": "Tell me about a complex technical project you've worked on.",
+        "stories": [
+            {
+                "title": "gRPC service layer + tests",
+                "situation": "Context: internal services moving to Java + gRPC + Protocol Buffers for podcast ingestion and distribution (10,000+ monthly listeners). Ingestion errors propagate to creators and listeners.",
+                "task": "Goal: raise measured data accuracy on the ingestion path; keep protobuf contracts testable at the RPC boundary.",
+                "action": "Steps: extend Java service layer; tighten .proto files; add end-to-end tests across gRPC; validate against real ingestion runs, not mocks only.",
+                "result": "Outcome: ~2× measured accuracy on ingestion path (team metric); safer downstream integrations."
+            },
+            {
+                "title": "Kafka/MQTT/Postgres pipeline",
+                "situation": "Hubtel LTD — Software Engineer Intern, Jun–Sep 2023, Ghana. Problem: high-volume system events for transaction-heavy services; slow failure detection hurt availability and trust.",
+                "task": "Goal: shorten detection time for pipeline failures without destabilizing payment paths.",
+                "action": "Stack + method: Kafka Connect → MQTT → PostgreSQL; trace broker to sink; integration tests + metrics to localize failures before restart-first debugging.",
+                "result": "Outcome: ~40% faster downtime detection (team baseline); fewer blind incidents on payment flows."
+            },
+            {
+                "title": "MedDiagnose stack + pilot",
+                "situation": "Project: MedDiagnose AI — Python, TypeScript, FastAPI, TensorFlow, React. Features: real-time monitoring, NIHSS scoring, RBAC, automated tPA eligibility.",
+                "task": "Goal: Louisiana hospital pilot optimized for workflow time — not leaderboard accuracy.",
+                "action": "Execution: FastAPI + React + model integration; Random Forest stroke-risk ~45% — positioned as decision support only; workflow KPIs agreed with neurologists.",
+                "result": "Outcome: pilot completed; ~35% reduction in time-to-treatment (pilot metric); assistive workflow, not autonomous diagnosis."
+            }
+        ]
+    },
+    {
+        "id": 28,
+        "category": "Technical",
+        "question": "How do you stay up-to-date with the latest technological advancements?",
+        "stories": [
+            {
+                "title": "Hands-on with real stacks",
+                "situation": "Situation: new frameworks ship constantly; passive tutorials do not predict whether something works in my codebase.",
+                "task": "Task: only adopt tech I can validate in a repo I own.",
+                "action": "Action: follow release notes for stacks in use (gRPC/protobuf, Kafka, React, TensorFlow); spike in VisualizeMyAlgorithm or Mini-Compiler branch; benchmark; adopt or reject with numbers.",
+                "result": "Result: fewer dead-end dependencies; learning time tied to measured impact."
+            },
+            {
+                "title": "Papers + practice",
+                "situation": "Situation: ML papers optimize leaderboard metrics; hospital pilot (MedDiagnose) penalizes wrong assumptions about data and workflow.",
+                "task": "Task: evaluate research by deployability, not abstract score.",
+                "action": "Action: checklist each paper — training vs deployment distribution, failure modes, inference cost, monitoring needs.",
+                "result": "Result: research reading filtered to ideas that survive real constraints."
+            },
+            {
+                "title": "Community signal",
+                "situation": "Situation: interview focus shifts by season and company; solo grind wastes time on low-yield topics.",
+                "task": "Task: align study backlog with recent real interview signal.",
+                "action": "Action: NSBE + ColorStack peers share system-design prompts and company-specific rounds; I track topics in a spreadsheet and reprioritize weekly.",
+                "result": "Result: prep hours concentrated on high-frequency questions."
+            }
+        ]
+    },
+    {
+        "id": 29,
+        "category": "Technical",
+        "question": "Give an example of a time you had to debug a challenging technical issue.",
+        "stories": [
+            {
+                "title": "gRPC contract mismatch",
+                "situation": "Symptom: HTTP 500s after protobuf field rename.",
+                "task": "Root cause: client and server generated from different .proto / dependency versions.",
+                "action": "Fix: git history on .proto; pin protoc + plugin versions in CI; contract test fails build if codegen stale.",
+                "result": "Outcome: eliminated silent stub drift class of outages."
+            },
+            {
+                "title": "Kafka/MQTT/Postgres pipeline",
+                "situation": "Hubtel LTD — Software Engineer Intern, Jun–Sep 2023, Ghana. Problem: high-volume system events for transaction-heavy services; slow failure detection hurt availability and trust.",
+                "task": "Goal: shorten detection time for pipeline failures without destabilizing payment paths.",
+                "action": "Stack + method: Kafka Connect → MQTT → PostgreSQL; trace broker to sink; integration tests + metrics to localize failures before restart-first debugging.",
+                "result": "Outcome: ~40% faster downtime detection (team baseline); fewer blind incidents on payment flows."
+            },
+            {
+                "title": "Correctness first",
+                "situation": "Failure mode: lexer/parser edge cases produced corrupt IR; optimizations hid bugs.",
+                "task": "Goal: green parser/lexer suite before optimization passes.",
+                "action": "Steps: expand grammar tests; regression tokens; gate optimizations on passing baseline.",
+                "result": "Outcome: stable IR; other students added passes without mystery failures."
+            }
+        ]
+    },
+    {
+        "id": 30,
+        "category": "Motivation",
+        "question": "Why are you interested in working at [company name]?",
+        "stories": [
+            {
+                "title": "Impact + systems",
+                "situation": "Selection criteria: work must tie to measurable outcomes — latency, availability, correctness, clinical or financial KPIs.",
+                "task": "Stack fit: backend + data + full-stack depth like Geaux (gRPC, protobuf, RBAC), Hubtel (Kafka, MQTT, Postgres, Firebase), MedDiagnose (clinical ML + React).",
+                "action": "Questions for [company]: which services own revenue or safety paths; team SLOs; how success is defined in year one.",
+                "result": "Why hire me: I already shipped under those constraints; I want the same class of problem at larger scale."
+            },
+            {
+                "title": "Growth vector",
+                "situation": "Learning mode: production constraints — schema migration, idempotency, failure domains — not tutorial CRUD.",
+                "task": "Target team: rigorous review, on-call reality, explicit cross-team contracts.",
+                "action": "Track record: chose internships/projects that forced distributed systems, production ML tradeoffs, compiler-level correctness.",
+                "result": "5-year aim: own critical service boundaries + mentor on testing and incident response."
+            },
+            {
+                "title": "Mission + craft",
+                "situation": "Non-negotiables: tests, observability, inclusive UX for real users — healthcare and payments proved “works locally” is insufficient.",
+                "task": "Alignment: RBAC + logging + accessibility at Geaux; honest ML framing + workflow KPIs at MedDiagnose.",
+                "action": "Question to employers: how do you balance ship velocity with incident budget and accessibility requirements?",
+                "result": "Desired culture: correctness and auditability are part of delivery — not a backlog afterthought."
+            }
+        ]
+    },
+    {
+        "id": 31,
+        "category": "Design & Product",
+        "question": "Assume you are given a task to design a system. How would you do it? How would you resolve ambiguity?",
+        "stories": [
+            {
+                "title": "Clarify SLOs and boundaries",
+                "situation": "Step 1 — Non-functionals: latency target, durability, consistency model, compliance (PII, audit).",
+                "task": "Step 2 — User journeys: failure modes if each step is wrong.",
+                "action": "Step 3 — Architecture sketch: data flow diagram; trust boundaries (RBAC); choose REST vs gRPC vs events from coupling + scale (Geaux/Hubtel pattern).",
+                "result": "Deliverable: 1–2 page design note for review before implementation."
+            },
+            {
+                "title": "Full-stack reliability",
+                "situation": "Risk: real-time monitoring — UI errors mimic clinical emergencies; RBAC errors expose PHI.",
+                "task": "Goal: load-stable UI + correct role separation end to end.",
+                "action": "Steps: RBAC on all sensitive routes; consistent API error schema; optimize React paths on time-critical monitoring views.",
+                "result": "Outcome: pilot sessions without access-control incidents; IT checklist satisfied for role separation."
+            },
+            {
+                "title": "Kafka/MQTT/Postgres pipeline",
+                "situation": "Hubtel LTD — Software Engineer Intern, Jun–Sep 2023, Ghana. Problem: high-volume system events for transaction-heavy services; slow failure detection hurt availability and trust.",
+                "task": "Goal: shorten detection time for pipeline failures without destabilizing payment paths.",
+                "action": "Stack + method: Kafka Connect → MQTT → PostgreSQL; trace broker to sink; integration tests + metrics to localize failures before restart-first debugging.",
+                "result": "Outcome: ~40% faster downtime detection (team baseline); fewer blind incidents on payment flows."
+            }
+        ]
+    },
+    {
+        "id": 32,
+        "category": "Collaboration",
+        "question": "Have you ever been in a situation where another team and yours were creating a similar product? What happened?",
+        "stories": [
+            {
+                "title": "Geaux overlap risk",
+                "situation": "Problem: engineering + content each built overlapping “audit” UIs — duplicate work + inconsistent UX.",
+                "task": "Decision: single Change History product; one owner for roadmap.",
+                "action": "Actions: merge requirements; shared protobuf event contracts; deprecate duplicate prototype.",
+                "result": "Outcome: one user-facing story; zero duplicate backend integration for same feature."
+            },
+            {
+                "title": "MedDiagnose stack + pilot",
+                "situation": "Project: MedDiagnose AI — Python, TypeScript, FastAPI, TensorFlow, React. Features: real-time monitoring, NIHSS scoring, RBAC, automated tPA eligibility.",
+                "task": "Goal: Louisiana hospital pilot optimized for workflow time — not leaderboard accuracy.",
+                "action": "Execution: FastAPI + React + model integration; Random Forest stroke-risk ~45% — positioned as decision support only; workflow KPIs agreed with neurologists.",
+                "result": "Outcome: pilot completed; ~35% reduction in time-to-treatment (pilot metric); assistive workflow, not autonomous diagnosis."
+            },
+            {
+                "title": "Cross-officer conflict",
+                "situation": "Conflict: officers split on hackathons vs corporate sessions vs K-12 outreach.",
+                "task": "Goal: single quarterly roadmap with measurable targets.",
+                "action": "Resolution: attendance data + survey; map sponsor dollars to dated events; vote written priority list in meeting.",
+                "result": "Outcome: fewer debate loops; execution tracked to agreed metrics."
+            }
+        ]
+    },
+    {
+        "id": 33,
+        "category": "Technical",
+        "question": "What is the biggest technical challenge you have worked on?",
+        "stories": [
+            {
+                "title": "Kafka/MQTT/Postgres pipeline",
+                "situation": "Hubtel LTD — Software Engineer Intern, Jun–Sep 2023, Ghana. Problem: high-volume system events for transaction-heavy services; slow failure detection hurt availability and trust.",
+                "task": "Goal: shorten detection time for pipeline failures without destabilizing payment paths.",
+                "action": "Stack + method: Kafka Connect → MQTT → PostgreSQL; trace broker to sink; integration tests + metrics to localize failures before restart-first debugging.",
+                "result": "Outcome: ~40% faster downtime detection (team baseline); fewer blind incidents on payment flows."
+            },
+            {
+                "title": "MedDiagnose stack + pilot",
+                "situation": "Project: MedDiagnose AI — Python, TypeScript, FastAPI, TensorFlow, React. Features: real-time monitoring, NIHSS scoring, RBAC, automated tPA eligibility.",
+                "task": "Goal: Louisiana hospital pilot optimized for workflow time — not leaderboard accuracy.",
+                "action": "Execution: FastAPI + React + model integration; Random Forest stroke-risk ~45% — positioned as decision support only; workflow KPIs agreed with neurologists.",
+                "result": "Outcome: pilot completed; ~35% reduction in time-to-treatment (pilot metric); assistive workflow, not autonomous diagnosis."
+            },
+            {
+                "title": "gRPC service layer + tests",
+                "situation": "Context: internal services moving to Java + gRPC + Protocol Buffers for podcast ingestion and distribution (10,000+ monthly listeners). Ingestion errors propagate to creators and listeners.",
+                "task": "Goal: raise measured data accuracy on the ingestion path; keep protobuf contracts testable at the RPC boundary.",
+                "action": "Steps: extend Java service layer; tighten .proto files; add end-to-end tests across gRPC; validate against real ingestion runs, not mocks only.",
+                "result": "Outcome: ~2× measured accuracy on ingestion path (team metric); safer downstream integrations."
+            }
+        ]
+    },
+    {
+        "id": 34,
+        "category": "Motivation",
+        "question": "Why do you want to change your current company?",
+        "stories": [
+            {
+                "title": "Impact + systems",
+                "situation": "Selection criteria: work must tie to measurable outcomes — latency, availability, correctness, clinical or financial KPIs.",
+                "task": "Stack fit: backend + data + full-stack depth like Geaux (gRPC, protobuf, RBAC), Hubtel (Kafka, MQTT, Postgres, Firebase), MedDiagnose (clinical ML + React).",
+                "action": "Questions for [company]: which services own revenue or safety paths; team SLOs; how success is defined in year one.",
+                "result": "Why hire me: I already shipped under those constraints; I want the same class of problem at larger scale."
+            },
+            {
+                "title": "Growth vector",
+                "situation": "Learning mode: production constraints — schema migration, idempotency, failure domains — not tutorial CRUD.",
+                "task": "Target team: rigorous review, on-call reality, explicit cross-team contracts.",
+                "action": "Track record: chose internships/projects that forced distributed systems, production ML tradeoffs, compiler-level correctness.",
+                "result": "5-year aim: own critical service boundaries + mentor on testing and incident response."
+            },
+            {
+                "title": "Mission + craft",
+                "situation": "Non-negotiables: tests, observability, inclusive UX for real users — healthcare and payments proved “works locally” is insufficient.",
+                "task": "Alignment: RBAC + logging + accessibility at Geaux; honest ML framing + workflow KPIs at MedDiagnose.",
+                "action": "Question to employers: how do you balance ship velocity with incident budget and accessibility requirements?",
+                "result": "Desired culture: correctness and auditability are part of delivery — not a backlog afterthought."
+            }
+        ]
+    },
+    {
+        "id": 35,
+        "category": "Decision Making",
+        "question": "Tell me a time when you had a different opinion than the rest of the team. How did you handle it?",
+        "stories": [
+            {
+                "title": "Change History: event consolidation",
+                "situation": "Geaux Network — Associate Software Developer Intern, May–Aug 2025, remote. Problem: engineering and content both needed audit trails for podcast and media edits, but events lived in multiple backends with inconsistent schemas.",
+                "task": "Goal: ship Change History (TypeScript, SCSS) that improves traceability on v1 without blocking the release on full consolidation.",
+                "action": "Steps: (1) Joint session with engineering + content to rank event sources by traceability value per engineering week. (2) Phase 1 UI: highest-signal protobuf-backed events first. (3) Integration tests on merged read path before adding sources.",
+                "result": "Outcome: stronger traceability for targeted workflows; stable release cadence; backlog defined for remaining sources."
+            },
+            {
+                "title": "ML + clinical translation",
+                "situation": "Gap: engineers report accuracy; clinicians need override rules, failure modes, shift-time usability.",
+                "task": "Goal: assistive ML with explicit human checkpoints.",
+                "action": "Steps: plain-language model explanation in UI; documented uncertainty; UI blocks high-risk actions without clinician acknowledgment.",
+                "result": "Outcome: trust in rounds; automation limited to routing, alerts, eligibility prep — within hospital risk tolerance."
+            },
+            {
+                "title": "Kafka/MQTT/Postgres pipeline",
+                "situation": "Hubtel LTD — Software Engineer Intern, Jun–Sep 2023, Ghana. Problem: high-volume system events for transaction-heavy services; slow failure detection hurt availability and trust.",
+                "task": "Goal: shorten detection time for pipeline failures without destabilizing payment paths.",
+                "action": "Stack + method: Kafka Connect → MQTT → PostgreSQL; trace broker to sink; integration tests + metrics to localize failures before restart-first debugging.",
+                "result": "Outcome: ~40% faster downtime detection (team baseline); fewer blind incidents on payment flows."
+            }
+        ]
+    },
+    {
+        "id": 36,
+        "category": "Problem Solving",
+        "question": "Tell me about a time when you were faced with a problem that had a number of possible solutions. What was the problem and how did you determine the course of action?",
+        "stories": [
+            {
+                "title": "Change History: event consolidation",
+                "situation": "Geaux Network — Associate Software Developer Intern, May–Aug 2025, remote. Problem: engineering and content both needed audit trails for podcast and media edits, but events lived in multiple backends with inconsistent schemas.",
+                "task": "Goal: ship Change History (TypeScript, SCSS) that improves traceability on v1 without blocking the release on full consolidation.",
+                "action": "Steps: (1) Joint session with engineering + content to rank event sources by traceability value per engineering week. (2) Phase 1 UI: highest-signal protobuf-backed events first. (3) Integration tests on merged read path before adding sources.",
+                "result": "Outcome: stronger traceability for targeted workflows; stable release cadence; backlog defined for remaining sources."
+            },
+            {
+                "title": "Kafka/MQTT/Postgres pipeline",
+                "situation": "Hubtel LTD — Software Engineer Intern, Jun–Sep 2023, Ghana. Problem: high-volume system events for transaction-heavy services; slow failure detection hurt availability and trust.",
+                "task": "Goal: shorten detection time for pipeline failures without destabilizing payment paths.",
+                "action": "Stack + method: Kafka Connect → MQTT → PostgreSQL; trace broker to sink; integration tests + metrics to localize failures before restart-first debugging.",
+                "result": "Outcome: ~40% faster downtime detection (team baseline); fewer blind incidents on payment flows."
+            },
+            {
+                "title": "State + performance",
+                "situation": "Issue: large graph state → React rerender storms → dropped frames on mid-tier laptops.",
+                "task": "Goal: smooth stepping on classroom hardware.",
+                "action": "Steps: batch updates per simulation tick; memoize graph structures; per-frame work budget.",
+                "result": "Outcome: usable in lecture halls without high-end GPUs."
+            }
+        ]
+    },
+    {
+        "id": 37,
+        "category": "Leadership",
+        "question": "Describe a time when you needed to motivate a group of individuals or encourage collaboration during a particular project.",
+        "stories": [
+            {
+                "title": "NSBE Gen-Sec + partnerships",
+                "situation": "Role: NSBE — General Secretary, Jan 2025–present, Grambling State University.",
+                "task": "Goal: grow technical membership; convert sponsor conversations into funded programs.",
+                "action": "Plan: officer alignment from member surveys; sponsor packets with attendance + outcomes; recurring technical events.",
+                "result": "Outcome: 300+ members; ~$3K technical partnerships (resume figure); higher CS engagement vs prior term."
+            },
+            {
+                "title": "ColorStack hackathon win",
+                "situation": "Event: ColorStack Winter Hackathon 2024 — ~1,000 participants worldwide.",
+                "task": "Goal: MVP + demo script with zero live-integration failure on stage.",
+                "action": "Execution: scope freeze day one; FE/BE owners; rehearsed demo; fallback if API unstable.",
+                "result": "Outcome: 1st place Winter 2024; demo completed without outage."
+            },
+            {
+                "title": "MedDiagnose stack + pilot",
+                "situation": "Project: MedDiagnose AI — Python, TypeScript, FastAPI, TensorFlow, React. Features: real-time monitoring, NIHSS scoring, RBAC, automated tPA eligibility.",
+                "task": "Goal: Louisiana hospital pilot optimized for workflow time — not leaderboard accuracy.",
+                "action": "Execution: FastAPI + React + model integration; Random Forest stroke-risk ~45% — positioned as decision support only; workflow KPIs agreed with neurologists.",
+                "result": "Outcome: pilot completed; ~35% reduction in time-to-treatment (pilot metric); assistive workflow, not autonomous diagnosis."
+            }
+        ]
+    },
+    {
+        "id": 38,
+        "category": "Learning & Adaptability",
+        "question": "What do you do to enhance your technical knowledge apart from your project work?",
+        "stories": [
+            {
+                "title": "Structured fundamentals",
+                "situation": "Bridge: map OS/DSA coursework to production (e.g. Kafka backpressure ↔ queueing theory; gRPC deadlines ↔ RPC semantics).",
+                "task": "When stuck: re-read primary sources (OS text, papers) before random Stack Overflow.",
+                "action": "Cadence: after each internship incident, log “textbook concept → symptom” in notes.",
+                "result": "Outcome: faster root-cause analysis on unfamiliar stacks."
+            },
+            {
+                "title": "Open source reading",
+                "situation": "Target: production gRPC/Java/Kafka repos — not tutorial repos.",
+                "task": "Technique: read error handling, .proto versioning policy, module layout; reproduce minimal bug in fork.",
+                "action": "Apply: import idioms into Geaux code — cite precedent in PR description.",
+                "result": "Outcome: fewer one-off patterns; reviews cite prior art."
+            },
+            {
+                "title": "Mentor feedback",
+                "situation": "Input sources: ColorStack + NSBE mentors — resume, tests, interview framing.",
+                "task": "Process: each critique → single actionable ticket (e.g. add 3 JUnit cases for payment path; rewrite bullet with metric).",
+                "action": "Tracking: spreadsheet of feedback → done/not done.",
+                "result": "Outcome: interview answers anchored to shipped work + numbers."
+            }
+        ]
+    },
+    {
+        "id": 39,
+        "category": "Prioritisation",
+        "question": "How do you prioritize your workload? What do you do when your work feels like it's just too much to get done?",
+        "stories": [
+            {
+                "title": "Change History: event consolidation",
+                "situation": "Geaux Network — Associate Software Developer Intern, May–Aug 2025, remote. Problem: engineering and content both needed audit trails for podcast and media edits, but events lived in multiple backends with inconsistent schemas.",
+                "task": "Goal: ship Change History (TypeScript, SCSS) that improves traceability on v1 without blocking the release on full consolidation.",
+                "action": "Steps: (1) Joint session with engineering + content to rank event sources by traceability value per engineering week. (2) Phase 1 UI: highest-signal protobuf-backed events first. (3) Integration tests on merged read path before adding sources.",
+                "result": "Outcome: stronger traceability for targeted workflows; stable release cadence; backlog defined for remaining sources."
+            },
+            {
+                "title": "Cross-officer conflict",
+                "situation": "Conflict: officers split on hackathons vs corporate sessions vs K-12 outreach.",
+                "task": "Goal: single quarterly roadmap with measurable targets.",
+                "action": "Resolution: attendance data + survey; map sponsor dollars to dated events; vote written priority list in meeting.",
+                "result": "Outcome: fewer debate loops; execution tracked to agreed metrics."
+            },
+            {
+                "title": "Balance with coursework",
+                "situation": "Constraint: Dean’s List, Presidential Scholarship, and hackathon deadlines in the same academic term.",
+                "task": "Goal: ship a defensible demo without losing scholarship GPA.",
+                "action": "Method: fixed scope budget before the hackathon; reuse UI modules across projects; hard feature freeze in the final 12 hours.",
+                "result": "Outcome: demos delivered on schedule; GPA stayed within scholarship requirements."
+            }
+        ]
+    },
+    {
+        "id": 40,
+        "category": "Achievement",
+        "question": "What's the number one accomplishment you're most proud of?",
+        "stories": [
+            {
+                "title": "MedDiagnose stack + pilot",
+                "situation": "Project: MedDiagnose AI — Python, TypeScript, FastAPI, TensorFlow, React. Features: real-time monitoring, NIHSS scoring, RBAC, automated tPA eligibility.",
+                "task": "Goal: Louisiana hospital pilot optimized for workflow time — not leaderboard accuracy.",
+                "action": "Execution: FastAPI + React + model integration; Random Forest stroke-risk ~45% — positioned as decision support only; workflow KPIs agreed with neurologists.",
+                "result": "Outcome: pilot completed; ~35% reduction in time-to-treatment (pilot metric); assistive workflow, not autonomous diagnosis."
+            },
+            {
+                "title": "NSBE Gen-Sec + partnerships",
+                "situation": "Role: NSBE — General Secretary, Jan 2025–present, Grambling State University.",
+                "task": "Goal: grow technical membership; convert sponsor conversations into funded programs.",
+                "action": "Plan: officer alignment from member surveys; sponsor packets with attendance + outcomes; recurring technical events.",
+                "result": "Outcome: 300+ members; ~$3K technical partnerships (resume figure); higher CS engagement vs prior term."
+            },
+            {
+                "title": "VisualizeMyAlgorithm scale",
+                "situation": "Product: VisualizeMyAlgorithm (React) — pathfinding, sorting, NN-style demos. Reach: 1,000+ learners.",
+                "task": "Goal: classroom-scale performance + teaching clarity.",
+                "action": "Build: modular components (Dijkstra, A*, Minimax, NN demos); explicit step state machine; batched rendering pipeline.",
+                "result": "Outcome: ~40% faster self-reported time-to-understanding (informal classroom timing); stable under concurrent classroom load."
+            }
+        ]
+    },
+    {
+        "id": 41,
+        "category": "Pressure & Resilience",
+        "question": "Tell me about a time when you had an excessive amount of work and you knew you could not meet the deadline. How did you manage?",
+        "stories": [
+            {
+                "title": "Scope negotiation",
+                "situation": "Conflict: Geaux release deadline overlapped final exams; full RBAC matrix not finishable.",
+                "task": "Goal: ship security-critical paths; defer non-blocking edge cases with written plan.",
+                "action": "Steps: table of RPC methods × roles; classify must-ship vs next sprint; get manager sign-off; no Friday deploy without checklist green.",
+                "result": "Outcome: critical protections merged; remainder scheduled; trust preserved via transparent scope cut."
+            },
+            {
+                "title": "Balance with coursework",
+                "situation": "Constraint: Dean’s List, Presidential Scholarship, and hackathon deadlines in the same academic term.",
+                "task": "Goal: ship a defensible demo without losing scholarship GPA.",
+                "action": "Method: fixed scope budget before the hackathon; reuse UI modules across projects; hard feature freeze in the final 12 hours.",
+                "result": "Outcome: demos delivered on schedule; GPA stayed within scholarship requirements."
+            },
+            {
+                "title": "Cross-officer conflict",
+                "situation": "Conflict: officers split on hackathons vs corporate sessions vs K-12 outreach.",
+                "task": "Goal: single quarterly roadmap with measurable targets.",
+                "action": "Resolution: attendance data + survey; map sponsor dollars to dated events; vote written priority list in meeting.",
+                "result": "Outcome: fewer debate loops; execution tracked to agreed metrics."
+            }
+        ]
+    },
+    {
+        "id": 42,
+        "category": "Learning & Adaptability",
+        "question": "What will be your course of action if you are assigned a task you don't know at all?",
+        "stories": [
+            {
+                "title": "gRPC service layer + tests",
+                "situation": "Context: internal services moving to Java + gRPC + Protocol Buffers for podcast ingestion and distribution (10,000+ monthly listeners). Ingestion errors propagate to creators and listeners.",
+                "task": "Goal: raise measured data accuracy on the ingestion path; keep protobuf contracts testable at the RPC boundary.",
+                "action": "Steps: extend Java service layer; tighten .proto files; add end-to-end tests across gRPC; validate against real ingestion runs, not mocks only.",
+                "result": "Outcome: ~2× measured accuracy on ingestion path (team metric); safer downstream integrations."
+            },
+            {
+                "title": "Kafka/MQTT/Postgres pipeline",
+                "situation": "Hubtel LTD — Software Engineer Intern, Jun–Sep 2023, Ghana. Problem: high-volume system events for transaction-heavy services; slow failure detection hurt availability and trust.",
+                "task": "Goal: shorten detection time for pipeline failures without destabilizing payment paths.",
+                "action": "Stack + method: Kafka Connect → MQTT → PostgreSQL; trace broker to sink; integration tests + metrics to localize failures before restart-first debugging.",
+                "result": "Outcome: ~40% faster downtime detection (team baseline); fewer blind incidents on payment flows."
+            },
+            {
+                "title": "Correctness first",
+                "situation": "Failure mode: lexer/parser edge cases produced corrupt IR; optimizations hid bugs.",
+                "task": "Goal: green parser/lexer suite before optimization passes.",
+                "action": "Steps: expand grammar tests; regression tokens; gate optimizations on passing baseline.",
+                "result": "Outcome: stable IR; other students added passes without mystery failures."
+            }
+        ]
+    },
+    {
+        "id": 43,
+        "category": "Failure & Growth",
+        "question": "Give an example of when you took a huge risk and failed.",
+        "stories": [
+            {
+                "title": "ML + clinical translation",
+                "situation": "Gap: engineers report accuracy; clinicians need override rules, failure modes, shift-time usability.",
+                "task": "Goal: assistive ML with explicit human checkpoints.",
+                "action": "Steps: plain-language model explanation in UI; documented uncertainty; UI blocks high-risk actions without clinician acknowledgment.",
+                "result": "Outcome: trust in rounds; automation limited to routing, alerts, eligibility prep — within hospital risk tolerance."
+            },
+            {
+                "title": "Correctness first",
+                "situation": "Failure mode: lexer/parser edge cases produced corrupt IR; optimizations hid bugs.",
+                "task": "Goal: green parser/lexer suite before optimization passes.",
+                "action": "Steps: expand grammar tests; regression tokens; gate optimizations on passing baseline.",
+                "result": "Outcome: stable IR; other students added passes without mystery failures."
+            },
+            {
+                "title": "gRPC service layer + tests",
+                "situation": "Context: internal services moving to Java + gRPC + Protocol Buffers for podcast ingestion and distribution (10,000+ monthly listeners). Ingestion errors propagate to creators and listeners.",
+                "task": "Goal: raise measured data accuracy on the ingestion path; keep protobuf contracts testable at the RPC boundary.",
+                "action": "Steps: extend Java service layer; tighten .proto files; add end-to-end tests across gRPC; validate against real ingestion runs, not mocks only.",
+                "result": "Outcome: ~2× measured accuracy on ingestion path (team metric); safer downstream integrations."
+            }
+        ]
+    },
+    {
+        "id": 44,
+        "category": "Prioritisation",
+        "question": "Describe a time when you had to work simultaneously on both high-priority urgent projects as well as long-term projects. How did you handle both?",
+        "stories": [
+            {
+                "title": "Kafka/MQTT/Postgres pipeline",
+                "situation": "Hubtel LTD — Software Engineer Intern, Jun–Sep 2023, Ghana. Problem: high-volume system events for transaction-heavy services; slow failure detection hurt availability and trust.",
+                "task": "Goal: shorten detection time for pipeline failures without destabilizing payment paths.",
+                "action": "Stack + method: Kafka Connect → MQTT → PostgreSQL; trace broker to sink; integration tests + metrics to localize failures before restart-first debugging.",
+                "result": "Outcome: ~40% faster downtime detection (team baseline); fewer blind incidents on payment flows."
+            },
+            {
+                "title": "RBAC, logging, and a11y on RPC",
+                "situation": "Constraint: creator vs admin flows on overlapping surfaces; compliance requires auditable mutations and usable UI for both roles.",
+                "task": "Goal: RBAC on sensitive gRPC methods + structured logs + accessibility coverage — without stalling feature delivery.",
+                "action": "Steps: enforce role rules on critical RPCs; log interaction events on mutations; keyboard + screen-reader pass on primary creator/admin screens tied to those RPCs.",
+                "result": "Outcome: fewer wrong-role failures in QA; clearer audit trail; explicit creator/admin behavior."
+            },
+            {
+                "title": "NSBE Gen-Sec + partnerships",
+                "situation": "Role: NSBE — General Secretary, Jan 2025–present, Grambling State University.",
+                "task": "Goal: grow technical membership; convert sponsor conversations into funded programs.",
+                "action": "Plan: officer alignment from member surveys; sponsor packets with attendance + outcomes; recurring technical events.",
+                "result": "Outcome: 300+ members; ~$3K technical partnerships (resume figure); higher CS engagement vs prior term."
+            }
+        ]
+    },
+    {
+        "id": 45,
+        "category": "Conflict & Communication",
+        "question": "Tell me about a time when you had a hard time working with someone in your team. How did you handle it?",
+        "stories": [
+            {
+                "title": "Async communication drift",
+                "situation": "Problem: remote teammate and I interpreted protobuf fields differently — duplicate Change History API work.",
+                "task": "Goal: single source of truth for the contract.",
+                "action": "Actions: 30-minute pairing; screen-shared .proto; added field-level comments; locked semantics with one golden-path test.",
+                "result": "Result: duplicate work stopped; future changes referenced same test."
+            },
+            {
+                "title": "Cross-officer conflict",
+                "situation": "Conflict: officers split on hackathons vs corporate sessions vs K-12 outreach.",
+                "task": "Goal: single quarterly roadmap with measurable targets.",
+                "action": "Resolution: attendance data + survey; map sponsor dollars to dated events; vote written priority list in meeting.",
+                "result": "Outcome: fewer debate loops; execution tracked to agreed metrics."
+            },
+            {
+                "title": "Spring Boot test expansion",
+                "situation": "Problem: failures appeared at integration boundaries (DB, messaging, HTTP), not in isolated unit tests — typical for payment-related Spring services.",
+                "task": "Goal: increase confidence on money-touching code paths.",
+                "action": "Steps: 20+ tests using Spring Boot, JUnit, Postman; cases centered on transaction boundaries, retries, and known failure modes.",
+                "result": "Outcome: ~80% reliability lift in targeted areas (team measurement); regressions caught pre-release more often."
+            }
+        ]
+    },
+    {
+        "id": 46,
+        "category": "Failure & Growth",
+        "question": "Tell me about a project that didn't go according to plan.",
+        "stories": [
+            {
+                "title": "ML + clinical translation",
+                "situation": "Gap: engineers report accuracy; clinicians need override rules, failure modes, shift-time usability.",
+                "task": "Goal: assistive ML with explicit human checkpoints.",
+                "action": "Steps: plain-language model explanation in UI; documented uncertainty; UI blocks high-risk actions without clinician acknowledgment.",
+                "result": "Outcome: trust in rounds; automation limited to routing, alerts, eligibility prep — within hospital risk tolerance."
+            },
+            {
+                "title": "Correctness first",
+                "situation": "Failure mode: lexer/parser edge cases produced corrupt IR; optimizations hid bugs.",
+                "task": "Goal: green parser/lexer suite before optimization passes.",
+                "action": "Steps: expand grammar tests; regression tokens; gate optimizations on passing baseline.",
+                "result": "Outcome: stable IR; other students added passes without mystery failures."
+            },
+            {
+                "title": "gRPC service layer + tests",
+                "situation": "Context: internal services moving to Java + gRPC + Protocol Buffers for podcast ingestion and distribution (10,000+ monthly listeners). Ingestion errors propagate to creators and listeners.",
+                "task": "Goal: raise measured data accuracy on the ingestion path; keep protobuf contracts testable at the RPC boundary.",
+                "action": "Steps: extend Java service layer; tighten .proto files; add end-to-end tests across gRPC; validate against real ingestion runs, not mocks only.",
+                "result": "Outcome: ~2× measured accuracy on ingestion path (team metric); safer downstream integrations."
+            }
+        ]
+    },
+    {
+        "id": 47,
+        "category": "Learning & Adaptability",
+        "question": "What is something new that you've learned recently?",
+        "stories": [
+            {
+                "title": "Firebase push latency (resume metric)",
+                "situation": "At Hubtel I implemented a real-time push notification system with Google Firebase for critical transaction and status updates—my resume calls out sub-10ms latency for those pushes, which only holds if batching, token lifecycle, and priority channels are right.",
+                "task": "I wanted to understand where that number came from so I could explain it honestly to PMs and avoid over-promising.",
+                "action": "I read Firebase’s priority docs, traced device-side delivery, and published a small table of measured p50/p95 under different load patterns—not a single “magic API call.”",
+                "result": "Fewer false “push is broken” tickets; stakeholders understood what “fast” meant in production, not in a demo."
+            },
+            {
+                "title": "TensorFlow serving constraints",
+                "situation": "Learning (MedDiagnose): train-time tensor shape can drift from serve-time requests — silent scoring errors.",
+                "task": "Goal: fail fast on bad inputs before model call.",
+                "action": "Method: pydantic / JSON schema on FastAPI ingress for feature vector shape and dtype.",
+                "result": "Result: fewer unexplained scores in pilot; easier debugging."
+            },
+            {
+                "title": "gRPC interceptors",
+                "situation": "Problem (Geaux): RBAC checks duplicated across handlers — risk of missing one endpoint.",
+                "task": "Goal: centralize authorization for gRPC services.",
+                "action": "Method: prototype ServerInterceptor; roll out to high-risk RPCs first; regression matrix creator vs admin.",
+                "result": "Result: auth logic auditable in one module; duplicate guards removed."
+            }
+        ]
+    },
+    {
+        "id": 48,
+        "category": "Decision Making",
+        "question": "Tell me about a time when you had to make a decision without all the information you needed.",
+        "stories": [
+            {
+                "title": "Change History: event consolidation",
+                "situation": "Geaux Network — Associate Software Developer Intern, May–Aug 2025, remote. Problem: engineering and content both needed audit trails for podcast and media edits, but events lived in multiple backends with inconsistent schemas.",
+                "task": "Goal: ship Change History (TypeScript, SCSS) that improves traceability on v1 without blocking the release on full consolidation.",
+                "action": "Steps: (1) Joint session with engineering + content to rank event sources by traceability value per engineering week. (2) Phase 1 UI: highest-signal protobuf-backed events first. (3) Integration tests on merged read path before adding sources.",
+                "result": "Outcome: stronger traceability for targeted workflows; stable release cadence; backlog defined for remaining sources."
+            },
+            {
+                "title": "ML + clinical translation",
+                "situation": "Gap: engineers report accuracy; clinicians need override rules, failure modes, shift-time usability.",
+                "task": "Goal: assistive ML with explicit human checkpoints.",
+                "action": "Steps: plain-language model explanation in UI; documented uncertainty; UI blocks high-risk actions without clinician acknowledgment.",
+                "result": "Outcome: trust in rounds; automation limited to routing, alerts, eligibility prep — within hospital risk tolerance."
+            },
+            {
+                "title": "Kafka/MQTT/Postgres pipeline",
+                "situation": "Hubtel LTD — Software Engineer Intern, Jun–Sep 2023, Ghana. Problem: high-volume system events for transaction-heavy services; slow failure detection hurt availability and trust.",
+                "task": "Goal: shorten detection time for pipeline failures without destabilizing payment paths.",
+                "action": "Stack + method: Kafka Connect → MQTT → PostgreSQL; trace broker to sink; integration tests + metrics to localize failures before restart-first debugging.",
+                "result": "Outcome: ~40% faster downtime detection (team baseline); fewer blind incidents on payment flows."
+            }
+        ]
+    },
+    {
+        "id": 49,
+        "category": "Problem Solving",
+        "question": "Tell me a time when you linked two or more problems together and identified an underlying issue.",
+        "stories": [
+            {
+                "title": "Downtime symptoms vs root cause",
+                "situation": "Symptom: DB alerts and slow queries. Correlation: MQTT broker backoff under publish bursts → Kafka consumer lag → DB write stalls.",
+                "task": "Hypothesis: root cause upstream of Postgres.",
+                "action": "Verification: aligned metrics timeline — Kafka lag, MQTT rate, PG connections; fix batching and consumer parallelism at source.",
+                "result": "Result: ~40% MTTD improvement (team metric); stopped restart-only “fixes”."
+            },
+            {
+                "title": "Change History: event consolidation",
+                "situation": "Geaux Network — Associate Software Developer Intern, May–Aug 2025, remote. Problem: engineering and content both needed audit trails for podcast and media edits, but events lived in multiple backends with inconsistent schemas.",
+                "task": "Goal: ship Change History (TypeScript, SCSS) that improves traceability on v1 without blocking the release on full consolidation.",
+                "action": "Steps: (1) Joint session with engineering + content to rank event sources by traceability value per engineering week. (2) Phase 1 UI: highest-signal protobuf-backed events first. (3) Integration tests on merged read path before adding sources.",
+                "result": "Outcome: stronger traceability for targeted workflows; stable release cadence; backlog defined for remaining sources."
+            },
+            {
+                "title": "State + performance",
+                "situation": "Issue: large graph state → React rerender storms → dropped frames on mid-tier laptops.",
+                "task": "Goal: smooth stepping on classroom hardware.",
+                "action": "Steps: batch updates per simulation tick; memoize graph structures; per-frame work budget.",
+                "result": "Outcome: usable in lecture halls without high-end GPUs."
+            }
+        ]
+    },
+    {
+        "id": 50,
+        "category": "Decision Making",
+        "question": "Tell me about a time you made a decision to sacrifice short-term gain for a longer-term goal.",
+        "stories": [
+            {
+                "title": "Tests before features",
+                "situation": "Tradeoff: ship new VisualizeMyAlgorithm visuals fast vs fix state-management debt causing frame drops on large graphs.",
+                "task": "Decision: delay feature splash; invest in perf foundation first.",
+                "action": "Actions: per-tick batching; memoization; CI perf budget gate before new viz merges.",
+                "result": "Result: stable demos for Dijkstra / A* / Minimax; fewer production performance bugs."
+            },
+            {
+                "title": "ML + clinical translation",
+                "situation": "Gap: engineers report accuracy; clinicians need override rules, failure modes, shift-time usability.",
+                "task": "Goal: assistive ML with explicit human checkpoints.",
+                "action": "Steps: plain-language model explanation in UI; documented uncertainty; UI blocks high-risk actions without clinician acknowledgment.",
+                "result": "Outcome: trust in rounds; automation limited to routing, alerts, eligibility prep — within hospital risk tolerance."
+            },
+            {
+                "title": "Change History: event consolidation",
+                "situation": "Geaux Network — Associate Software Developer Intern, May–Aug 2025, remote. Problem: engineering and content both needed audit trails for podcast and media edits, but events lived in multiple backends with inconsistent schemas.",
+                "task": "Goal: ship Change History (TypeScript, SCSS) that improves traceability on v1 without blocking the release on full consolidation.",
+                "action": "Steps: (1) Joint session with engineering + content to rank event sources by traceability value per engineering week. (2) Phase 1 UI: highest-signal protobuf-backed events first. (3) Integration tests on merged read path before adding sources.",
+                "result": "Outcome: stronger traceability for targeted workflows; stable release cadence; backlog defined for remaining sources."
+            }
+        ]
+    },
+    {
+        "id": 51,
+        "category": "Judgment",
+        "question": "How would you respond if you were the last member of the team in the office on a Friday afternoon and the product owner asks you to develop and deploy a change to production?",
+        "stories": [
+            {
+                "title": "Production change discipline",
+                "situation": "Trigger: Friday afternoon prod change request — often high urgency, unclear severity.",
+                "task": "Decision checklist: (1) Active user/revenue impact? (2) Blast radius? (3) Rollback plan? (4) On-call available? (5) Feature-flaggable minimal fix?",
+                "action": "If severity unclear: ship smallest reversible change or defer to Monday with incident ticket + named owner.",
+                "result": "Precedent: same checklist reduced risky deploys at Geaux and Hubtel."
+            },
+            {
+                "title": "MedDiagnose lesson: trust",
+                "situation": "Stakeholder tension: ML metrics weaker than “AI headline” expectations.",
+                "task": "Message: RF stroke-risk ~45% — decision support only; pair with workflow KPI: ~35% faster time-to-treatment in pilot.",
+                "action": "Delivery: written summary for clinical leads + demo of human-in-the-loop checkpoints.",
+                "result": "Result: pilot continued under informed consent; no silent over-reliance on model score."
+            },
+            {
+                "title": "Evidence over noise",
+                "situation": "Pattern: downstream symptom (e.g. DB pressure) masking upstream cause (broker backpressure, deserialization).",
+                "task": "Rule: trace Kafka → MQTT → Postgres with logs and tests before editing hot code.",
+                "action": "Hubtel outcome: fewer repeat incidents after fixing upstream batching vs repeated DB restarts.",
+                "result": "Applies to Friday hotfix: end-to-end trace first, patch second."
+            }
+        ]
+    },
+    {
+        "id": 52,
+        "category": "Motivation",
+        "question": "Where do you see yourself in 5 years?",
+        "stories": [
+            {
+                "title": "Staff-shaped ownership",
+                "situation": "5-year target: own critical service boundaries — API design, SLOs, incident process, cross-team contracts.",
+                "task": "Evidence bar: metrics + design docs + mentored engineers shipping safely.",
+                "action": "Path: deepen same mix as Geaux + Hubtel + MedDiagnose (backend, data, regulated UX) at larger scale.",
+                "result": "Anti-goal: heroics — goal is fewer pages, not more medals."
+            },
+            {
+                "title": "Growth vector",
+                "situation": "Learning mode: production constraints — schema migration, idempotency, failure domains — not tutorial CRUD.",
+                "task": "Target team: rigorous review, on-call reality, explicit cross-team contracts.",
+                "action": "Track record: chose internships/projects that forced distributed systems, production ML tradeoffs, compiler-level correctness.",
+                "result": "5-year aim: own critical service boundaries + mentor on testing and incident response."
+            },
+            {
+                "title": "Impact + systems",
+                "situation": "Selection criteria: work must tie to measurable outcomes — latency, availability, correctness, clinical or financial KPIs.",
+                "task": "Stack fit: backend + data + full-stack depth like Geaux (gRPC, protobuf, RBAC), Hubtel (Kafka, MQTT, Postgres, Firebase), MedDiagnose (clinical ML + React).",
+                "action": "Questions for [company]: which services own revenue or safety paths; team SLOs; how success is defined in year one.",
+                "result": "Why hire me: I already shipped under those constraints; I want the same class of problem at larger scale."
+            }
+        ]
+    },
+    {
+        "id": 53,
+        "category": "Motivation",
+        "question": "What does your best day of work look like?",
+        "stories": [
+            {
+                "title": "Deep work + shipping",
+                "situation": "Definition of a good day: (1) merged change with tests green; (2) one deep dive — profile, trace, or RCA; (3) one knowledge transfer — PR review or pairing.",
+                "task": "Balance: solo focus blocks + team unblocking — same day.",
+                "action": "Reference pattern: Geaux / Hubtel on-call days.",
+                "result": "End state: at least one measurable improvement — latency, coverage, or customer-visible fix shipped."
+            },
+            {
+                "title": "Impact + systems",
+                "situation": "Selection criteria: work must tie to measurable outcomes — latency, availability, correctness, clinical or financial KPIs.",
+                "task": "Stack fit: backend + data + full-stack depth like Geaux (gRPC, protobuf, RBAC), Hubtel (Kafka, MQTT, Postgres, Firebase), MedDiagnose (clinical ML + React).",
+                "action": "Questions for [company]: which services own revenue or safety paths; team SLOs; how success is defined in year one.",
+                "result": "Why hire me: I already shipped under those constraints; I want the same class of problem at larger scale."
+            },
+            {
+                "title": "Pedagogy + engineering",
+                "situation": "Teaching constraint: each frame must map to a checkable invariant (frontier, relaxed edge, etc.).",
+                "task": "Goal: tie every animation to pseudocode — zero unexplained motion.",
+                "action": "Steps: label invariant in UI at each step; sync visual state to algorithm state vector.",
+                "result": "Outcome: improved retention on follow-up quizzes (informal instructor feedback)."
+            }
+        ]
+    },
+    {
+        "id": 54,
+        "category": "Communication",
+        "question": "What words would your colleagues use to describe you?",
+        "stories": [
+            {
+                "title": "Rigorous tester",
+                "situation": "At Hubtel, people knew I’d push back if money-moving flows didn’t have real integration tests.",
+                "task": "I’d rather slow a merge than ship blind.",
+                "action": "JUnit and Postman weren’t glamorous, but they ended arguments.",
+                "result": "I hear “thorough” a lot in feedback—I will take it."
+            },
+            {
+                "title": "Systems thinker",
+                "situation": "At Geaux, teammates asked me to trace protobuf contracts across services when things got fuzzy.",
+                "task": "I like drawing the system before I code.",
+                "action": "I sketch flows, retries, idempotency—what breaks for creators vs admins—so we don’t discover it in prod.",
+                "result": "People say I make the scary parts smaller before they blow up."
+            },
+            {
+                "title": "Mission-driven",
+                "situation": "In NSBE and ColorStack I think people would say I show up with a plan—not just energy.",
+                "task": "I care about logistics, not only speeches.",
+                "action": "RSVP targets, sponsor deliverables, workshops that match what interviews actually ask.",
+                "result": "We hit attendance goals and members actually land opportunities—that’s the point."
+            }
+        ]
+    },
+    {
+        "id": 55,
+        "category": "Initiative",
+        "question": "What is something that you had to push for in your previous projects?",
+        "stories": [
+            {
+                "title": "RBAC, logging, and a11y on RPC",
+                "situation": "Constraint: creator vs admin flows on overlapping surfaces; compliance requires auditable mutations and usable UI for both roles.",
+                "task": "Goal: RBAC on sensitive gRPC methods + structured logs + accessibility coverage — without stalling feature delivery.",
+                "action": "Steps: enforce role rules on critical RPCs; log interaction events on mutations; keyboard + screen-reader pass on primary creator/admin screens tied to those RPCs.",
+                "result": "Outcome: fewer wrong-role failures in QA; clearer audit trail; explicit creator/admin behavior."
+            },
+            {
+                "title": "Spring Boot test expansion",
+                "situation": "Problem: failures appeared at integration boundaries (DB, messaging, HTTP), not in isolated unit tests — typical for payment-related Spring services.",
+                "task": "Goal: increase confidence on money-touching code paths.",
+                "action": "Steps: 20+ tests using Spring Boot, JUnit, Postman; cases centered on transaction boundaries, retries, and known failure modes.",
+                "result": "Outcome: ~80% reliability lift in targeted areas (team measurement); regressions caught pre-release more often."
+            },
+            {
+                "title": "VisualizeMyAlgorithm scale",
+                "situation": "Product: VisualizeMyAlgorithm (React) — pathfinding, sorting, NN-style demos. Reach: 1,000+ learners.",
+                "task": "Goal: classroom-scale performance + teaching clarity.",
+                "action": "Build: modular components (Dijkstra, A*, Minimax, NN demos); explicit step state machine; batched rendering pipeline.",
+                "result": "Outcome: ~40% faster self-reported time-to-understanding (informal classroom timing); stable under concurrent classroom load."
+            }
+        ]
+    },
+    {
+        "id": 56,
+        "category": "Initiative",
+        "question": "What would you hope to achieve in the first six months after being hired?",
+        "stories": [
+            {
+                "title": "Ramp + ownership",
+                "situation": "30 / 60 / 180 day plan: (0–30) ship small fixes — learn build, deploy, on-call; (30–90) own one service or pipeline with defined SLO; (180) lead one cross-team reliability or test initiative.",
+                "task": "Success metric: measurable latency, error rate, or MTTD improvement — not ticket count.",
+                "action": "Reference: same ramp pattern at Geaux on gRPC/protobuf.",
+                "result": "Deliverable by month 6: written postmortem or design note with metrics showing improvement."
+            },
+            {
+                "title": "Relationships",
+                "situation": "Stakeholder map (week 1–2): security, product, SRE/support — agree incident comms channels and SLAs.",
+                "task": "MedDiagnose parallel: short weekly async updates to clinical contacts; documented risks.",
+                "action": "Goal: no surprise escalations — status visible when healthy.",
+                "result": "Payoff: faster incident resolution when trust pre-exists."
+            },
+            {
+                "title": "Testing culture",
+                "situation": "Target: RPC + event pipeline contract tests and flaky-test burn-down in Q1.",
+                "task": "Why: highest cost bugs — silent data corruption and pipeline drift.",
+                "action": "Actions: prioritize top flaky tests; add gRPC contract tests in CI; document ownership per suite.",
+                "result": "Metric: reduce flaky CI rate + increase coverage on critical paths."
+            }
+        ]
+    },
+    {
+        "id": 57,
+        "category": "Achievement",
+        "question": "If this were your first annual review, what would I be telling you right now?",
+        "stories": [
+            {
+                "title": "Ship + measure",
+                "situation": "If this were my first review, you’d probably say: you shipped real stuff across TypeScript, Java and gRPC, and data pipelines—and you could point to numbers: roughly 40% better downtime detection at Hubtel, big reliability gains where we invested tests, and about 35% faster time-to-treatment in the MedDiagnose pilot.",
+                "task": "That’s a strong start for where I am in my career.",
+                "action": "The growth edge is estimation and communication across teams—owning timelines without sandbagging or overpromising.",
+                "result": "Next step is bigger ownership with clearer SLOs and helping others on test design, not just my own code."
+            },
+            {
+                "title": "NSBE Gen-Sec + partnerships",
+                "situation": "Role: NSBE — General Secretary, Jan 2025–present, Grambling State University.",
+                "task": "Goal: grow technical membership; convert sponsor conversations into funded programs.",
+                "action": "Plan: officer alignment from member surveys; sponsor packets with attendance + outcomes; recurring technical events.",
+                "result": "Outcome: 300+ members; ~$3K technical partnerships (resume figure); higher CS engagement vs prior term."
+            },
+            {
+                "title": "ColorStack hackathon win",
+                "situation": "Event: ColorStack Winter Hackathon 2024 — ~1,000 participants worldwide.",
+                "task": "Goal: MVP + demo script with zero live-integration failure on stage.",
+                "action": "Execution: scope freeze day one; FE/BE owners; rehearsed demo; fallback if API unstable.",
+                "result": "Outcome: 1st place Winter 2024; demo completed without outage."
+            }
+        ]
+    },
+    {
+        "id": 58,
+        "category": "Learning & Adaptability",
+        "question": "What is your biggest strength and area of growth?",
+        "stories": [
+            {
+                "title": "Strength: end-to-end debugging",
+                "situation": "I’m pretty calm when things break across protobuf, Kafka and MQTT, and the UI—I’ve done that at Hubtel and Geaux.",
+                "task": "Where I’m growing is knowing when to pull someone in earlier.",
+                "action": "I can over-investigate before I escalate; I’m working on time-boxing and giving leads a tight summary with what I’ve ruled out.",
+                "result": "They get signal sooner, and I still finish the fix—I’m not dropping the ball."
+            },
+            {
+                "title": "Strength: responsible ML framing",
+                "situation": "MedDiagnose taught me to talk about ML next to workflow outcomes, not a single accuracy number.",
+                "task": "I want more depth in real MLOps—not just training notebooks.",
+                "action": "I’m reading more about drift monitoring and what retraining looks like when you’re not in a classroom.",
+                "result": "I’m closing that gap with side projects and coursework where I can."
+            },
+            {
+                "title": "Strength: community leadership",
+                "situation": "NSBE is proof I can execute—membership growth, real sponsor dollars.",
+                "task": "I’m still learning to delegate so it doesn’t all ride on me.",
+                "action": "I’m trying to build other leaders, not only run events myself.",
+                "result": "The win is when programs keep working even when I’m slammed with school."
+            }
+        ]
+    },
+    {
+        "id": 59,
+        "category": "Learning & Adaptability",
+        "question": "What aspects of your work are most often criticized?",
+        "stories": [
+            {
+                "title": "Over-engineering risk",
+                "situation": "I’ve been called out for reaching for abstractions too early—I get excited about clean design.",
+                "task": "I’m learning to prove the need with data first.",
+                "action": "Now I try the smallest change that meets the SLO, and only refactor when the pattern repeats.",
+                "result": "PRs move faster and people spend less time debating architecture in the abstract."
+            },
+            {
+                "title": "Estimation optimism",
+                "situation": "Compiler and viz projects taught me pretty visuals can hide a week of integration pain.",
+                "task": "I’m getting better at padding estimates for unknowns.",
+                "action": "I slice work vertically so there’s something demoable sooner.",
+                "result": "Stakeholders get fewer “surprise, we need another sprint” moments."
+            },
+            {
+                "title": "Async updates",
+                "situation": "Remote work means nobody sees you thinking—mentors told me I need to over-communicate status.",
+                "task": "I’m working on smaller, more frequent updates.",
+                "action": "Short standup notes or doc updates when something shifts.",
+                "result": "Managers stopped pinging me for “where are we?” because it’s already written down."
+            }
+        ]
+    },
+    {
+        "id": 60,
+        "category": "Stakeholder Management",
+        "question": "Tell me about a time you needed information from someone who wasn't responsive.",
+        "stories": [
+            {
+                "title": "Blocked on proto review",
+                "situation": "A senior engineer had my protobuf review sitting, and my Geaux feature was stuck behind it.",
+                "task": "I couldn’t spam them, but I couldn’t wait forever either.",
+                "action": "I sent a tight summary of the diff, listed exact questions, and offered two short slots. If it slipped past what we’d agreed, I escalated with facts—who was blocked downstream.",
+                "result": "The review landed, and they actually thanked me for making it easy to consume."
+            },
+            {
+                "title": "Clinical feedback loop",
+                "situation": "During finals, neurologists weren’t answering MedDiagnose UX questions fast—and honestly, their time is more valuable than mine.",
+                "task": "I needed answers without being annoying.",
+                "action": "I batched questions, sent screenshots, and used short Loom videos so they could respond async.",
+                "result": "We got what we needed without burning bridges."
+            },
+            {
+                "title": "Sponsor contact ghosting",
+                "situation": "For NSBE, a sponsor contact went quiet right when we needed a yes on budget so we could book travel.",
+                "task": "I needed an answer without sounding desperate.",
+                "action": "I sent a short email with two clear options—commit by this date or pause—and only looped a faculty advisor when it was fair.",
+                "result": "We got a decision in time to book or pivot to another sponsor without drama."
+            }
+        ]
+    },
+    {
+        "id": 61,
+        "category": "Judgment",
+        "question": "What frustrates you?",
+        "stories": [
+            {
+                "title": "Opaque incidents",
+                "situation": "Nothing frustrates me more than a postmortem that says “fixed” with no root cause and no follow-up tests.",
+                "task": "If we don’t learn, we’ll see the same fire again.",
+                "action": "At Hubtel I pushed for a real timeline, what actually failed, and what test would catch it next time—not just “we restarted it.”",
+                "result": "Once we fixed upstream backpressure instead of blaming Postgres, repeat noise dropped."
+            },
+            {
+                "title": "Vanity metrics",
+                "situation": "Shipping features with no definition of success drives me nuts—if we can’t point to latency, errors, or a user outcome, what are we doing?",
+                "task": "I want work tied to something measurable.",
+                "action": "On MedDiagnose I’d rather talk about time-to-treatment than a pretty slide.",
+                "result": "Teams move faster when everyone agrees what “good” means."
+            },
+            {
+                "title": "Gatekeeping",
+                "situation": "I get frustrated by communities that make beginners feel dumb—that’s a big reason I care about NSBE and ColorStack.",
+                "task": "Gatekeeping wastes talent.",
+                "action": "I help run intro workshops—DSA basics, git hygiene—so people have a real on-ramp.",
+                "result": "Retention goes up when people feel invited, not tested for coolness."
+            }
+        ]
+    },
+    {
+        "id": 62,
+        "category": "Judgment",
+        "question": "What is something 90% of people disagree with you about?",
+        "stories": [
+            {
+                "title": "Move slow to move fast",
+                "situation": "A lot of people want to hotfix on Friday and call it heroism. I’d rather ship a boring, tested change Monday.",
+                "task": "Tail risk matters more than adrenaline.",
+                "action": "Hubtel and MedDiagnose both taught me untested hotfixes come back as outages.",
+                "result": "I’d rather be the person who sleeps and keeps prod stable."
+            },
+            {
+                "title": "Accuracy is not enough in ML",
+                "situation": "Hackathons love leaderboard scores. I care whether the model behaves in the real workflow—calibration, when it’s wrong, how clinicians actually use it.",
+                "task": "That’s not always a popular take in a 48-hour room.",
+                "action": "I push for human-in-the-loop UX and monitoring, not a vanity metric.",
+                "result": "Clinicians buy in when you’re honest; some hackathon judges don’t love it until they see pilot numbers."
+            },
+            {
+                "title": "Community > grind culture",
+                "situation": "Some people brag about all-nighters. I don’t think that’s sustainable—or necessary.",
+                "task": "I’d rather ship consistently and stay healthy.",
+                "action": "I time-box, protect sleep during exams, and still shipped real projects at Geaux and on VisualizeMyAlgorithm.",
+                "result": "Dean’s List plus shipping beats burnout theater."
+            }
+        ]
+    },
+    {
+        "id": 63,
+        "category": "Communication",
+        "question": "Tell me about a time you had to deliver difficult or bad news to someone.",
+        "stories": [
+            {
+                "title": "Model limits to stakeholders",
+                "situation": "I had to tell clinical partners the stroke risk model was sitting around 45% accuracy—that’s not what someone wants to hear if they wanted a headline “AI saves lives” story.",
+                "task": "Bad news lands better if you’re direct.",
+                "action": "I paired it with what we could prove on the workflow side—NIHSS, tPA checks, and about 35% faster time-to-treatment in the pilot.",
+                "result": "They could live with it as decision support, and the pilot kept going with clearer expectations."
+            },
+            {
+                "title": "Sponsor shortfall",
+                "situation": "NSBE had to tell a sponsor we didn’t hit the attendance we promised for an event—that’s uncomfortable.",
+                "task": "We owned it instead of making excuses.",
+                "action": "We came back with a smaller workshop, guaranteed RSVPs, and a tighter plan.",
+                "result": "They stayed with us because we didn’t hide the miss."
+            },
+            {
+                "title": "Demo failure prep",
+                "situation": "Six hours before a ColorStack deadline I told my team the live ML endpoint was too risky—we’d been fighting instability.",
+                "task": "I’d rather eat crow early than fail on stage.",
+                "action": "We stubbed inference with recorded outputs, kept the API contract stable, and rehearsed.",
+                "result": "We still won Winter 2024 out of roughly a thousand people—and the demo didn’t flake."
+            }
+        ]
+    }
+]

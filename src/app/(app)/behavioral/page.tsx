@@ -39,6 +39,9 @@ const STORY_STYLES = [
   { idle: 'bg-amber-50 text-amber-700 border-amber-200', active: 'bg-amber-600 text-white border-amber-600' },
 ]
 
+/** Emmanuel resume-backed STAR bank. Revert to `/behavioral_questions.json` to restore the default set. */
+const BEHAVIORAL_QUESTIONS_URL = '/behavioral/emmanuel/questions.json'
+
 export default function BehavioralPage() {
   const [allQuestions, setAllQuestions] = useState<BehavioralQuestion[]>([])
   const [cat, setCat] = useState('All')
@@ -54,7 +57,7 @@ export default function BehavioralPage() {
   useEffect(() => {
     async function load() {
       const [qs, vis] = await Promise.all([
-        fetch('/behavioral_questions.json').then(r => r.json()),
+        fetch(BEHAVIORAL_QUESTIONS_URL).then(r => r.json()),
         getBehavioralVisited(),
       ])
       setAllQuestions(qs)
