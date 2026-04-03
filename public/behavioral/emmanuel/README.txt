@@ -21,6 +21,12 @@ back to:
 
 Or delete this entire public/behavioral/emmanuel/ folder after reverting that line.
 
+Optional: Gemini-generated STAR drafts
+--------------------------------------
+On the Behavioural page, flip a card and use “Generate with Gemini”. The API reads resume
+context from src/lib/behavioralResumeContext.ts (not this JSON file). Set GEMINI_API_KEY in
+.env.local — see repo .env.example.
+
 Notes
 -----
 - Visiting progress (visited cards) is stored in Supabase by question id; ids match the default set.

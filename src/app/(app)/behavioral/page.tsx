@@ -1,6 +1,9 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { BookOpen, Shuffle, RotateCcw, ChevronLeft, ChevronRight, CheckCircle, Circle } from 'lucide-react'
+import {
+  BookOpen, Shuffle, RotateCcw, ChevronLeft, ChevronRight, CheckCircle, Circle, Sparkles, Loader2,
+} from 'lucide-react'
+import toast from 'react-hot-toast'
 import { getBehavioralVisited, addBehavioralVisited } from '@/lib/db'
 import { shuffle } from '@/lib/utils'
 
@@ -53,6 +56,10 @@ export default function BehavioralPage() {
   const [visited, setVisited] = useState<Set<number>>(new Set())
   const [storyTab, setStoryTab] = useState(0)
   const [loading, setLoading] = useState(true)
+  /** AI-generated stories for the current card; null until a successful Gemini call */
+  const [geminiStories, setGeminiStories] = useState<Story[] | null>(null)
+  const [useGeminiStories, setUseGeminiStories] = useState(false)
+  const [geminiLoading, setGeminiLoading] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -78,6 +85,46 @@ export default function BehavioralPage() {
   }, [cat, isShuffled, allQuestions])
 
   const card = deck[idx] || null
+
+  useEffect(() => {
+    setGeminiStories(null)
+    setUseGeminiStories(false)
+    setGeminiLoading(false)
+    setStoryTab(0)
+  }, [card?.id])
+
+  const displayStories =
+    useGeminiStories && geminiStories && geminiStories.length === 3 ? geminiStories : card?.stories ?? []
+
+  const generateWithGemini = useCallback(async () => {
+    if (!card) return
+    setGeminiLoading(true)
+    try {
+      const res = await fetch('/api/behavioral-gemini', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: card.question, category: card.category }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        toast.error(typeof data.error === 'string' ? data.error : 'Gemini request failed')
+        return
+      }
+      const stories = data.stories as Story[] | undefined
+      if (!Array.isArray(stories) || stories.length !== 3) {
+        toast.error('Unexpected response from Gemini')
+        return
+      }
+      setGeminiStories(stories)
+      setUseGeminiStories(true)
+      setStoryTab(0)
+      toast.success('Generated 3 STAR stories')
+    } catch {
+      toast.error('Network error calling Gemini')
+    } finally {
+      setGeminiLoading(false)
+    }
+  }, [card])
 
   const fadeSwap = useCallback((fn: () => void) => {
     setFading(true)
@@ -133,7 +180,10 @@ export default function BehavioralPage() {
         <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2 mb-0.5">
           <BookOpen className="text-indigo-500" /> Behavioural
         </h1>
-        <p className="text-xs text-gray-400">Tap card to reveal STAR stories · ← → to navigate · Space to flip</p>
+        <p className="text-xs text-gray-400">
+          Tap card to reveal STAR stories · ← → to navigate · Space to flip · Optional: generate fresh answers with Gemini
+          (API key required)
+        </p>
       </div>
 
       {/* Controls */}
@@ -229,9 +279,38 @@ export default function BehavioralPage() {
                   <span className="hidden sm:inline text-xs text-indigo-400 font-medium shrink-0">← Flip back</span>
                 </div>
 
+                <div className="px-5 pt-3 flex flex-wrap items-center gap-2 border-b border-indigo-100/80 pb-3" onClick={e => e.stopPropagation()}>
+                  <button
+                    type="button"
+                    onClick={generateWithGemini}
+                    disabled={geminiLoading}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100 disabled:opacity-50"
+                  >
+                    {geminiLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                    {geminiLoading ? 'Generating…' : 'Generate with Gemini'}
+                  </button>
+                  {geminiStories && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUseGeminiStories(u => !u)
+                        setStoryTab(0)
+                      }}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-full border border-gray-200 bg-white text-gray-600 hover:border-indigo-300"
+                    >
+                      {useGeminiStories ? 'Show saved STAR bank' : 'Show Gemini answers'}
+                    </button>
+                  )}
+                  {useGeminiStories && (
+                    <span className="text-[10px] font-medium text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">
+                      AI draft — verify facts before interviews
+                    </span>
+                  )}
+                </div>
+
                 {/* Story tabs */}
                 <div className="px-5 pt-4 pb-0 flex flex-wrap gap-2" onClick={e => e.stopPropagation()}>
-                  {card.stories.map((story, i) => (
+                  {displayStories.map((story, i) => (
                     <button
                       key={i}
                       onClick={() => setStoryTab(i)}
@@ -249,7 +328,7 @@ export default function BehavioralPage() {
                   {STAR.map(({ key, label, cls }) => (
                     <div key={key} className={`rounded-xl border p-3 ${cls}`}>
                       <div className="text-xs font-bold mb-1">{label}</div>
-                      <p className="text-sm leading-relaxed">{card.stories[storyTab]?.[key]}</p>
+                      <p className="text-sm leading-relaxed">{displayStories[storyTab]?.[key]}</p>
                     </div>
                   ))}
                 </div>
