@@ -18,6 +18,16 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## Question bank and “Approach” text
+
+Practice solution pages read `algorithm_name` and `solution_steps` from `public/questions_full.json`. To (re)fill those fields from each problem’s `python_solution` comments—with fallbacks when comments are thin—run:
+
+```bash
+node scripts/generateApproachFromSolutions.mjs
+```
+
+The script skips questions that already have both a non-empty title and at least two steps, so hand-curated entries stay unless you remove those fields first.
+
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More
