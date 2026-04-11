@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# behavioral bake script backups (local only)
+*.bak.*
+
 # debug
 npm-debug.log*
 yarn-debug.log*

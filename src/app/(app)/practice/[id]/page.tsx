@@ -1,11 +1,12 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useState, useEffect, useRef, Suspense } from 'react'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, CheckCircle, Clock, Code2, BookOpen, ExternalLink, Loader2, Trophy } from 'lucide-react'
 import { getProgress, updateProgress, addTimeSpent, completeReview } from '@/lib/db'
 import { formatTime, isDue } from '@/lib/utils'
 import DifficultyBadge from '@/components/DifficultyBadge'
 import CodePanel from '@/components/CodePanel'
+import SolutionAlgorithm from '@/components/SolutionAlgorithm'
 import LeetCodeEditor from '@/components/LeetCodeEditor'
 import AcceptedSolutions, { useAcceptedSolutions } from '@/components/AcceptedSolutions'
 import toast from 'react-hot-toast'
@@ -21,6 +22,9 @@ interface Question {
   explanation?: string
   python_solution?: string
   cpp_solution?: string
+  /** Shown above code on Solution tab */
+  algorithm_name?: string
+  solution_steps?: string[]
 }
 
 function PremiumBlock({ slug }: { slug?: string }) {
@@ -47,9 +51,10 @@ function PremiumBlock({ slug }: { slug?: string }) {
   )
 }
 
-export default function PracticePage() {
+function PracticePageInner() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const id = Number(params.id)
 
   const [question, setQuestion] = useState<Question | null>(null)
@@ -142,6 +147,24 @@ export default function PracticePage() {
       clearTimeout(timeout)
     }
   }, [question?.slug])
+
+  // Open Solution tab from /practice/:id?tab=solution (e.g. Daily → Approach link)
+  useEffect(() => {
+    if (!question) return
+    const tab = searchParams.get('tab')
+    if (tab === 'solution' && (question.python_solution || question.cpp_solution)) {
+      setLeftTab('solution')
+    }
+  }, [question, searchParams])
+
+  useEffect(() => {
+    if (leftTab !== 'solution' || !question) return
+    if (typeof window === 'undefined') return
+    if (window.location.hash !== '#algorithm') return
+    requestAnimationFrame(() => {
+      document.getElementById('solution-algorithm')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+  }, [leftTab, question])
 
   // Timer
   useEffect(() => {
@@ -337,7 +360,10 @@ export default function PracticePage() {
             )}
 
             {leftTab === 'solution' && question && (
-              <CodePanel pythonCode={question.python_solution} cppCode={question.cpp_solution} />
+              <>
+                <SolutionAlgorithm name={question.algorithm_name} steps={question.solution_steps} />
+                <CodePanel pythonCode={question.python_solution} cppCode={question.cpp_solution} />
+              </>
             )}
 
             {leftTab === 'accepted' && (
@@ -381,5 +407,19 @@ export default function PracticePage() {
         .lc-description sup { font-size: 10px; }
       `}</style>
     </div>
+  )
+}
+
+export default function PracticePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-[calc(100vh-56px)] flex-col items-center justify-center text-sm text-gray-400">
+          Loading…
+        </div>
+      }
+    >
+      <PracticePageInner />
+    </Suspense>
   )
 }

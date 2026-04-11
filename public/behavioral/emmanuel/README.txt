@@ -27,6 +27,30 @@ On the Behavioural page, flip a card and use “Generate with Gemini”. The API
 context from src/lib/behavioralResumeContext.ts (not this JSON file). Set GEMINI_API_KEY in
 .env.local — see repo .env.example.
 
+Bake all questions once (no API calls when studying)
+----------------------------------------------------
+Pricing: baking uses one Gemini API request per question (free-tier quota or paid tokens).
+After stories live in questions.json, the Behavioural page only fetch()es JSON — zero Gemini cost.
+
+Run locally from the repo root (uses .env.local for GEMINI_API_KEY; optional GEMINI_MODEL):
+
+  npm run bake:behavioral:dry       # test: first question only, 5s delay (gemini-2.0-flash)
+  npm run bake:behavioral:dry:15    # same, but gemini-1.5-flash (often different free-tier bucket)
+  npm run bake:behavioral           # full file: all ids in range (long run; ~25s between calls)
+  npm run bake:behavioral:15        # full bake with gemini-1.5-flash
+
+This overwrites questions.json in place and creates a timestamped .bak backup first.
+Resume text is read from src/lib/behavioralResumeContext.ts — edit that before baking.
+
+Extra CLI flags (use -- after npm run):
+
+  npm run bake:behavioral -- --from=1 --to=5 --delay=30000
+  node scripts/bake-behavioral-gemini.mjs --from=1 --to=5 --delay=30000
+  node scripts/bake-behavioral-gemini.mjs --input=public/behavioral_questions.json --output=public/behavioral_questions.json
+  node scripts/bake-behavioral-gemini.mjs --model=gemini-1.5-flash
+
+After baking, commit the JSON and deploy — the Behavioural page fetch() needs no Gemini quota.
+
 Notes
 -----
 - Visiting progress (visited cards) is stored in Supabase by question id; ids match the default set.

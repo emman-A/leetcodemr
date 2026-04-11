@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "bake:behavioral": "node scripts/bake-behavioral-gemini.mjs",
+    "bake:behavioral:dry": "node scripts/bake-behavioral-gemini.mjs --dry-run --delay=5000",
+    "bake:behavioral:dry:15": "node scripts/bake-behavioral-gemini.mjs --dry-run --delay=5000 --model=gemini-1.5-flash",
+    "bake:behavioral:15": "node scripts/bake-behavioral-gemini.mjs --model=gemini-1.5-flash"
   },
   "dependencies": {
     "@codemirror/commands": "^6.10.3",

@@ -419,16 +419,24 @@ export default function DailyPage() {
                       <DifficultyBadge difficulty={q.difficulty} />
                     </div>
                   </div>
-                  <Link
-                    href={`/practice/${q.id}`}
-                    className={`shrink-0 flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${
-                      solved
-                        ? 'bg-green-50 text-green-600 border border-green-200 hover:bg-green-100'
-                        : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                    }`}
-                  >
-                    {solved ? <><RotateCcw size={11} /> Revisit</> : <>Solve <ArrowRight size={12} /></>}
-                  </Link>
+                  <div className="flex shrink-0 flex-col items-end gap-1.5 sm:flex-row sm:items-center">
+                    <Link
+                      href={`/practice/${q.id}?tab=solution#algorithm`}
+                      className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg border border-indigo-100 text-indigo-600 bg-white hover:bg-indigo-50 transition-colors"
+                    >
+                      Approach
+                    </Link>
+                    <Link
+                      href={`/practice/${q.id}`}
+                      className={`flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${
+                        solved
+                          ? 'bg-green-50 text-green-600 border border-green-200 hover:bg-green-100'
+                          : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                      }`}
+                    >
+                      {solved ? <><RotateCcw size={11} /> Revisit</> : <>Solve <ArrowRight size={12} /></>}
+                    </Link>
+                  </div>
                 </div>
               )
             })}
@@ -504,16 +512,24 @@ export default function DailyPage() {
                         </div>
 
                         {/* Preview link — read-only intent, not solve pressure */}
-                        <Link
-                          href={`/practice/${q.id}`}
-                          className={`shrink-0 flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
-                            solved
-                              ? 'border-green-200 text-green-600 bg-green-50 hover:bg-green-100'
-                              : 'border-purple-200 text-purple-600 bg-white hover:bg-purple-50'
-                          }`}
-                        >
-                          {solved ? 'Review' : 'Preview'}
-                        </Link>
+                        <div className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center">
+                          <Link
+                            href={`/practice/${q.id}?tab=solution#algorithm`}
+                            className="px-2.5 py-1.5 text-xs font-semibold rounded-lg border border-indigo-100 text-indigo-600 bg-white hover:bg-indigo-50"
+                          >
+                            Approach
+                          </Link>
+                          <Link
+                            href={`/practice/${q.id}`}
+                            className={`flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${
+                              solved
+                                ? 'border-green-200 text-green-600 bg-green-50 hover:bg-green-100'
+                                : 'border-purple-200 text-purple-600 bg-white hover:bg-purple-50'
+                            }`}
+                          >
+                            {solved ? 'Review' : 'Preview'}
+                          </Link>
+                        </div>
                       </div>
                     )
                   })}
@@ -591,9 +607,17 @@ export default function DailyPage() {
                             ? <CheckCircle2 size={14} className="text-green-500 shrink-0" />
                             : <Circle size={14} className="text-gray-300 shrink-0" />
                           }
-                          <Link href={`/practice/${q.id}`} className="text-gray-700 hover:text-indigo-600 truncate flex-1 min-w-0">
-                            {q.title}
-                          </Link>
+                          <div className="flex min-w-0 flex-1 items-center gap-2 truncate">
+                            <Link href={`/practice/${q.id}`} className="truncate text-gray-700 hover:text-indigo-600">
+                              {q.title}
+                            </Link>
+                            <Link
+                              href={`/practice/${q.id}?tab=solution#algorithm`}
+                              className="shrink-0 text-[10px] font-semibold text-indigo-500 hover:underline"
+                            >
+                              approach
+                            </Link>
+                          </div>
                           <a
                             href={`https://leetcode.com/problems/${q.slug}/`}
                             target="_blank"

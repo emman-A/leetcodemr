@@ -1,7 +1,7 @@
 'use client'
-import { useState, useEffect, useCallback, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { ChevronLeft, ChevronRight, Shuffle, RotateCcw, Layers, CheckCircle, Circle } from 'lucide-react'
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
+import { useSearchParams, useRouter, usePathname } from 'next/navigation'
+import { ChevronLeft, ChevronRight, Shuffle, RotateCcw, Layers, CheckCircle, Circle, Search, X } from 'lucide-react'
 import { getFcVisited, addFcVisited } from '@/lib/db'
 import { shuffle } from '@/lib/utils'
 import { DIFFICULTY_LEVELS, QUESTION_SOURCES, QUICK_PATTERNS } from '@/lib/constants'
@@ -20,7 +20,40 @@ interface Question {
   description?: string
 }
 
+function buildFlashcardParams(opts: {
+  diff: string
+  source: string
+  search: string
+  starred: boolean
+  solved: null | boolean
+  pattern: string | null
+}): string {
+  const p = new URLSearchParams()
+  if (opts.diff !== 'All') p.set('diff', opts.diff)
+  if (opts.source !== 'All') p.set('source', opts.source)
+  if (opts.search.trim()) p.set('search', opts.search.trim())
+  if (opts.starred) p.set('starred', '1')
+  if (opts.solved === true) p.set('solved', 'true')
+  if (opts.solved === false) p.set('solved', 'false')
+  if (opts.pattern) {
+    const pat = QUICK_PATTERNS.find(x => x.name === opts.pattern)
+    if (pat?.tags?.length) p.set('tags', [...pat.tags].join(','))
+  }
+  return p.toString()
+}
+
+function questionMatchesSearch(q: Question, query: string): boolean {
+  const t = query.trim().toLowerCase()
+  if (!t) return true
+  if (q.title.toLowerCase().includes(t)) return true
+  if (q.slug?.toLowerCase().includes(t)) return true
+  if (String(q.id) === t) return true
+  return (q.tags || []).some(tag => tag.toLowerCase().includes(t))
+}
+
 function FlashcardsInner() {
+  const router = useRouter()
+  const pathname = usePathname()
   const searchParams = useSearchParams()
   const initDiff    = searchParams.get('diff')    || 'All'
   const initSource  = searchParams.get('source')  || 'All'
@@ -43,8 +76,45 @@ function FlashcardsInner() {
   const [filterPattern, setFilterPattern] = useState<string | null>(
     initTags.length > 0 ? (QUICK_PATTERNS.find(p => p.tags.some(t => initTags.includes(t)))?.name ?? null) : null
   )
+  const [searchQuery, setSearchQuery] = useState(initSearch)
+  const [filterStarred, setFilterStarred] = useState(initStarred)
+  const [filterSolved, setFilterSolved] = useState<null | boolean>(initSolved)
   const [isShuffled, setIsShuffled] = useState(false)
   const [visited, setVisited] = useState<Set<number>>(new Set())
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  const searchQueryRef = useRef(searchQuery)
+  searchQueryRef.current = searchQuery
+
+  const replaceFlashcardUrl = useCallback(
+    (search: string) => {
+      const qs = buildFlashcardParams({
+        diff: filterDiff,
+        source: filterSource,
+        search,
+        starred: filterStarred,
+        solved: filterSolved,
+        pattern: filterPattern,
+      })
+      const next = qs ? `${pathname}?${qs}` : pathname
+      router.replace(next, { scroll: false })
+    },
+    [pathname, router, filterDiff, filterSource, filterStarred, filterSolved, filterPattern]
+  )
+
+  // Debounce writing ?search= to the URL while typing (deck filters use searchQuery state immediately).
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      const fromUrl = searchParams.get('search') || ''
+      if (searchQuery.trim() === fromUrl.trim()) return
+      replaceFlashcardUrl(searchQuery)
+    }, 350)
+    return () => window.clearTimeout(id)
+  }, [searchQuery, replaceFlashcardUrl, searchParams])
+
+  // When difficulty / source / pattern / starred / solved change, update URL immediately (keep current search text).
+  useEffect(() => {
+    replaceFlashcardUrl(searchQueryRef.current)
+  }, [filterDiff, filterSource, filterPattern, filterStarred, filterSolved, replaceFlashcardUrl])
 
   useEffect(() => {
     async function load() {
@@ -65,18 +135,28 @@ function FlashcardsInner() {
     let filtered = all
     if (filterDiff !== 'All') filtered = filtered.filter(q => q.difficulty === filterDiff)
     if (filterSource !== 'All') filtered = filtered.filter(q => (q.source || []).includes(filterSource))
-    if (initSearch) filtered = filtered.filter(q => q.title.toLowerCase().includes(initSearch.toLowerCase()))
+    filtered = filtered.filter(q => questionMatchesSearch(q, searchQuery))
     if (filterPattern) {
       const patTags = QUICK_PATTERNS.find(p => p.name === filterPattern)?.tags ?? []
       filtered = filtered.filter(q => (q.tags || []).some(t => (patTags as readonly string[]).includes(t)))
     }
-    if (initStarred) filtered = filtered.filter(q => progress[q.id]?.starred)
-    if (initSolved === true)  filtered = filtered.filter(q => progress[q.id]?.solved)
-    if (initSolved === false) filtered = filtered.filter(q => !progress[q.id]?.solved)
+    if (filterStarred) filtered = filtered.filter(q => progress[q.id]?.starred)
+    if (filterSolved === true) filtered = filtered.filter(q => progress[q.id]?.solved)
+    if (filterSolved === false) filtered = filtered.filter(q => !progress[q.id]?.solved)
     setDeck(isShuffled ? shuffle(filtered) : filtered)
     setIdx(0)
     setFlipped(false)
-  }, [filterDiff, filterSource, filterPattern, all, isShuffled])
+  }, [
+    filterDiff,
+    filterSource,
+    filterPattern,
+    filterStarred,
+    filterSolved,
+    searchQuery,
+    all,
+    isShuffled,
+    progress,
+  ])
 
   const q = deck[idx] || null
 
@@ -132,9 +212,44 @@ function FlashcardsInner() {
               <Layers className="text-indigo-500" /> Flashcards
             </h1>
             <p className="text-xs text-gray-400 mt-0.5">
-              Tap card to flip · ← → to navigate · Space to flip
+              Tap card to flip · ← → to navigate · Space to flip · search filters the deck as you type
             </p>
           </div>
+        </div>
+        {/* Search */}
+        <div className="mb-4 flex flex-wrap items-stretch gap-2">
+          <div className="relative flex-1 min-w-[min(100%,220px)] max-w-xl">
+            <Search className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-gray-400" size={16} aria-hidden />
+            <input
+              ref={searchInputRef}
+              type="search"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search title, #id, slug, tag…"
+              className="w-full rounded-xl border border-gray-200 bg-white py-2 pl-9 pr-9 text-sm text-gray-800 placeholder:text-gray-400 focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+              autoComplete="off"
+            />
+            {searchQuery ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery('')
+                  replaceFlashcardUrl('')
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                aria-label="Clear search"
+              >
+                <X size={16} />
+              </button>
+            ) : null}
+          </div>
+          <button
+            type="button"
+            onClick={() => searchInputRef.current?.focus()}
+            className="flex shrink-0 items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-700 hover:bg-indigo-100"
+          >
+            <Search size={14} /> Search
+          </button>
         </div>
         <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-gray-500">
           <span className="bg-indigo-50 text-indigo-600 border border-indigo-200 px-3 py-1.5 rounded-full">
