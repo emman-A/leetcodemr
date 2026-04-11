@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef, Suspense } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { ArrowLeft, CheckCircle, Clock, Code2, BookOpen, ExternalLink, Loader2, Trophy } from 'lucide-react'
+import { ArrowLeft, CheckCircle, Clock, Code2, BookOpen, ExternalLink, Loader2, Trophy, Star } from 'lucide-react'
 import { getProgress, updateProgress, addTimeSpent, completeReview } from '@/lib/db'
 import { formatTime, isDue } from '@/lib/utils'
 import DifficultyBadge from '@/components/DifficultyBadge'
@@ -59,6 +59,7 @@ function PracticePageInner() {
 
   const [question, setQuestion] = useState<Question | null>(null)
   const [solved, setSolved] = useState(false)
+  const [starred, setStarred] = useState(false)
   const [nextReview, setNextReview] = useState<string | null>(null)
   const [reviewDone, setReviewDone] = useState(false)
   const [leftTab, setLeftTab] = useState<'description' | 'solution' | 'accepted'>('description')
@@ -87,6 +88,7 @@ function PracticePageInner() {
       if (!q) return
       setQuestion(q)
       setSolved(!!prog[String(id)]?.solved)
+      setStarred(!!prog[String(id)]?.starred)
       setNextReview(prog[String(id)]?.next_review ?? null)
     }
     load()
@@ -195,6 +197,14 @@ function PracticePageInner() {
     toast.success(newSolved ? 'Marked as solved! 🎉' : 'Unmarked')
   }
 
+  async function handleToggleStar() {
+    if (!question) return
+    const next = !starred
+    setStarred(next)
+    await updateProgress(id, { starred: next })
+    toast.success(next ? 'Starred — shows in LeetGame' : 'Star removed')
+  }
+
   // Show skeleton top bar immediately, fill in once question loads
   return (
     <div className="flex flex-col h-[calc(100vh-56px)]">
@@ -230,6 +240,20 @@ function PracticePageInner() {
             <Clock size={13} />
             {formatTime(timer)}
           </div>
+          <button
+            type="button"
+            onClick={handleToggleStar}
+            disabled={!question}
+            title={starred ? 'Unstar' : 'Star — must master (LeetGame)'}
+            className={`flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-colors border disabled:opacity-40 ${
+              starred
+                ? 'bg-amber-50 text-amber-600 border-amber-200'
+                : 'bg-gray-50 text-gray-500 border-gray-200 hover:border-amber-300'
+            }`}
+          >
+            <Star size={13} className={starred ? 'fill-amber-400' : ''} />
+            <span className="hidden sm:inline">{starred ? 'Starred' : 'Star'}</span>
+          </button>
           <button
             onClick={handleMarkSolved}
             disabled={!question}

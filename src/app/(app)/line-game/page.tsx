@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { Calendar, Loader2 } from 'lucide-react'
-import { getStudyPlan } from '@/lib/db'
+import { getStudyPlan, getProgress } from '@/lib/db'
 import LineGameSession, { type LineGameQuestion } from '@/components/line-game/LineGameSession'
 import LeetGameQuestionList from '@/components/line-game/LeetGameQuestionList'
 
@@ -14,18 +14,21 @@ interface StudyPlanRow {
 export default function LineGamePage() {
   const [all, setAll] = useState<LineGameQuestion[]>([])
   const [plan, setPlan] = useState<StudyPlanRow | null>(null)
+  const [progress, setProgress] = useState<Record<string, { starred?: boolean }>>({})
   const [loading, setLoading] = useState(true)
   /** `null` = show question picker; number = playing that index in `deck` */
   const [playIndex, setPlayIndex] = useState<number | null>(null)
 
   useEffect(() => {
     async function load() {
-      const [qs, p] = await Promise.all([
+      const [qs, p, prog] = await Promise.all([
         fetch('/questions_full.json').then(r => r.json()) as Promise<LineGameQuestion[]>,
         getStudyPlan(),
+        getProgress(),
       ])
       setAll(qs)
       setPlan(p as StudyPlanRow | null)
+      setProgress(prog as Record<string, { starred?: boolean }>)
       setLoading(false)
     }
     load()
@@ -75,7 +78,7 @@ export default function LineGamePage() {
         )}
       </div>
       {playIndex === null ? (
-        <LeetGameQuestionList deck={deck} onSelect={setPlayIndex} />
+        <LeetGameQuestionList deck={deck} progress={progress} onSelect={setPlayIndex} />
       ) : (
         <LineGameSession
           key={playIndex}

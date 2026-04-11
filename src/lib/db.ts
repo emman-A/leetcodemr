@@ -222,14 +222,41 @@ export async function saveStudyPlan(plan: {
   per_day: number
   question_order: number[]
   lock_code: string
+  revision_cleared_ids?: number[]
 }) {
   const { error } = await supabase.from('study_plan').upsert({
     user_id: USER_ID,
     ...plan,
+    revision_cleared_ids: plan.revision_cleared_ids ?? [],
     created_at: new Date().toISOString(),
   }, { onConflict: 'user_id' })
   if (error) console.error('[db] saveStudyPlan:', error.message)
   return !error
+}
+
+/** Merge question IDs cleared on revision days (won't reappear on later 7th-day reviews) */
+export async function mergeRevisionClearedIds(ids: number[]): Promise<number[] | null> {
+  if (!ids.length) return []
+  const { data, error: fetchErr } = await supabase
+    .from('study_plan')
+    .select('revision_cleared_ids')
+    .eq('user_id', USER_ID)
+    .single()
+  if (fetchErr || !data) {
+    console.error('[db] mergeRevisionClearedIds fetch:', fetchErr?.message)
+    return null
+  }
+  const prev = (data.revision_cleared_ids as number[] | null) ?? []
+  const merged = [...new Set([...prev, ...ids])]
+  const { error } = await supabase
+    .from('study_plan')
+    .update({ revision_cleared_ids: merged })
+    .eq('user_id', USER_ID)
+  if (error) {
+    console.error('[db] mergeRevisionClearedIds:', error.message)
+    return null
+  }
+  return merged
 }
 
 export async function clearStudyPlan() {

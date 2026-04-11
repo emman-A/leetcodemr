@@ -1,8 +1,14 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useMemo, type MouseEvent } from 'react'
 import Link from 'next/link'
-import { CalendarCheck, Rocket, RotateCcw, ArrowRight, CheckCircle2, Circle, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react'
-import { getStudyPlan, saveStudyPlan, clearStudyPlan, getProgress } from '@/lib/db'
+import { CalendarCheck, Rocket, RotateCcw, ArrowRight, CheckCircle2, Circle, ChevronDown, ChevronUp, ExternalLink, Star } from 'lucide-react'
+import { getStudyPlan, saveStudyPlan, clearStudyPlan, getProgress, updateProgress, mergeRevisionClearedIds } from '@/lib/db'
+import {
+  computeTotalStudyDays,
+  findFirstIncompleteStudyDay,
+  getStudyDayContent,
+  type StudyPlanSlice,
+} from '@/lib/dailySchedule'
 import DifficultyBadge from '@/components/DifficultyBadge'
 import toast from 'react-hot-toast'
 
@@ -25,6 +31,8 @@ interface StudyPlan {
   per_day: number
   question_order: number[]
   lock_code: string
+  /** Cleared on a revision day — excluded from later 7th-day reviews */
+  revision_cleared_ids?: number[]
 }
 
 function todayISO() {
@@ -35,22 +43,21 @@ function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
 }
 
-function calcFinish(startDate: string, perDay: number, total: number) {
-  const days = Math.ceil(total / perDay)
+function planSlice(plan: StudyPlan): StudyPlanSlice {
+  return { per_day: plan.per_day, question_order: plan.question_order }
+}
+
+function finishDateFromStudyDays(startDate: string, studyDayCount: number) {
   const d = new Date(startDate)
-  d.setDate(d.getDate() + days - 1)
-  return { days, date: d.toISOString().split('T')[0] }
+  d.setDate(d.getDate() + Math.max(0, studyDayCount - 1))
+  return d.toISOString().split('T')[0]
 }
 
-function getDayInfo(plan: StudyPlan, dayIndex: number, allQuestions: Question[], progress: Record<string, ProgressData>) {
-  const start = plan.per_day * dayIndex
-  const end = start + plan.per_day
-  const questionIds = plan.question_order.slice(start, end)
-  const questions = questionIds.map(id => allQuestions.find(q => q.id === id)).filter(Boolean) as Question[]
-  return { questionIds, questions }
-}
-
-function getTodayInfo(plan: StudyPlan, allQuestions: Question[], progress: Record<string, ProgressData>) {
+function getTodayInfo(
+  plan: StudyPlan,
+  allQuestions: Question[],
+  progress: Record<string, ProgressData>
+) {
   const today = todayISO()
   const start = new Date(plan.start_date)
   start.setHours(0, 0, 0, 0)
@@ -60,45 +67,48 @@ function getTodayInfo(plan: StudyPlan, allQuestions: Question[], progress: Recor
   const diffMs = now.getTime() - start.getTime()
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
 
-  const totalDays = Math.ceil(plan.question_order.length / plan.per_day)
-  const finishDate = calcFinish(plan.start_date, plan.per_day, plan.question_order.length).date
+  const slice = planSlice(plan)
+  const totalDays = computeTotalStudyDays(slice)
+  const finishDate = finishDateFromStudyDays(plan.start_date, totalDays || 1)
+  const revisionCleared = new Set(plan.revision_cleared_ids ?? [])
 
   if (diffDays < 0) {
-    return { pending: true, daysUntil: -diffDays, startDate: plan.start_date, totalDays, finishDate }
-  }
-
-  if (diffDays >= totalDays) {
-    return { complete: true, totalDays, finishDate, dayNumber: totalDays, daysLeft: 0 }
-  }
-
-  // Stay on the first incomplete day — don't advance by calendar date alone
-  let activeDayIndex = diffDays
-  for (let i = 0; i <= diffDays; i++) {
-    const { questionIds } = getDayInfo(plan, i, allQuestions, progress)
-    const allSolved = questionIds.every(id => {
-      const p = progress[String(id)]
-      return p && p.solved
-    })
-    if (!allSolved) {
-      activeDayIndex = i
-      break
+    return {
+      pending: true,
+      daysUntil: -diffDays,
+      startDate: plan.start_date,
+      totalDays,
+      finishDate,
+      isRevisionDay: false,
     }
   }
 
-  const dayNumber = activeDayIndex + 1
-  const daysLeft = totalDays - dayNumber
+  const firstInc = findFirstIncompleteStudyDay(slice, progress, revisionCleared)
+  if (firstInc === -1) {
+    return {
+      complete: true,
+      totalDays,
+      finishDate,
+      dayNumber: totalDays,
+      daysLeft: 0,
+      isRevisionDay: false,
+    }
+  }
 
-  const { questionIds, questions } = getDayInfo(plan, activeDayIndex, allQuestions, progress)
+  const { questionIds, isRevisionDay } = getStudyDayContent(slice, firstInc, revisionCleared)
+  const questions = questionIds.map(id => allQuestions.find(q => q.id === id)).filter(Boolean) as Question[]
+  const daysLeft = Math.max(0, totalDays - firstInc)
 
   return {
     pending: false,
     complete: false,
-    dayNumber,
+    dayNumber: firstInc,
     totalDays,
     finishDate,
     daysLeft,
     questionIds,
     questions,
+    isRevisionDay,
   }
 }
 
@@ -140,7 +150,37 @@ export default function DailyPage() {
     load()
   }, [])
 
-  const { days: previewDays, date: previewFinish } = calcFinish(startDate, perDay, allQuestions.length)
+  const previewOrder = allQuestions.length ? generateOrder(allQuestions) : []
+  const previewStudyDays = previewOrder.length
+    ? computeTotalStudyDays({ per_day: perDay, question_order: previewOrder })
+    : 0
+  const previewFinish = finishDateFromStudyDays(startDate, previewStudyDays || 1)
+
+  const revisionSolvedRef = useRef<Record<number, boolean | undefined>>({})
+
+  const todayInfo = useMemo(() => {
+    if (!plan || loading) return null
+    return getTodayInfo(plan, allQuestions, progress)
+  }, [plan, allQuestions, progress, loading])
+
+  useEffect(() => {
+    revisionSolvedRef.current = {}
+  }, [todayInfo?.dayNumber])
+
+  useEffect(() => {
+    if (!plan || !todayInfo || todayInfo.pending || todayInfo.complete || !todayInfo.isRevisionDay || !todayInfo.questionIds?.length)
+      return
+    for (const id of todayInfo.questionIds) {
+      const now = !!progress[String(id)]?.solved
+      const was = revisionSolvedRef.current[id]
+      if (was !== undefined && now && !was) {
+        mergeRevisionClearedIds([id]).then(merged => {
+          if (merged) setPlan(prev => (prev ? { ...prev, revision_cleared_ids: merged } : null))
+        })
+      }
+      revisionSolvedRef.current[id] = now
+    }
+  }, [progress, plan, todayInfo])
 
   function generateOrder(questions: Question[]): number[] {
     const easy   = questions.filter(q => q.difficulty === 'Easy').map(q => q.id)
@@ -158,6 +198,7 @@ export default function DailyPage() {
       per_day: perDay,
       question_order: order,
       lock_code: planCode.trim(),
+      revision_cleared_ids: [],
     }
     const ok = await saveStudyPlan(newPlan)
     setGenerating(false)
@@ -188,6 +229,20 @@ export default function DailyPage() {
 
   function isSolved(id: number) {
     return !!progress[String(id)]?.solved
+  }
+
+  function isStarred(id: number) {
+    return !!progress[String(id)]?.starred
+  }
+
+  async function toggleStarred(e: MouseEvent<HTMLButtonElement>, questionId: number) {
+    e.preventDefault()
+    e.stopPropagation()
+    const p = progress[String(questionId)] || { solved: false, starred: false, notes: '' }
+    const newStarred = !p.starred
+    setProgress(prev => ({ ...prev, [String(questionId)]: { ...p, starred: newStarred } }))
+    await updateProgress(questionId, { starred: newStarred })
+    toast.success(newStarred ? 'Starred — practice in LeetGame' : 'Removed star')
   }
 
   if (loading) return <div className="text-center py-32 text-gray-400 animate-pulse text-sm">Loading...</div>
@@ -261,8 +316,8 @@ export default function DailyPage() {
           {/* Preview */}
           <div className="mt-5 bg-indigo-50 border border-indigo-100 rounded-xl p-4">
             <div className="flex justify-between items-center mb-1">
-              <span className="text-xs text-indigo-600 font-semibold">At {perDay}/day you finish in</span>
-              <span className="text-lg font-black text-indigo-700">{previewDays} days</span>
+              <span className="text-xs text-indigo-600 font-semibold">Study sessions (incl. every 7th = revision)</span>
+              <span className="text-lg font-black text-indigo-700">{previewStudyDays} days</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-xs text-indigo-500">Estimated finish</span>
@@ -284,8 +339,9 @@ export default function DailyPage() {
   }
 
   // ACTIVE VIEW
-  const todayInfo = getTodayInfo(plan, allQuestions, progress)
-  const totalDays = Math.ceil(plan.question_order.length / plan.per_day)
+  if (!todayInfo) return <div className="text-center py-32 text-gray-400 text-sm">Loading plan…</div>
+
+  const totalDays = computeTotalStudyDays(planSlice(plan))
   const progressPct = todayInfo.dayNumber ? Math.round((todayInfo.dayNumber / totalDays) * 100) : 0
   const todayQs = todayInfo.questions || []
   const todayDone = (todayInfo.questionIds || []).filter(id => isSolved(id)).length
@@ -373,9 +429,14 @@ export default function DailyPage() {
       {!todayInfo.pending && !todayInfo.complete && todayInfo.dayNumber && (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-4">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-bold text-gray-800 text-sm flex items-center gap-2">
+            <h2 className="font-bold text-gray-800 text-sm flex items-center gap-2 flex-wrap">
               <CalendarCheck size={15} className="text-indigo-500" />
-              Today — Day {todayInfo.dayNumber}
+              Today — Study day {todayInfo.dayNumber}
+              {todayInfo.isRevisionDay && (
+                <span className="text-[10px] font-bold uppercase tracking-wide bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">
+                  Revision (7th day)
+                </span>
+              )}
             </h2>
             <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
               todayDone === todayQs.length ? 'bg-green-100 text-green-700' :
@@ -385,9 +446,17 @@ export default function DailyPage() {
             </span>
           </div>
 
+          {todayInfo.isRevisionDay && (
+            <p className="text-xs text-amber-800 bg-amber-50/80 border border-amber-100 rounded-lg px-3 py-2 mb-3">
+              Review every problem from your <strong>previous six study days</strong>. Marking a problem solved here removes it from
+              future revision days. New problems are paused today.
+            </p>
+          )}
+
           <div className="space-y-3">
             {todayQs.map(q => {
               const solved = isSolved(q.id)
+              const starred = isStarred(q.id)
               return (
                 <div
                   key={q.id}
@@ -404,6 +473,7 @@ export default function DailyPage() {
                       <span className={`text-sm font-semibold truncate ${solved ? 'text-green-700 line-through' : 'text-gray-800'}`}>
                         {q.title}
                       </span>
+                      {starred && <Star size={14} className="text-amber-500 shrink-0 fill-amber-400" aria-label="Starred for mastery" />}
                       <a
                         href={`https://leetcode.com/problems/${q.slug}/`}
                         target="_blank"
@@ -420,6 +490,18 @@ export default function DailyPage() {
                     </div>
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-1.5 sm:flex-row sm:items-center">
+                    <button
+                      type="button"
+                      onClick={e => toggleStarred(e, q.id)}
+                      title={starred ? 'Unstar (LeetGame mastery)' : 'Star — must master in LeetGame'}
+                      className={`flex items-center justify-center w-9 h-9 rounded-lg border transition-colors ${
+                        starred
+                          ? 'bg-amber-50 text-amber-600 border-amber-200'
+                          : 'bg-white text-gray-400 border-gray-200 hover:border-amber-300 hover:text-amber-600'
+                      }`}
+                    >
+                      <Star size={16} className={starred ? 'fill-amber-400' : ''} />
+                    </button>
                     <Link
                       href={`/practice/${q.id}?tab=solution#algorithm`}
                       className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg border border-indigo-100 text-indigo-600 bg-white hover:bg-indigo-50 transition-colors"
@@ -450,18 +532,24 @@ export default function DailyPage() {
 
           {/* Sneak peek days */}
           {Array.from({ length: extraDays }, (_, i) => {
-            const nextDayIdx = (todayInfo.dayNumber ?? 1) - 1 + i + 1
-            if (nextDayIdx >= totalDays) return null
-            const { questionIds: nextIds, questions: nextQs } = getDayInfo(plan, nextDayIdx, allQuestions, progress)
+            const peekStudyDay = (todayInfo.dayNumber ?? 1) + 1 + i
+            if (peekStudyDay > totalDays) return null
+            const rev = new Set(plan.revision_cleared_ids ?? [])
+            const peekContent = getStudyDayContent(planSlice(plan), peekStudyDay, rev)
+            const nextIds = peekContent.questionIds
+            const nextQs = nextIds.map(id => allQuestions.find(q => q.id === id)).filter(Boolean) as Question[]
             const alreadySolved = nextIds.filter(id => isSolved(id)).length
-            const allPreSolved = alreadySolved === nextQs.length
+            const allPreSolved = nextQs.length === 0 || alreadySolved === nextQs.length
             return (
-              <div key={nextDayIdx} className="mt-4 border-t border-dashed border-purple-100 pt-4">
+              <div key={peekStudyDay} className="mt-4 border-t border-dashed border-purple-100 pt-4">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-bold text-gray-600 text-sm flex items-center gap-2">
+                  <h3 className="font-bold text-gray-600 text-sm flex items-center gap-2 flex-wrap">
                     <span className="text-base">👀</span>
-                    Day {nextDayIdx + 1}
+                    Study day {peekStudyDay}
+                    {peekContent.isRevisionDay && (
+                      <span className="text-[10px] font-bold uppercase bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded">Revision</span>
+                    )}
                     <span className="text-xs font-normal text-purple-400">sneak peek</span>
                   </h3>
                   {alreadySolved > 0 && (
@@ -481,6 +569,7 @@ export default function DailyPage() {
                 <div className="space-y-2">
                   {nextQs.map(q => {
                     const solved = isSolved(q.id)
+                    const starred = isStarred(q.id)
                     return (
                       <div
                         key={q.id}
@@ -504,6 +593,7 @@ export default function DailyPage() {
                             <span className={`text-sm font-medium truncate ${solved ? 'text-green-700 line-through' : 'text-gray-700'}`}>
                               {q.title}
                             </span>
+                            {starred && <Star size={14} className="text-amber-500 shrink-0 fill-amber-400" aria-label="Starred for mastery" />}
                           </div>
                           <div className="mt-1 flex items-center gap-2">
                             <DifficultyBadge difficulty={q.difficulty} />
@@ -513,6 +603,18 @@ export default function DailyPage() {
 
                         {/* Preview link — read-only intent, not solve pressure */}
                         <div className="flex shrink-0 flex-col items-end gap-1 sm:flex-row sm:items-center">
+                          <button
+                            type="button"
+                            onClick={e => toggleStarred(e, q.id)}
+                            title={starred ? 'Unstar (LeetGame mastery)' : 'Star — must master in LeetGame'}
+                            className={`flex items-center justify-center w-9 h-9 rounded-lg border transition-colors ${
+                              starred
+                                ? 'bg-amber-50 text-amber-600 border-amber-200'
+                                : 'bg-white text-gray-400 border-gray-200 hover:border-amber-300 hover:text-amber-600'
+                            }`}
+                          >
+                            <Star size={16} className={starred ? 'fill-amber-400' : ''} />
+                          </button>
                           <Link
                             href={`/practice/${q.id}?tab=solution#algorithm`}
                             className="px-2.5 py-1.5 text-xs font-semibold rounded-lg border border-indigo-100 text-indigo-600 bg-white hover:bg-indigo-50"
@@ -540,7 +642,7 @@ export default function DailyPage() {
 
           {/* Do More button — only unlocked when today is fully done */}
           {todayDone === todayQs.length && todayQs.length > 0 &&
-           (todayInfo.dayNumber ?? 1) - 1 + extraDays + 1 < totalDays && (
+           (todayInfo.dayNumber ?? 1) + extraDays + 1 < totalDays && (
             <button
               onClick={() => setExtraDays(e => e + 1)}
               className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed border-purple-200 text-purple-600 text-sm font-semibold rounded-xl hover:bg-purple-50 transition-colors"
@@ -580,18 +682,26 @@ export default function DailyPage() {
           <h2 className="font-bold text-gray-700 text-sm mb-3">Past Days</h2>
           <div className="space-y-2">
             {Array.from({ length: displayPast }, (_, i) => {
-              const dayIdx = (todayInfo.dayNumber ? todayInfo.dayNumber - 2 - i : totalDays - 1 - i)
-              if (dayIdx < 0) return null
-              const { questionIds, questions: dayQs } = getDayInfo(plan, dayIdx, allQuestions, progress)
+              const pastStudyDay = (todayInfo.dayNumber ? todayInfo.dayNumber - 1 - i : 1)
+              if (pastStudyDay < 1) return null
+              const rev = new Set(plan.revision_cleared_ids ?? [])
+              const pastContent = getStudyDayContent(planSlice(plan), pastStudyDay, rev)
+              const questionIds = pastContent.questionIds
+              const dayQs = questionIds.map(id => allQuestions.find(q => q.id === id)).filter(Boolean) as Question[]
               const doneCnt = questionIds.filter(id => isSolved(id)).length
-              const expanded = expandedDays[dayIdx]
+              const expanded = expandedDays[pastStudyDay]
               return (
-                <div key={dayIdx} className="border border-gray-100 rounded-xl overflow-hidden">
+                <div key={pastStudyDay} className="border border-gray-100 rounded-xl overflow-hidden">
                   <button
-                    onClick={() => setExpandedDays(p => ({ ...p, [dayIdx]: !p[dayIdx] }))}
+                    onClick={() => setExpandedDays(p => ({ ...p, [pastStudyDay]: !p[pastStudyDay] }))}
                     className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 transition-colors"
                   >
-                    <span className="text-sm font-semibold text-gray-700">Day {dayIdx + 1}</span>
+                    <span className="text-sm font-semibold text-gray-700 flex items-center gap-2 flex-wrap">
+                      Study day {pastStudyDay}
+                      {pastContent.isRevisionDay && (
+                        <span className="text-[10px] font-bold uppercase bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded">Revision</span>
+                      )}
+                    </span>
                     <div className="flex items-center gap-2">
                       <span className={`text-xs font-bold ${doneCnt === dayQs.length ? 'text-green-600' : doneCnt > 0 ? 'text-yellow-600' : 'text-red-500'}`}>
                         {doneCnt}/{dayQs.length}

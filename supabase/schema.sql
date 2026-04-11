@@ -79,6 +79,7 @@ CREATE TABLE IF NOT EXISTS study_plan (
   per_day INTEGER DEFAULT 3,
   question_order INTEGER[] NOT NULL,
   lock_code TEXT DEFAULT '',
+  revision_cleared_ids INTEGER[] DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id)
 );
