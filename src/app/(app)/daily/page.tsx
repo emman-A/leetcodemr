@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef, useMemo, type MouseEvent } from 'react'
 import Link from 'next/link'
-import { CalendarCheck, Rocket, RotateCcw, ArrowRight, CheckCircle2, Circle, ChevronDown, ChevronUp, ExternalLink, Star } from 'lucide-react'
+import { CalendarCheck, Calendar, Rocket, RotateCcw, ArrowRight, CheckCircle2, Circle, ChevronDown, ChevronUp, ExternalLink, Star } from 'lucide-react'
 import { getStudyPlan, saveStudyPlan, clearStudyPlan, getProgress, updateProgress, mergeRevisionClearedIds } from '@/lib/db'
 import {
   computeTotalStudyDays,
@@ -52,6 +52,19 @@ function finishDateFromStudyDays(startDate: string, studyDayCount: number) {
   const d = new Date(startDate)
   d.setDate(d.getDate() + Math.max(0, studyDayCount - 1))
   return d.toISOString().split('T')[0]
+}
+
+/** Add calendar days to a YYYY-MM-DD string using America/Chicago (matches todayISO). */
+function addDaysChicagoIso(iso: string, deltaDays: number): string {
+  const [y, m, d] = iso.split('-').map(Number)
+  const ms = Date.UTC(y, m - 1, d, 12, 0, 0) + deltaDays * 86400000
+  return new Date(ms).toLocaleDateString('en-CA', { timeZone: 'America/Chicago' })
+}
+
+/** Set plan start so that today counts as study day `targetDay` (1-based), capped at totalDays. */
+function computeStartDateForTodayAsStudyDay(targetDay: number, totalDays: number): string {
+  const t = Math.min(totalDays, Math.max(1, Math.floor(targetDay)))
+  return addDaysChicagoIso(todayISO(), -(t - 1))
 }
 
 function getTodayInfo(
@@ -156,6 +169,11 @@ export default function DailyPage() {
   // Extra days
   const [extraDays, setExtraDays] = useState(0)
 
+  // Align calendar day number (shift start_date only; progress unchanged)
+  const [showAdjustSchedule, setShowAdjustSchedule] = useState(false)
+  const [adjustTargetDay, setAdjustTargetDay] = useState('1')
+  const [savingSchedule, setSavingSchedule] = useState(false)
+
   useEffect(() => {
     async function load() {
       const [qs, prog, p] = await Promise.all([
@@ -238,6 +256,28 @@ export default function DailyPage() {
       toast.success('Study plan created!')
     } else {
       toast.error('Failed to save plan — check Supabase RLS policies.')
+    }
+  }
+
+  async function handleSaveAlignSchedule() {
+    if (!plan || !totalDays) return
+    const raw = parseInt(adjustTargetDay.trim(), 10)
+    if (Number.isNaN(raw) || raw < 1) {
+      toast.error('Enter a study day between 1 and your plan length.')
+      return
+    }
+    const target = Math.min(totalDays, raw)
+    setSavingSchedule(true)
+    const newStart = computeStartDateForTodayAsStudyDay(target, totalDays)
+    const updated: StudyPlan = { ...plan, start_date: newStart }
+    const ok = await saveStudyPlan(updated)
+    setSavingSchedule(false)
+    if (ok) {
+      setPlan(updated)
+      setShowAdjustSchedule(false)
+      toast.success(`Today is now study day ${target}. Solved progress is unchanged.`)
+    } else {
+      toast.error('Could not save — check Supabase.')
     }
   }
 
@@ -398,12 +438,26 @@ export default function DailyPage() {
             <p className="text-xs text-green-600 font-semibold mt-0.5">Plan complete!</p>
           )}
         </div>
-        <button
-          onClick={() => setShowResetPrompt(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          <RotateCcw size={12} /> Reset
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          {!todayInfo.pending && !todayInfo.complete && todayInfo.dayNumber && (
+            <button
+              type="button"
+              onClick={() => {
+                setShowAdjustSchedule(s => !s)
+                setAdjustTargetDay(String(todayInfo.dayNumber ?? 1))
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 transition-colors"
+            >
+              <Calendar size={12} /> Align day
+            </button>
+          )}
+          <button
+            onClick={() => setShowResetPrompt(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <RotateCcw size={12} /> Reset
+          </button>
+        </div>
       </div>
 
       {/* Reset gate */}
@@ -451,6 +505,45 @@ export default function DailyPage() {
             <span>{fmtDate(plan.start_date)}</span>
             <span>{todayInfo.daysLeft !== undefined ? `${todayInfo.daysLeft} days left` : ''}</span>
             <span>{fmtDate(todayInfo.finishDate || '')}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Align today’s study day — shifts start_date only */}
+      {showAdjustSchedule && !todayInfo.pending && !todayInfo.complete && todayInfo.dayNumber && (
+        <div className="bg-indigo-50/80 border border-indigo-100 rounded-xl p-4 mb-4">
+          <p className="text-sm font-semibold text-indigo-900 mb-1">Align calendar day</p>
+          <p className="text-xs text-indigo-700/90 mb-3">
+            Set which study day &quot;today&quot; should be (uses Chicago date). Your solved questions and plan order stay the same — only the plan start date updates so tomorrow becomes the next day.
+          </p>
+          <div className="flex flex-wrap items-end gap-2">
+            <div>
+              <label className="block text-[10px] font-semibold text-indigo-600 mb-1">Today should be study day</label>
+              <input
+                type="number"
+                min={1}
+                max={totalDays}
+                value={adjustTargetDay}
+                onChange={e => setAdjustTargetDay(e.target.value)}
+                className="w-24 px-2 py-2 border border-indigo-200 rounded-lg text-sm font-bold text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              />
+            </div>
+            <span className="text-xs text-indigo-600 pb-2">of {totalDays}</span>
+            <button
+              type="button"
+              disabled={savingSchedule}
+              onClick={handleSaveAlignSchedule}
+              className="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+            >
+              {savingSchedule ? 'Saving…' : 'Save'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowAdjustSchedule(false)}
+              className="px-4 py-2 bg-white text-indigo-700 text-sm font-semibold rounded-lg border border-indigo-200 hover:bg-indigo-100/50 transition-colors"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}
