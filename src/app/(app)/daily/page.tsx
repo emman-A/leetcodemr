@@ -7,6 +7,7 @@ import {
   computeTotalStudyDays,
   findFirstIncompleteStudyDay,
   getStudyDayContent,
+  isDayComplete,
   type StudyPlanSlice,
 } from '@/lib/dailySchedule'
 import DifficultyBadge from '@/components/DifficultyBadge'
@@ -70,6 +71,7 @@ function getTodayInfo(
   const slice = planSlice(plan)
   const totalDays = computeTotalStudyDays(slice)
   const finishDate = finishDateFromStudyDays(plan.start_date, totalDays || 1)
+  const dueStudyDay = Math.min(totalDays, Math.max(1, diffDays + 1))
 
   if (diffDays < 0) {
     return {
@@ -95,14 +97,33 @@ function getTodayInfo(
     }
   }
 
-  const { questionIds, isRevisionDay } = getStudyDayContent(slice, firstInc, new Set())
+  // Stack all unfinished due days up to today's scheduled study day.
+  const stackedIds: number[] = []
+  const seenIds = new Set<number>()
+  const backlogDays: number[] = []
+  for (let studyDay = 1; studyDay <= dueStudyDay; studyDay++) {
+    const content = getStudyDayContent(slice, studyDay, new Set())
+    if (!content.questionIds.length) continue
+    if (isDayComplete(content.questionIds, progress)) continue
+    backlogDays.push(studyDay)
+    for (const id of content.questionIds) {
+      if (!seenIds.has(id)) {
+        seenIds.add(id)
+        stackedIds.push(id)
+      }
+    }
+  }
+
+  const activeBacklogDay = backlogDays.length ? backlogDays[backlogDays.length - 1] : dueStudyDay
+  const isRevisionDay = activeBacklogDay % 7 === 0
+  const questionIds = stackedIds
   const questions = questionIds.map(id => allQuestions.find(q => q.id === id)).filter(Boolean) as Question[]
-  const daysLeft = Math.max(0, totalDays - firstInc)
+  const daysLeft = Math.max(0, totalDays - dueStudyDay)
 
   return {
     pending: false,
     complete: false,
-    dayNumber: firstInc,
+    dayNumber: dueStudyDay,
     totalDays,
     finishDate,
     daysLeft,
@@ -648,8 +669,9 @@ export default function DailyPage() {
             )
           })}
 
-          {/* Do More button — available even when today is unfinished */}
-          {(todayInfo.dayNumber ?? 1) + extraDays + 1 < totalDays && (
+          {/* Do More button — only unlocked when today is fully done */}
+          {todayDone === todayQs.length &&
+           (todayInfo.dayNumber ?? 1) + extraDays + 1 < totalDays && (
             <button
               onClick={() => setExtraDays(e => e + 1)}
               className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed border-purple-200 text-purple-600 text-sm font-semibold rounded-xl hover:bg-purple-50 transition-colors"
