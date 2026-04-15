@@ -162,6 +162,16 @@ export default function DailyPage() {
     if (!plan || loading) return null
     return getTodayInfo(plan, allQuestions, progress)
   }, [plan, allQuestions, progress, loading])
+  const totalDays = plan ? computeTotalStudyDays(planSlice(plan)) : 0
+  const pastStudyDays = useMemo(() => {
+    const days: number[] = []
+    let d = (todayInfo?.dayNumber ?? totalDays) - 1
+    while (d >= 1) {
+      days.push(d)
+      d = d % 7 === 0 ? d - 7 : d - 1
+    }
+    return days
+  }, [todayInfo?.dayNumber, totalDays])
 
   useEffect(() => {
     revisionSolvedRef.current = {}
@@ -341,21 +351,11 @@ export default function DailyPage() {
   // ACTIVE VIEW
   if (!todayInfo) return <div className="text-center py-32 text-gray-400 text-sm">Loading plan…</div>
 
-  const totalDays = computeTotalStudyDays(planSlice(plan))
   const progressPct = todayInfo.dayNumber ? Math.round((todayInfo.dayNumber / totalDays) * 100) : 0
   const todayQs = todayInfo.questions || []
   const todayDone = (todayInfo.questionIds || []).filter(id => isSolved(id)).length
   const pastDayCount = todayInfo.dayNumber ? todayInfo.dayNumber - 1 : totalDays
   const displayPast = pastDayCount
-  const pastStudyDays = useMemo(() => {
-    const days: number[] = []
-    let d = todayInfo.dayNumber ? todayInfo.dayNumber - 1 : totalDays
-    while (d >= 1) {
-      days.push(d)
-      d = d % 7 === 0 ? d - 7 : d - 1
-    }
-    return days
-  }, [todayInfo.dayNumber, totalDays])
 
   return (
     <div className="max-w-xl mx-auto px-4 py-8">
