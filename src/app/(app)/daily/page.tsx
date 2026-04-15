@@ -70,7 +70,6 @@ function getTodayInfo(
   const slice = planSlice(plan)
   const totalDays = computeTotalStudyDays(slice)
   const finishDate = finishDateFromStudyDays(plan.start_date, totalDays || 1)
-  const revisionCleared = new Set(plan.revision_cleared_ids ?? [])
 
   if (diffDays < 0) {
     return {
@@ -83,7 +82,8 @@ function getTodayInfo(
     }
   }
 
-  const firstInc = findFirstIncompleteStudyDay(slice, progress, revisionCleared)
+  // Progression lock should require completing full revision day sets.
+  const firstInc = findFirstIncompleteStudyDay(slice, progress, new Set())
   if (firstInc === -1) {
     return {
       complete: true,
@@ -95,7 +95,7 @@ function getTodayInfo(
     }
   }
 
-  const { questionIds, isRevisionDay } = getStudyDayContent(slice, firstInc, revisionCleared)
+  const { questionIds, isRevisionDay } = getStudyDayContent(slice, firstInc, new Set())
   const questions = questionIds.map(id => allQuestions.find(q => q.id === id)).filter(Boolean) as Question[]
   const daysLeft = Math.max(0, totalDays - firstInc)
 
@@ -346,7 +346,16 @@ export default function DailyPage() {
   const todayQs = todayInfo.questions || []
   const todayDone = (todayInfo.questionIds || []).filter(id => isSolved(id)).length
   const pastDayCount = todayInfo.dayNumber ? todayInfo.dayNumber - 1 : totalDays
-  const displayPast = Math.min(pastDayCount, 14)
+  const displayPast = pastDayCount
+  const pastStudyDays = useMemo(() => {
+    const days: number[] = []
+    let d = todayInfo.dayNumber ? todayInfo.dayNumber - 1 : totalDays
+    while (d >= 1) {
+      days.push(d)
+      d = d % 7 === 0 ? d - 7 : d - 1
+    }
+    return days
+  }, [todayInfo.dayNumber, totalDays])
 
   return (
     <div className="max-w-xl mx-auto px-4 py-8">
@@ -534,8 +543,7 @@ export default function DailyPage() {
           {Array.from({ length: extraDays }, (_, i) => {
             const peekStudyDay = (todayInfo.dayNumber ?? 1) + 1 + i
             if (peekStudyDay > totalDays) return null
-            const rev = new Set(plan.revision_cleared_ids ?? [])
-            const peekContent = getStudyDayContent(planSlice(plan), peekStudyDay, rev)
+            const peekContent = getStudyDayContent(planSlice(plan), peekStudyDay, new Set())
             const nextIds = peekContent.questionIds
             const nextQs = nextIds.map(id => allQuestions.find(q => q.id === id)).filter(Boolean) as Question[]
             const alreadySolved = nextIds.filter(id => isSolved(id)).length
@@ -640,9 +648,8 @@ export default function DailyPage() {
             )
           })}
 
-          {/* Do More button — only unlocked when today is fully done */}
-          {todayDone === todayQs.length && todayQs.length > 0 &&
-           (todayInfo.dayNumber ?? 1) + extraDays + 1 < totalDays && (
+          {/* Do More button — available even when today is unfinished */}
+          {(todayInfo.dayNumber ?? 1) + extraDays + 1 < totalDays && (
             <button
               onClick={() => setExtraDays(e => e + 1)}
               className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed border-purple-200 text-purple-600 text-sm font-semibold rounded-xl hover:bg-purple-50 transition-colors"
@@ -681,11 +688,8 @@ export default function DailyPage() {
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <h2 className="font-bold text-gray-700 text-sm mb-3">Past Days</h2>
           <div className="space-y-2">
-            {Array.from({ length: displayPast }, (_, i) => {
-              const pastStudyDay = (todayInfo.dayNumber ? todayInfo.dayNumber - 1 - i : 1)
-              if (pastStudyDay < 1) return null
-              const rev = new Set(plan.revision_cleared_ids ?? [])
-              const pastContent = getStudyDayContent(planSlice(plan), pastStudyDay, rev)
+            {pastStudyDays.slice(0, displayPast).map(pastStudyDay => {
+              const pastContent = getStudyDayContent(planSlice(plan), pastStudyDay, new Set())
               const questionIds = pastContent.questionIds
               const dayQs = questionIds.map(id => allQuestions.find(q => q.id === id)).filter(Boolean) as Question[]
               const doneCnt = questionIds.filter(id => isSolved(id)).length
@@ -700,6 +704,11 @@ export default function DailyPage() {
                       Study day {pastStudyDay}
                       {pastContent.isRevisionDay && (
                         <span className="text-[10px] font-bold uppercase bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded">Revision</span>
+                      )}
+                      {pastContent.isRevisionDay && (
+                        <span className="text-[10px] font-semibold uppercase tracking-wide bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
+                          grouped days {pastStudyDay - 6}-{pastStudyDay - 1}
+                        </span>
                       )}
                     </span>
                     <div className="flex items-center gap-2">
