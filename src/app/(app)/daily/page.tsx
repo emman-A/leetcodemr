@@ -127,9 +127,18 @@ function getTodayInfo(
     }
   }
 
-  const activeBacklogDay = backlogDays.length ? backlogDays[backlogDays.length - 1] : dueStudyDay
-  const isRevisionDay = activeBacklogDay % 7 === 0
-  const questionIds = stackedIds
+  // When nothing is left in the backlog (caught up through dueStudyDay), still show this calendar
+  // day's full question list so completed work stays visible like before.
+  let questionIds = stackedIds
+  let isRevisionDay = backlogDays.length
+    ? backlogDays[backlogDays.length - 1] % 7 === 0
+    : dueStudyDay % 7 === 0
+  if (questionIds.length === 0) {
+    const dueContent = getStudyDayContent(slice, dueStudyDay, new Set())
+    questionIds = dueContent.questionIds
+    isRevisionDay = dueContent.isRevisionDay
+  }
+
   const questions = questionIds.map(id => allQuestions.find(q => q.id === id)).filter(Boolean) as Question[]
   const daysLeft = Math.max(0, totalDays - dueStudyDay)
 
@@ -762,8 +771,8 @@ export default function DailyPage() {
             )
           })}
 
-          {/* Do More button — only unlocked when today is fully done */}
-          {todayDone === todayQs.length &&
+          {/* Do More button — only unlocked when today is fully done (non-empty list) */}
+          {todayDone === todayQs.length && todayQs.length > 0 &&
            (todayInfo.dayNumber ?? 1) + extraDays + 1 < totalDays && (
             <button
               onClick={() => setExtraDays(e => e + 1)}
